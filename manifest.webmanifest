@@ -1,0 +1,17 @@
+{
+  "name": "Data Science for Conversational AI · Lebanese University",
+  "short_name": "ConvAI Lectures",
+  "description": "Interactive HTML lectures for Data Science for Conversational AI, MSc, Lebanese University. 18 contact hours across 9 sessions. Works offline.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#101418",
+  "theme_color": "#96122B",
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
