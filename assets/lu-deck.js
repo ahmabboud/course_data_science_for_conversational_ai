@@ -647,6 +647,12 @@
       var note = el('div', 'lu-inline-def');
       note.id = id;
       note.innerHTML = '<b>' + (t.getAttribute('data-term') || t.textContent.trim().replace(/\?$/, '')) + '.</b> ' + Term.body(t);
+      /* A <dd> host sits in a dt/dd CSS grid (.lu-defs). Inserting a bare div
+         as its sibling consumes a grid cell and throws every row after it out
+         of alignment, which also blows the "label" column width out to fit
+         this full sentence. Force the note onto its own full-width row so
+         the grid keeps pairing dt with dd correctly. */
+      if (host.tagName === 'DD') note.style.gridColumn = '1 / -1';
       if (host.parentNode) host.parentNode.insertBefore(note, host.nextSibling);
     }
   };
