@@ -38,7 +38,7 @@ No framework. No bundler. No npm. No CDN at runtime except the two webfonts. A l
 
 1. **Read `design-system.html`** in a browser. It has every component live, with the markup.
 2. **Read `lectures/_reference.html`.** It is 21 slides and uses all nine layouts and all twelve components. Imitate its structure.
-3. **Copy `lectures/_template.html`** to `lectures/dsca-session-NN.html`.
+3. **Copy `lectures/_template.html`** to `lectures/dsca-module-NN.html`.
 4. Fill in `<title>`, the `<meta name="description">`, and the `<body data-*>` attributes.
 5. Write the slides. Delete template slides you do not need; never delete the deck frame (`.deck > .deck__stage > .slide`).
 6. Add a card for the lecture in `index.html` (copy an existing `<a class="lu-lecture-card">`).
@@ -105,10 +105,10 @@ Two measurement rules that cost real time:
 
 ```html
 <body
-  data-deck-id="dsca-s01"        <!-- REQUIRED. localStorage namespace. Unique per lecture. -->
+  data-deck-id="dsca-m01"        <!-- REQUIRED. localStorage namespace. Unique per lecture. -->
   data-course="Data Science for Conversational AI"  <!-- left side of every slide header -->
-  data-session="Session 1 of 9"            <!-- right side of every slide header -->
-  data-duration="120"                      <!-- planned contact minutes -->
+  data-session="Module 1 of 6"             <!-- right side of every slide header -->
+  data-duration="180"                      <!-- planned contact minutes -->
   data-app-root="../"                      <!-- path from THIS file to repo root -->
   data-unit="Lebanese University · MSc">   <!-- footer line -->
 ```

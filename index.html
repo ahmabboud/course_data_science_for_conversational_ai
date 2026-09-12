@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data Science for Conversational AI · Lebanese University, MSc</title>
-<meta name="description" content="Interactive HTML lectures for Data Science for Conversational AI, MSc, Lebanese University. 18 contact hours across 9 sessions. Runs in any browser, works offline, printable as a handout.">
+<meta name="description" content="Interactive HTML lectures for Data Science for Conversational AI, MSc, Lebanese University. 18 contact hours across 5 modules plus a project defense. Runs in any browser, works offline, printable as a handout.">
 <meta name="theme-color" content="#96122B">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,62 +33,44 @@
 </div>
 
 <section>
-  <h2>The nine sessions</h2>
-  <p class="ds-note" style="margin-top:var(--lu-s3)">18 contact hours · 9 sessions of 2 hours · MSc. Every capability is built twice, once with classical NLP components so the mechanics stay visible, then again with LLM-based components, and the two are compared on quality, latency and cost. Sessions 8 and 9 are the capstone.</p>
+  <h2>Five modules, one project</h2>
+  <p class="ds-note" style="margin-top:var(--lu-s3)">18 contact hours · 5 modules of 3 hours, plus a 3-hour project defense · MSc. LLM-only: no classical NLP stack. Every team grows one conversational agent from Module 1 onward, in its own domain, one GitHub issue per module. The defense in Module 6 is a live demonstration of that same system.</p>
   <div class="lu-cards" style="margin-top:var(--lu-s6)">
     <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 01 · Module 1</span>
-      <span class="lu-lecture-card__t">Foundations of Conversational AI and System Architecture</span>
-      <span class="lu-lecture-card__d">Establish the shared vocabulary and the reference architecture that every later session builds on.</span>
+      <span class="lu-lecture-card__n">Module 01</span>
+      <span class="lu-lecture-card__t">Foundations and Modern Understanding</span>
+      <span class="lu-lecture-card__d">The reference architecture, why function calling replaces classical intent and entity extraction, and the project kickoff.</span>
       <span class="lu-lecture-card__meta"><span>Not yet built</span></span>
     </span>
     <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 02 · Module 1</span>
-      <span class="lu-lecture-card__t">Conversational Data, Corpora, and Annotation</span>
-      <span class="lu-lecture-card__d">Treat dialogue as a data problem and build the labeled asset the modelling sessions depend on.</span>
-      <span class="lu-lecture-card__meta"><span>Not yet built</span><span>Milestone 1</span></span>
-    </span>
-    <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 03 · Module 2</span>
-      <span class="lu-lecture-card__t">Intent Recognition</span>
-      <span class="lu-lecture-card__d">Build, compare and calibrate intent classifiers across the classical and the LLM-based approaches.</span>
+      <span class="lu-lecture-card__n">Module 02</span>
+      <span class="lu-lecture-card__t">Agentic Dialogue Management</span>
+      <span class="lu-lecture-card__d">The raw agent loop, then LangGraph with explicit state, MCP for tools, and one routing or escalation pattern.</span>
       <span class="lu-lecture-card__meta"><span>Not yet built</span></span>
     </span>
     <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 04 · Module 2</span>
-      <span class="lu-lecture-card__t">Entity Extraction and Slot Filling</span>
-      <span class="lu-lecture-card__d">Extract, validate and normalize the structured values a dialogue policy needs in order to act.</span>
+      <span class="lu-lecture-card__n">Module 03</span>
+      <span class="lu-lecture-card__t">Grounded Generation</span>
+      <span class="lu-lecture-card__d">RAG with hybrid search and reranking as the default, cache-augmented generation as a comparison.</span>
       <span class="lu-lecture-card__meta"><span>Not yet built</span></span>
     </span>
     <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 05 · Module 3</span>
-      <span class="lu-lecture-card__t">Dialogue Management and State Tracking</span>
-      <span class="lu-lecture-card__d">Control multi-turn behaviour with explicit state rather than prompt improvisation.</span>
+      <span class="lu-lecture-card__n">Module 04</span>
+      <span class="lu-lecture-card__t">Memory</span>
+      <span class="lu-lecture-card__d">Session memory and persistent, cross-session memory, and what persistent memory costs in privacy risk.</span>
       <span class="lu-lecture-card__meta"><span>Not yet built</span></span>
     </span>
     <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 06 · Module 3</span>
-      <span class="lu-lecture-card__t">Response Generation, Knowledge Grounding, and Capstone Kickoff</span>
-      <span class="lu-lecture-card__d">Produce responses that are correct, grounded, consistent in tone and safe. Then scope the capstone.</span>
+      <span class="lu-lecture-card__n">Module 05</span>
+      <span class="lu-lecture-card__t">Evaluation and Responsible Deployment</span>
+      <span class="lu-lecture-card__d">Multi-turn evaluation, the blind spots of LLM-as-judge grading, bias and PII probes, deployment concerns.</span>
       <span class="lu-lecture-card__meta"><span>Not yet built</span></span>
     </span>
     <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 07 · Module 4</span>
-      <span class="lu-lecture-card__t">Evaluation, Bias, Privacy, and Deployment</span>
-      <span class="lu-lecture-card__d">Decide whether a conversational system is actually good, and whether it is safe to put in front of users.</span>
-      <span class="lu-lecture-card__meta"><span>Not yet built</span><span>Milestone 2</span></span>
-    </span>
-    <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 08 · Module 5</span>
-      <span class="lu-lecture-card__t">Capstone Build Lab</span>
-      <span class="lu-lecture-card__d">Assemble the components from Modules 1 through 4 into one working end-to-end system.</span>
-      <span class="lu-lecture-card__meta"><span>Not yet built</span></span>
-    </span>
-    <span class="lu-lecture-card" aria-disabled="true">
-      <span class="lu-lecture-card__n">Session 09 · Module 5</span>
-      <span class="lu-lecture-card__t">Capstone Evaluation, Demonstration, and Course Close</span>
-      <span class="lu-lecture-card__d">Prove the system works with evidence, then present it to a non-technical audience.</span>
-      <span class="lu-lecture-card__meta"><span>Not yet built</span></span>
+      <span class="lu-lecture-card__n">Module 06</span>
+      <span class="lu-lecture-card__t">Project Defense</span>
+      <span class="lu-lecture-card__d">Live demonstration, scorecard, and architecture defense of the same system grown since Module 1.</span>
+      <span class="lu-lecture-card__meta"><span>No lecture deck</span></span>
     </span>
   </div>
 </section>

@@ -1,38 +1,35 @@
 # Data Science for Conversational AI, Lebanese University, MSc
 
-Interactive HTML lectures for the Data Science for Conversational AI course. 18 contact hours, 9 sessions of 2 hours. Static pages, no build step, deployed to GitHub Pages as-is.
+Interactive HTML lectures for the Data Science for Conversational AI course. 18 contact hours, 5 modules of 3 hours plus a 3-hour project defense. Static pages, no build step, deployed to GitHub Pages as-is.
 
-**Students:** open the site and pick a session. Nothing to install. Your answers and your place in a lecture are stored in your own browser and never transmitted.
+**Students:** open the site and pick a module. Nothing to install. Your answers and your place in a lecture are stored in your own browser and never transmitted.
 
 ## The course in one paragraph
 
-One conversational agent, built end to end. Every capability is built twice: first with classical NLP components so the mechanics stay visible, then with LLM-based components, and the two are compared on quality, latency and cost. Design an intent and slot schema and annotate against it, train and calibrate intent classifiers, extract and normalize entities under a schema, drive multi-turn behaviour from explicit dialogue state, ground responses in a retrieved source with citation and a working refusal path, then measure the result with a regression harness that also probes for bias and PII leakage. Sessions 8 and 9 are the capstone, where teams integrate all of it and defend it with evidence.
+This is an LLM-only course: there is no classical NLP stack and no build-it-twice comparison, every capability is built once, at production depth. There is also no separate capstone. From Module 1, each team of two to three picks its own domain and grows one conversational agent across the whole course, one GitHub issue per module. Module 1 gets the agent understanding requests with structured extraction. Module 2 gives it a real multi-turn policy on LangGraph, with one routing or escalation pattern. Module 3 grounds its answers in a retrieved source. Module 4 gives it memory across separate sessions. Module 5 builds the evaluation harness that probes it for correctness, bias and PII leakage. Module 6 is a live defense of the same system, evidence and all, not a new deliverable.
 
-## Sessions
+## Modules
 
-| # | Module | Title | Status |
-|---|---|---|---|
-| 1 | 1 | Foundations of Conversational AI and System Architecture | To build |
-| 2 | 1 | Conversational Data, Corpora, and Annotation | To build · Milestone 1 |
-| 3 | 2 | Intent Recognition | To build |
-| 4 | 2 | Entity Extraction and Slot Filling | To build |
-| 5 | 3 | Dialogue Management and State Tracking | To build |
-| 6 | 3 | Response Generation, Knowledge Grounding, and Capstone Kickoff | To build |
-| 7 | 4 | Evaluation, Bias, Privacy, and Deployment | To build · Milestone 2 |
-| 8 | 5 | Capstone Build Lab | To build |
-| 9 | 5 | Capstone Evaluation, Demonstration, and Course Close | To build |
+| # | Title | Status |
+|---|---|---|
+| 1 | Foundations and Modern Understanding | To build |
+| 2 | Agentic Dialogue Management | To build |
+| 3 | Grounded Generation | To build |
+| 4 | Memory | To build |
+| 5 | Evaluation and Responsible Deployment | To build |
+| 6 | Project Defense | No lecture deck, live session only |
 
-Session length is 120 minutes. At the deck pacing of 3 to 4 minutes per content slide, a 2-hour session lands around 16 to 20 slides including dividers and the wrap, which is smaller than the 3-hour Knowledge Representation decks. Do not copy their slide counts.
+Module length is 180 minutes. At the deck pacing of 3 to 4 minutes per content slide, a 3-hour module lands around 24 to 28 slides including dividers and the wrap, the same pacing the Knowledge Representation reference deck uses. Module 6 has no lecture deck to build: it is a live demo and defense session.
 
 ## Repository
 
 - **`index.html`**, the course index students land on.
-- **`lectures/dsca-session-NN.html`**, one self-contained lecture per file.
+- **`lectures/dsca-module-NN.html`**, one self-contained lecture per file, for Modules 1 to 5.
 - **`design-system.html`**, the design system and a live gallery of all twelve interactive components. Start here before authoring.
-- **`lectures/_template.html`**, copy this to start a new session.
+- **`lectures/_template.html`**, copy this to start a new module.
 - **`lectures/_reference.html`**, a fully built deck from the Knowledge Representation course, kept as a worked example of the structure. It is not part of this course and is not linked from the index.
 - **`AGENTS.md`**, the authoring contract. Read it before writing a lecture, whether you are a person or an agent.
-- **`PROMPT.md`**, the paste-ready brief for handing a new session to an agent.
+- **`PROMPT.md`**, the paste-ready brief for handing a new module to an agent.
 
 Built from the [`LebUniv_Course_Template`](https://github.com/ahmabboud/LebUniv_Course_Template) design system. Fixes to the stylesheet or runtime belong upstream in the template, not here.
 
@@ -56,7 +53,8 @@ Enable GitHub Pages with **GitHub Actions** as the source, then push to `main`. 
 
 - Replace the `LU` placeholder in the lockup with the official crest at `assets/lu-crest.svg`. The mark here is a typographic stand-in, not the university's emblem.
 - Replace every `.lu-figure__ph` placeholder with a real capture. Each one states the path and what must be visible in the shot.
-- The course syllabus lives one directory up, in `Data Science for Conversational AI - Syllabus.docx`. Session objectives, segment minutes, deliverables and readings all come from it. A deck whose section minutes do not sum to the syllabus budget will overrun.
+- The course syllabus lives one directory up, in `Data Science for Conversational AI - Syllabus.docx`. Module objectives, segment minutes, deliverables and readings all come from it, and each deliverable names the GitHub issue it corresponds to. A deck whose section minutes do not sum to the syllabus budget will overrun.
+- Each team needs its own GitHub repository for the continuous project, seeded in Module 1. That repository is separate from this one: this repository holds the lecture decks, team repositories hold the agents students build.
 
 ## Accessibility
 

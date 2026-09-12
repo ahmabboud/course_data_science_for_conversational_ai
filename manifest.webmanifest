@@ -1,7 +1,7 @@
 {
   "name": "Data Science for Conversational AI · Lebanese University",
   "short_name": "ConvAI Lectures",
-  "description": "Interactive HTML lectures for Data Science for Conversational AI, MSc, Lebanese University. 18 contact hours across 9 sessions. Works offline.",
+  "description": "Interactive HTML lectures for Data Science for Conversational AI, MSc, Lebanese University. 18 contact hours across 5 modules plus a project defense. Works offline.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
