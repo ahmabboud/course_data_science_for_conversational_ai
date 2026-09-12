@@ -144,7 +144,7 @@
       </div>
       <div class="lu-reveal">
         <button class="lu-reveal__btn" type="button">Why call it a reference architecture and not "the pipeline"</button>
-        <div class="lu-reveal__panel" hidden><p>Because a pipeline implies each stage always runs, in order, once. A real agent skips stages, revisits them, and sometimes runs two at once. The five names are what to call each job, not a fixed sequence to obey.</p></div>
+        <div class="lu-reveal__panel" hidden><p>A pipeline implies each stage runs in order, once. A real agent skips and revisits stages. The five names describe a job, not a fixed sequence.</p></div>
       </div>
     </div>
   </div>
@@ -154,37 +154,49 @@
 </section>
 
 <!-- ==================================================================== 06 -->
-<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="9">
+<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">What changed, and why it is not a downgrade</div>
-  <h2 class="lu-h1" style="max-width:34ch">One call replaces a trained classifier, a trained tagger, and the team that maintained both</h2>
+  <h2 class="lu-h1" style="max-width:36ch">One call replaces a trained classifier and a trained tagger</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
     <div class="lu-stack">
       <p class="lu-p">Classical NLU used two separate trained models: an <button class="lu-term" type="button" data-term="Intent classifier" data-kind="Classical NLU"><span class="lu-term-word">intent classifier</span><template>A supervised model trained on labeled examples per intent. Adding a new intent meant collecting new labeled data and retraining.</template></button> and an <button class="lu-term" type="button" data-term="Entity tagger" data-kind="Classical NLU"><span class="lu-term-word">entity tagger</span><template>A sequence labeling model marking which tokens are which slot. Same retraining cost as the classifier, and the two models could disagree with each other.</template></button>, trained separately, that could silently disagree.</p>
       <ul class="lu-list">
-        <li><button class="lu-term" type="button" data-term="Function calling" data-kind="Modern NLU"><span class="lu-term-word">Function calling</span><template>The model is given a description of one or more functions, with typed parameters, and chooses whether and how to call one. No training data required per function, only a description.</template></button> replaces the classifier: the "function" the model can call is named after the intent.</li>
-        <li><button class="lu-term" type="button" data-term="Structured output" data-kind="Modern NLU"><span class="lu-term-word">Structured output</span><template>The model's response is constrained to match a JSON schema you provide, enforced by the API itself, not by hoping the model formats correctly.</template></button> replaces the tagger: the schema's fields are the entities.</li>
-        <li>Adding a new intent is now editing a schema, not collecting labeled data and retraining two models.</li>
+        <li><button class="lu-term" type="button" data-term="Function calling" data-kind="Modern NLU"><span class="lu-term-word">Function calling</span><template>The model is given a description of one or more functions, with typed parameters, and chooses whether and how to call one. No training data required per function, only a description.</template></button> replaces the classifier.</li>
+        <li><button class="lu-term" type="button" data-term="Structured output" data-kind="Modern NLU"><span class="lu-term-word">Structured output</span><template>The model's response is constrained to match a JSON schema you provide, enforced by the API itself, not by hoping the model formats correctly.</template></button> replaces the tagger.</li>
       </ul>
     </div>
-    <div class="lu-stack" data-build="1">
-      <div class="lu-code" data-name="the schema is the whole contract">
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">What this buys you</span>
+      <p class="lu-sub">Adding a new intent is now editing a schema, not collecting labeled data and retraining two models.</p>
+    </div>
+  </div>
+  <template data-notes>
+    <p>Five minutes. Keep this at the level of the trade: two trained, retrained, occasionally-disagreeing models become one schema. The mechanics are the next slide.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 06b -->
+<section class="slide" data-label="The schema is the whole contract" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">What the call actually enforces</div>
+  <h2 class="lu-h1" style="max-width:34ch">The schema is the whole contract</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-code" data-name="the schema is the whole contract">
 <pre><code><span class="tok-com"># One schema replaces a classifier and a tagger</span>
 SCHEMA = {
   <span class="tok-str">"party_size"</span>: <span class="tok-str">"integer | null"</span>,
   <span class="tok-str">"day"</span>:        <span class="tok-str">"string | null"</span>,
   <span class="tok-str">"time"</span>:       <span class="tok-str">"string | null"</span>,
 }
-<span class="tok-com"># the model returns exactly this shape, or the</span>
-<span class="tok-com"># call fails validation and the fallback runs</span></code></pre>
-      </div>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Trap</span>
-        <p class="lu-sub">"The model can do anything" is not the same claim as "the model's output is validated." This course only trusts the second one.</p>
-      </div>
+<span class="tok-com"># the call fails validation and the</span>
+<span class="tok-com"># fallback runs, or it returns exactly this</span></code></pre>
+    </div>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Trap</span>
+      <p class="lu-sub">"The model can do anything" is not the same claim as "the model's output is validated." This course only trusts the second one.</p>
     </div>
   </div>
   <template data-notes>
-    <p>Nine minutes. Expected question: "so is the model just guessing the schema?" No, the API enforces it at decode time for both providers this course uses. Say that plainly, it removes a real source of anxiety before the lab.</p>
+    <p>Four minutes. Expected question: "so is the model just guessing the schema?" No, the API enforces it at decode time for both providers this course uses. Say that plainly, it removes a real source of anxiety before the lab.</p>
   </template>
 </section>
 
@@ -245,26 +257,20 @@ state = {
 <!-- ==================================================================== 08 -->
 <section class="slide slide--tint" data-label="Check: what carries the state" data-section="Lecture" data-minutes="4">
   <div class="lu-eyebrow">Check question</div>
-  <div class="lu-split lu-split--wide-left">
-    <div class="lu-mcq" data-qid="m1-q1" data-answer="b"
-         data-label="What made party_size survive the correction turn"
-         data-fb-correct=" Correct. The current state was passed into the call as part of the input. The model did not need to remember anything on its own, the state was handed to it fresh every turn."
-         data-fb-wrong=" Nothing in this design relies on the model having memory of its own, or on a separate memory service. Module 4 covers memory across sessions, this is a single conversation carrying its own state forward one call at a time.">
-      <p class="lu-mcq__q">In the walkthrough, why did <code>party_size</code> survive the correction turn unchanged?</p>
-      <div class="lu-mcq__opts">
-        <button class="lu-mcq__opt" type="button" data-key="a">The model remembers earlier turns on its own<span class="lu-mcq__why" hidden>Models do not retain state between separate API calls unless you pass it in. There is no hidden memory here.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="b">The current state was passed into the next call as input<span class="lu-mcq__why" hidden>Correct. Look back at step 2: the call's input included the full current state, not just the new line.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="c">A memory service like Mem0 stored it<span class="lu-mcq__why" hidden>That is Module 4's job, for recall across separate sessions. This is one conversation, handled entirely by passing state forward each turn.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="d">The schema marks party_size as required<span class="lu-mcq__why" hidden>A required field only says the field must be present, it says nothing about where its value comes from on a turn that never mentioned it.</span></button>
-      </div>
-      <div class="lu-mcq__fb" hidden></div>
+  <div class="lu-mcq" data-qid="m1-q1" data-answer="b"
+       data-label="What made party_size survive the correction turn"
+       data-fb-correct=" Correct, per step 2: the input included the full current state."
+       data-fb-wrong=" Module 4 covers memory across sessions. This is one conversation, carried forward one call at a time.">
+    <p class="lu-mcq__q">In the walkthrough, why did <code>party_size</code> survive the correction turn unchanged?</p>
+    <div class="lu-mcq__opts">
+      <button class="lu-mcq__opt" type="button" data-key="a">The model remembers earlier turns on its own<span class="lu-mcq__why" hidden>Models keep no state between separate calls unless you pass it in.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="b">The current state was passed into the next call as input<span class="lu-mcq__why" hidden>Correct, per step 2: the input included the full current state.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="c">A memory service like Mem0 stored it<span class="lu-mcq__why" hidden>That is Module 4's job, across sessions. This is one conversation.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="d">The schema marks party_size as required<span class="lu-mcq__why" hidden>Required only means present, not where its value comes from.</span></button>
     </div>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">Why this matters before the lab</span>
-      <p class="lu-sub">Every team's extraction call needs to pass the current state in, every turn. Forgetting this is the single most common bug in the next segment.</p>
-    </div>
+    <div class="lu-mcq__fb" hidden></div>
   </div>
-  <template data-notes><p>Forty seconds, then reveal. The distractor that catches people is c, since Module 4's memory framing is fresh from the promise slide. Distinguish clearly: this is state within one conversation, not memory across sessions.</p></template>
+  <template data-notes><p>Forty seconds, then reveal. The distractor that catches people is c, since Module 4's memory framing is fresh from the promise slide. Distinguish clearly: this is state within one conversation, not memory across sessions. Say out loud: every extraction call needs to pass the current state in, every turn, forgetting this is the most common bug next.</p></template>
 </section>
 
 <!-- ==================================================================== 09 -->
@@ -417,7 +423,7 @@ state = {
 
 <!-- ==================================================================== 16 -->
 <section class="slide" data-label="Lab kickoff · what you build" data-section="Lab kickoff" data-minutes="10">
-  <div class="lu-eyebrow">Adapt the pattern from slide 7 to your own domain</div>
+  <div class="lu-eyebrow">Adapt the pattern from slide 8 to your own domain</div>
   <h2 class="lu-h1" style="max-width:32ch">Issue 1, in your own repository</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
     <ol class="lu-list lu-list--num">
@@ -443,7 +449,7 @@ state = {
       <thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead>
       <tbody>
         <tr><td>A field is always empty</td><td>The schema marks it optional when the utterance always states it, or the reverse</td></tr>
-        <tr><td>Fields reset every turn</td><td>Current state is not being passed into the next call, see slide 7</td></tr>
+        <tr><td>Fields reset every turn</td><td>Current state is not being passed into the next call, see slide 8</td></tr>
         <tr><td>The call raises an error</td><td>The provider key was never actually tested, run <code>verify_setup.py</code> again</td></tr>
       </tbody>
     </table>
