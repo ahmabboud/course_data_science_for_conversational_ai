@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" class="lu-deck-page">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foundations and Modern Understanding · Data Science for Conversational AI, Module 1</title>
+<meta name="description" content="Module 1 of Data Science for Conversational AI, MSc, Lebanese University. Why function calling replaces classical intent and entity extraction, and the start of the team project.">
+<meta name="theme-color" content="#96122B">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/lu.css?v=1.1.0">
+</head>
+
+<body
+  data-deck-id="dsca-m01"
+  data-course="Data Science for Conversational AI"
+  data-session="Module 1 of 6"
+  data-duration="180"
+  data-app-root="../"
+  data-unit="Lebanese University · MSc">
+
+<a class="lu-skip" href="#slide-2">Skip to the first content slide</a>
+
+<div class="deck">
+<div class="deck__stage">
+
+<!-- ==================================================================== 01 -->
+<section class="slide slide--night" data-chrome="none" data-label="Title" data-section="Opening" data-minutes="2">
+  <div class="slide__body" style="justify-content:space-between">
+    <div class="lu-row" style="justify-content:space-between;align-items:flex-start">
+      <div class="lu-lockup">
+        <span class="lu-lockup__mark">LU</span>
+        <span class="lu-lockup__text">
+          <span class="lu-lockup__name">Lebanese University</span>
+          <span class="lu-lockup__unit">Faculty of Sciences · MSc, Master of Research</span>
+        </span>
+      </div>
+      <div class="lu-tag lu-tag--red" style="background:transparent;color:#FF9AA7;border-color:#96122B">Module 1 · Foundations and understanding</div>
+    </div>
+
+    <div class="lu-stack">
+      <div class="lu-eyebrow">Data Science for Conversational AI · Module 1 of 6</div>
+      <h1 class="lu-display" style="max-width:24ch">Foundations and Modern Understanding</h1>
+      <p class="lu-lead" style="max-width:44ch">Turn a raw request into something a program can act on, correctly, and start the one project every later module extends.</p>
+    </div>
+
+    <div class="lu-row" style="justify-content:space-between;font-size:var(--lu-t-caption);color:var(--lu-on-night-2)">
+      <span>180 minutes · 20 hook · 50 lecture · 20 kickoff · 70 build kickoff · 20 wrap</span>
+      <span>Press <kbd>&rarr;</kbd> to begin · <kbd>?</kbd> for shortcuts</span>
+    </div>
+  </div>
+  <template data-notes>
+    <p>First ninety seconds: this is the only course session where nobody has built anything yet. By the end of today, every team has a first real result committed toward the same agent they defend in Module 6.</p>
+    <ul>
+      <li>Confirm out loud that everyone ran <code>scripts/verify_setup.py</code> before arriving. Fix any FAIL now, not at minute 90.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- ==================================================================== 02 -->
+<section class="slide" data-label="Before we watch this" data-section="Hook" data-minutes="5">
+  <div class="lu-eyebrow">Hook · watch two conversations</div>
+  <h2 class="lu-h1" style="max-width:32ch">Same opening line, two agents. One of them remembers what you just said.</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <p class="lu-p">Both agents get the same two lines, back to back.</p>
+      <ol class="lu-list lu-list--num">
+        <li>"Book me a table for 4 on Monday at 7pm"</li>
+        <li>"Actually, make that Tuesday"</li>
+      </ol>
+      <div class="lu-callout">
+        <span class="lu-callout__label">Watch for</span>
+        <p class="lu-sub">What happens to the party size and the time on the second line. Neither one was mentioned again.</p>
+      </div>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Now, instructor switches to the notebook</span>
+      <p class="lu-sub">First a small keyword-matching bot, no model, no connection needed. Then the reference agent this whole course builds toward.</p>
+    </div>
+  </div>
+  <template data-notes>
+    <p>Switch to <code>notebooks/hook_demo.ipynb</code> now. Run the naive bot cell live, it needs nothing. For the reference agent cell: re-run live if the connection holds, or narrate this morning's saved output if it does not. Either way, come back to this deck for the next slide.</p>
+    <ul><li>Total time on the notebook: about twelve minutes.</li></ul>
+  </template>
+</section>
+
+<!-- ==================================================================== 03 -->
+<section class="slide" data-label="The five stages, already in front of you" data-section="Hook" data-minutes="15">
+  <div class="lu-eyebrow">What you just watched, named</div>
+  <h2 class="lu-h1" style="max-width:34ch">Five stages. The reference agent did all five in twelve lines of transcript.</h2>
+  <ul class="lu-pipeline" style="margin-top:var(--lu-s5)">
+    <li data-state="active"><span class="lu-pipeline__n">01</span><span class="lu-pipeline__t">Understand</span><span class="lu-pipeline__d">Today, Module 1</span></li>
+    <li data-state="muted"><span class="lu-pipeline__n">02</span><span class="lu-pipeline__t">Decide</span><span class="lu-pipeline__d">Module 2</span></li>
+    <li data-state="muted"><span class="lu-pipeline__n">03</span><span class="lu-pipeline__t">Respond</span><span class="lu-pipeline__d">Module 3</span></li>
+    <li data-state="muted"><span class="lu-pipeline__n">04</span><span class="lu-pipeline__t">Remember</span><span class="lu-pipeline__d">Module 4</span></li>
+    <li data-state="muted"><span class="lu-pipeline__n">05</span><span class="lu-pipeline__t">Evaluate</span><span class="lu-pipeline__d">Module 5</span></li>
+  </ul>
+  <div class="lu-split" style="margin-top:var(--lu-s6)">
+    <div class="lu-callout lu-callout--neutral">
+      <span class="lu-callout__label">What the naive bot never had</span>
+      <p class="lu-sub">State. It reacted to whichever line came in last, so the correction meant nothing to it. There was nothing to correct.</p>
+    </div>
+    <div class="lu-callout">
+      <span class="lu-callout__label">What today builds</span>
+      <p class="lu-sub">Stage one only: turning "actually, make that Tuesday" into a structured update, reliably, with a defined behavior when it fails. Stages two through five are one module each, on the same agent.</p>
+    </div>
+  </div>
+  <template data-notes>
+    <p>This is the promise slide. Point at stage 01 and say: everything after this is future modules, on the exact system just demonstrated, not a new one.</p>
+    <ul><li>If someone asks how the correction actually got parsed, say "that's the next twenty minutes" and move on.</li></ul>
+  </template>
+</section>
+
+<!-- ==================================================================== 04 -->
+<section class="slide slide--night" data-chrome="none" data-label="Part 1 · Why this replaces classical NLP" data-section="Lecture" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">Part one of one · 50 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">Why this replaces classical NLP</h2>
+    <p class="lu-lead" style="max-width:44ch">Not a new tool bolted onto the old pipeline. The old pipeline's first two stages, done a different way, with the failure case designed in from the start.</p>
+  </div>
+  <template data-notes><p>Ten seconds. Dividers are punctuation.</p></template>
+</section>
+
+<!-- ==================================================================== 05 -->
+<section class="slide" data-label="The five-stage arc, in detail" data-section="Lecture" data-minutes="9">
+  <div class="lu-eyebrow">The reference architecture</div>
+  <h2 class="lu-h1" style="max-width:34ch">Every conversational agent does five things. This course builds each one once.</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <dl class="lu-defs">
+        <dt>Understand</dt><dd>Turn the raw utterance into <button class="lu-term" type="button" data-term="Intent" data-kind="Understanding"><span class="lu-term-word">intent</span><template>What the user wants done, as a label the rest of the system can branch on. "book_table", not the sentence itself.<p>In this course, intent and its entities come out of one call, not two separate models.</p></template></button> and <button class="lu-term" type="button" data-term="Entity" data-kind="Understanding"><span class="lu-term-word">entities</span><template>The specific values inside the request: party size, day, time. In classical NLP these came from a separate tagger, trained on labeled spans.</template></button>, structured.</dd>
+        <dt>Decide</dt><dd>Hold state across turns, ask for what's missing, route to a specialist or a human when needed.</dd>
+        <dt>Respond</dt><dd>Ground the answer in a real source, cite it, refuse cleanly when the source does not cover it.</dd>
+        <dt>Remember</dt><dd>Recognize a returning user, recall what mattered, forget what should not persist.</dd>
+        <dt>Evaluate</dt><dd>Prove, with a real test suite, that the first four stages still work before anyone ships a change.</dd>
+      </dl>
+    </div>
+    <div class="lu-stack">
+      <div class="lu-callout lu-callout--concept">
+        <span class="lu-callout__label">The one rule that matters this module</span>
+        <p class="lu-sub">Understand is not "run a script and hope." It is a call with a contract: a schema the model's output must satisfy, and a defined answer for when it does not.</p>
+      </div>
+      <div class="lu-reveal">
+        <button class="lu-reveal__btn" type="button">Why call it a reference architecture and not "the pipeline"</button>
+        <div class="lu-reveal__panel" hidden><p>Because a pipeline implies each stage always runs, in order, once. A real agent skips stages, revisits them, and sometimes runs two at once. The five names are what to call each job, not a fixed sequence to obey.</p></div>
+      </div>
+    </div>
+  </div>
+  <template data-notes>
+    <p>Nine minutes. This slide is the spine of the whole course, refer back to it every module. Do not let "understand" turn into a grammar lesson, keep it at the level of the contract: structured in, structured out, defined failure.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 06 -->
+<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="9">
+  <div class="lu-eyebrow">What changed, and why it is not a downgrade</div>
+  <h2 class="lu-h1" style="max-width:34ch">One call replaces a trained classifier, a trained tagger, and the team that maintained both</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <p class="lu-p">Classical NLU used two separate trained models: an <button class="lu-term" type="button" data-term="Intent classifier" data-kind="Classical NLU"><span class="lu-term-word">intent classifier</span><template>A supervised model trained on labeled examples per intent. Adding a new intent meant collecting new labeled data and retraining.</template></button> and an <button class="lu-term" type="button" data-term="Entity tagger" data-kind="Classical NLU"><span class="lu-term-word">entity tagger</span><template>A sequence labeling model marking which tokens are which slot. Same retraining cost as the classifier, and the two models could disagree with each other.</template></button>, trained separately, that could silently disagree.</p>
+      <ul class="lu-list">
+        <li><button class="lu-term" type="button" data-term="Function calling" data-kind="Modern NLU"><span class="lu-term-word">Function calling</span><template>The model is given a description of one or more functions, with typed parameters, and chooses whether and how to call one. No training data required per function, only a description.</template></button> replaces the classifier: the "function" the model can call is named after the intent.</li>
+        <li><button class="lu-term" type="button" data-term="Structured output" data-kind="Modern NLU"><span class="lu-term-word">Structured output</span><template>The model's response is constrained to match a JSON schema you provide, enforced by the API itself, not by hoping the model formats correctly.</template></button> replaces the tagger: the schema's fields are the entities.</li>
+        <li>Adding a new intent is now editing a schema, not collecting labeled data and retraining two models.</li>
+      </ul>
+    </div>
+    <div class="lu-stack" data-build="1">
+      <div class="lu-code" data-name="the schema is the whole contract">
+<pre><code><span class="tok-com"># One schema replaces a classifier and a tagger</span>
+SCHEMA = {
+  <span class="tok-str">"party_size"</span>: <span class="tok-str">"integer | null"</span>,
+  <span class="tok-str">"day"</span>:        <span class="tok-str">"string | null"</span>,
+  <span class="tok-str">"time"</span>:       <span class="tok-str">"string | null"</span>,
+}
+<span class="tok-com"># the model returns exactly this shape, or the</span>
+<span class="tok-com"># call fails validation and the fallback runs</span></code></pre>
+      </div>
+      <div class="lu-callout">
+        <span class="lu-callout__label">Trap</span>
+        <p class="lu-sub">"The model can do anything" is not the same claim as "the model's output is validated." This course only trusts the second one.</p>
+      </div>
+    </div>
+  </div>
+  <template data-notes>
+    <p>Nine minutes. Expected question: "so is the model just guessing the schema?" No, the API enforces it at decode time for both providers this course uses. Say that plainly, it removes a real source of anxiety before the lab.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 07 -->
+<section class="slide" data-label="Walkthrough: the correction becomes JSON" data-section="Lecture" data-minutes="10">
+  <div class="lu-eyebrow">Diagnostic walkthrough</div>
+  <h2 class="lu-h2">The hook's own correction, turned into an updated object in four steps</h2>
+  <div class="lu-walk" data-label="Booking state walkthrough">
+    <div class="lu-walk__view">
+      <div data-walk-step="1" data-caption-short="Turn one"
+           data-caption="<b>Step 1.</b> First line comes in. State starts empty, the call fills all three fields.">
+        <div class="lu-code lu-code--sm" data-name="turn 1 → state">
+<pre><code><span class="tok-com">user: "Book me a table for 4 on Monday at 7pm"</span>
+
+state = {
+  <span class="tok-str">"party_size"</span>: 4,
+  <span class="tok-str">"day"</span>: <span class="tok-str">"monday"</span>,
+  <span class="tok-str">"time"</span>: <span class="tok-str">"7pm"</span>
+}</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="2" data-caption-short="The correction"
+           data-caption="<b>Step 2.</b> Second line only mentions the day. The call is given the current state, not just the new line.">
+        <div class="lu-code lu-code--sm" data-name="turn 2, the call's input">
+<pre><code><span class="tok-com">current state: {"party_size": 4, "day": "monday", "time": "7pm"}</span>
+<span class="tok-com">user just said: "actually, make that Tuesday"</span>
+
+<span class="tok-com"># the model is asked to return the updated</span>
+<span class="tok-com"># state, keeping any field the user did not change</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="3" data-caption-short="What updates"
+           data-caption="<b>Step 3.</b> Only the day changes. Party size and time carry forward untouched, because they were passed in as the current state, not re-derived from a line that never mentioned them.">
+        <div class="lu-code lu-code--sm" data-name="turn 2 → state">
+<pre><code>state = {
+  <span class="tok-str">"party_size"</span>: 4,        <span class="tok-com">// carried forward</span>
+  <span class="tok-str">"day"</span>: <span class="tok-str">"tuesday"</span>,      <span class="tok-com">// updated</span>
+  <span class="tok-str">"time"</span>: <span class="tok-str">"7pm"</span>        <span class="tok-com">// carried forward</span>
+}</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="4" data-caption-short="When it fails"
+           data-caption="<b>Step 4.</b> If the model's reply does not parse as this schema, the call is treated as failed, not silently accepted. What happens next is exactly the fallback design decision your team makes in the lab kickoff.">
+        <div class="lu-code lu-code--sm" data-name="a failed call">
+<pre><code><span class="tok-com">reply: "Sure, updating that for you!"</span>
+<span class="tok-com">→ does not match SCHEMA, validation fails</span>
+<span class="tok-com">→ fallback runs: retry once, or ask a clarifying</span>
+<span class="tok-com">   question, your team decides which</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template data-notes>
+    <p>Ten minutes. Step through once yourself before class. The point of step 3 is that nothing was re-derived, the untouched fields are literally the same values passed back in. Step 4 is the direct setup for the lab kickoff's fallback discussion, do not resolve it here, just name it.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 08 -->
+<section class="slide slide--tint" data-label="Check: what carries the state" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Check question</div>
+  <div class="lu-split lu-split--wide-left">
+    <div class="lu-mcq" data-qid="m1-q1" data-answer="b"
+         data-label="What made party_size survive the correction turn"
+         data-fb-correct=" Correct. The current state was passed into the call as part of the input. The model did not need to remember anything on its own, the state was handed to it fresh every turn."
+         data-fb-wrong=" Nothing in this design relies on the model having memory of its own, or on a separate memory service. Module 4 covers memory across sessions, this is a single conversation carrying its own state forward one call at a time.">
+      <p class="lu-mcq__q">In the walkthrough, why did <code>party_size</code> survive the correction turn unchanged?</p>
+      <div class="lu-mcq__opts">
+        <button class="lu-mcq__opt" type="button" data-key="a">The model remembers earlier turns on its own<span class="lu-mcq__why" hidden>Models do not retain state between separate API calls unless you pass it in. There is no hidden memory here.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="b">The current state was passed into the next call as input<span class="lu-mcq__why" hidden>Correct. Look back at step 2: the call's input included the full current state, not just the new line.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="c">A memory service like Mem0 stored it<span class="lu-mcq__why" hidden>That is Module 4's job, for recall across separate sessions. This is one conversation, handled entirely by passing state forward each turn.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="d">The schema marks party_size as required<span class="lu-mcq__why" hidden>A required field only says the field must be present, it says nothing about where its value comes from on a turn that never mentioned it.</span></button>
+      </div>
+      <div class="lu-mcq__fb" hidden></div>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Why this matters before the lab</span>
+      <p class="lu-sub">Every team's extraction call needs to pass the current state in, every turn. Forgetting this is the single most common bug in the next segment.</p>
+    </div>
+  </div>
+  <template data-notes><p>Forty seconds, then reveal. The distractor that catches people is c, since Module 4's memory framing is fresh from the promise slide. Distinguish clearly: this is state within one conversation, not memory across sessions.</p></template>
+</section>
+
+<!-- ==================================================================== 09 -->
+<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="9">
+  <div class="lu-eyebrow">What you are actually calling</div>
+  <h2 class="lu-h1" style="max-width:32ch">Two providers, one shape of call, for the whole course</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <table class="lu-table">
+        <thead><tr><th>Provider</th><th>Structured output mechanism</th><th>Model used in the lab</th></tr></thead>
+        <tbody>
+          <tr><td>OpenAI</td><td>JSON schema response format</td><td>gpt-4o-mini</td></tr>
+          <tr><td>Anthropic</td><td>Tool use with a required tool call</td><td>Claude Haiku</td></tr>
+        </tbody>
+      </table>
+      <div class="lu-callout">
+        <span class="lu-callout__label">Pick one, either is fine</span>
+        <p class="lu-sub">Your team's pre-course setup already tested one key. Use that provider today, nothing in the acceptance criteria depends on which.</p>
+      </div>
+    </div>
+    <div class="lu-stack">
+      <div class="lu-reveal">
+        <button class="lu-reveal__btn" type="button">Cost and latency, since you will call this a lot</button>
+        <div class="lu-reveal__panel" hidden><p>A single extraction call on a small model is a fraction of a cent and well under a second. Your free signup credit comfortably covers every module. The number to actually watch is calls per test run once Module 5's harness exists, not any single call today.</p></div>
+      </div>
+      <p class="lu-caption">Both providers enforce the schema at decode time. Neither is "asked nicely" to format correctly, the constraint is structural.</p>
+    </div>
+  </div>
+  <template data-notes>
+    <p>Nine minutes. Keep this practical, not a product comparison. The one thing worth dwelling on: schema enforcement is structural on both, so the fallback exists for cases the schema cannot rule out (a wrong value in a valid shape), not for malformed JSON, which the API already prevents.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 10 -->
+<section class="slide" data-label="Designing for evaluation from day one" data-section="Lecture" data-minutes="8">
+  <div class="lu-eyebrow">A decision made now, paid for in Module 5</div>
+  <h2 class="lu-h1" style="max-width:34ch">Log the three example utterances today. Module 5 needs exactly them.</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <p class="lu-p">Module 5's regression harness is scripted conversations run automatically. The cheapest way to have those scripts is to save the ones you write today, verbatim, with the extraction result they produced.</p>
+      <ul class="lu-list">
+        <li>Save your team's 3 required utterances as a fixture file, not just in a notebook cell you might overwrite.</li>
+        <li>Save one malformed or edge-case input too. That becomes a Module 5 regression case for free.</li>
+      </ul>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">The alternative, and why it is worse</span>
+      <p class="lu-sub">Writing test conversations from scratch in Module 5, four modules later, after nobody remembers exactly what broke in Module 1. Five minutes now against an afternoon later.</p>
+    </div>
+  </div>
+  <template data-notes>
+    <p>Eight minutes. This is the module's one explicit forward-reference to Module 5, keep it to the practical instruction: save the fixtures now. Do not teach the harness itself, that is Module 5's job.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 11 -->
+<section class="slide slide--night" data-chrome="none" data-label="Part 2 · Your project begins" data-section="Kickoff" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">20 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:20ch">Your project begins</h2>
+    <p class="lu-lead" style="max-width:40ch">One team, one domain, one repository, for the rest of the course.</p>
+  </div>
+  <template data-notes><p>Ten seconds.</p></template>
+</section>
+
+<!-- ==================================================================== 12 -->
+<section class="slide slide--tint" data-label="What is already done" data-section="Kickoff" data-minutes="2">
+  <div class="lu-eyebrow">Before this room</div>
+  <h2 class="lu-h2">Setup is not today's problem. It already happened.</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)">
+    <ul class="lu-list lu-list--check">
+      <li>Repository created from the team template, on GitHub, before this session.</li>
+      <li>An LLM key and a memory-service key, both tested by <code>scripts/verify_setup.py</code>.</li>
+      <li>Dependencies installed, the Module 3 embedding model already cached.</li>
+    </ul>
+    <div class="lu-callout">
+      <span class="lu-callout__label">If your team has not done this</span>
+      <p class="lu-sub">Say so now. Pair with a team that has and run the script together at the first break, do not wait until the lab kickoff to discover it.</p>
+    </div>
+  </div>
+  <template data-notes><p>Three minutes. This is a genuine check, not rhetorical, ask for a show of hands. A team that has not run the script is about to lose real time in the next segment.</p></template>
+</section>
+
+<!-- ==================================================================== 13 -->
+<section class="slide" data-label="Form your team, pick your domain" data-section="Kickoff" data-minutes="8">
+  <div class="lu-eyebrow">Decide now, live with it for six modules</div>
+  <h2 class="lu-h1" style="max-width:32ch">Two to three people, one domain, chosen for data you can actually get</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <ol class="lu-list lu-list--num">
+        <li>Form a team of two to three.</li>
+        <li>Pick a domain you can source or synthesize real data for. No personal or client data, ever, see your repo's data policy.</li>
+        <li>Write one sentence: who asks this agent what, and why they'd come back a second time.</li>
+      </ol>
+      <div class="lu-callout">
+        <span class="lu-callout__label">A domain that has failed before</span>
+        <p class="lu-sub">One nobody in the team can generate realistic example utterances for, from memory, right now. If you cannot write three example requests in the next two minutes, pick a different domain.</p>
+      </div>
+    </div>
+    <div class="lu-card">
+      <span class="lu-card__label">If you want a starting point</span>
+      <ul class="lu-list lu-list--tight">
+        <li>Restaurant or appointment booking</li>
+        <li>Internal IT or HR helpdesk</li>
+        <li>Course or library assistant</li>
+        <li>Small business order intake</li>
+      </ul>
+      <p class="lu-caption">Illustrative, not a menu. Your own idea is fine if it passes the two-minute test on the left.</p>
+    </div>
+  </div>
+  <template data-notes><p>Nine minutes. Circulate while teams argue over domains, the two-minute test kills most bad choices fast. Push back on anything requiring data nobody in the room actually has access to.</p></template>
+</section>
+
+<!-- ==================================================================== 14 -->
+<section class="slide" data-label="The rubric, and how modules build to it" data-section="Kickoff" data-minutes="9">
+  <div class="lu-eyebrow">100 points, earned six times</div>
+  <h2 class="lu-h1">Every later module is worth points you can see today</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <table class="lu-table">
+      <thead><tr><th>Criterion</th><th>Pts</th><th>Built in</th></tr></thead>
+      <tbody>
+        <tr><td>Problem framing and scope</td><td>10</td><td>Today</td></tr>
+        <tr><td>Understanding: extraction</td><td>15</td><td>Today</td></tr>
+        <tr><td>Dialogue management</td><td>20</td><td>Module 2</td></tr>
+        <tr><td>Grounded generation</td><td>15</td><td>Module 3</td></tr>
+        <tr><td>Memory</td><td>15</td><td>Module 4</td></tr>
+        <tr><td>Evaluation rigor</td><td>15</td><td>Module 5</td></tr>
+        <tr><td>Ethics, privacy, safety</td><td>5</td><td>Throughout</td></tr>
+        <tr><td>Communication</td><td>5</td><td>Module 6 defense</td></tr>
+      </tbody>
+    </table>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">The defense is not a new deliverable</span>
+      <p class="lu-sub">Module 6 demonstrates whatever this repository holds by then. There is no separate final project, what you commit today is graded when Issue 1 merges, not held for later.</p>
+      <p class="lu-sub" style="margin-top:var(--lu-s2)">One more thing: the Module 6 defense asks each of you specifically about a part of the system a teammate built, using your own repository's branch and pull request history. Read that as a reason to actually understand each other's modules, not just your own.</p>
+    </div>
+  </div>
+  <template data-notes><p>Ten minutes. Read the individual-questioning line aloud, it is the one part of the rubric that most changes how a team should work together starting today.</p></template>
+</section>
+
+<!-- ==================================================================== 15 -->
+<section class="slide slide--night" data-chrome="none" data-label="Part 3 · Build it" data-section="Lab kickoff" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">70 minutes, most of it off this deck</div>
+    <h2 class="lu-display-xl" style="max-width:20ch">Build it</h2>
+    <p class="lu-lead" style="max-width:40ch">Pattern, pairing, and the bugs most likely to hit you. The commit happens off-session.</p>
+  </div>
+  <template data-notes><p>Ten seconds.</p></template>
+</section>
+
+<!-- ==================================================================== 16 -->
+<section class="slide" data-label="Lab kickoff · what you build" data-section="Lab kickoff" data-minutes="10">
+  <div class="lu-eyebrow">Adapt the pattern from slide 7 to your own domain</div>
+  <h2 class="lu-h1" style="max-width:32ch">Issue 1, in your own repository</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <ol class="lu-list lu-list--num">
+      <li>Write your team's 3 required utterances: one clean, one missing a needed detail, one that should fail cleanly.</li>
+      <li>Adapt the schema from the walkthrough to your domain's fields, in <code>agent/understanding.py</code>'s <code>extract()</code>.</li>
+      <li>Decide your fallback: retry once, or ask a clarifying question. Either is fine, undecided is not, write it down.</li>
+      <li>Pair up. One person can start the schema while another drafts the utterances.</li>
+    </ol>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Deliverable, finished off-session before Module 2</span>
+      <p class="lu-sub"><code>extract()</code> working against your 3 utterances, the fallback decision written in the pull request, tests updated, Issue 1 merged.</p>
+    </div>
+  </div>
+  <template data-notes><p>Ten minutes to brief, then circulate. This room time is for getting unstuck, not for finishing. Most teams will not have a merged PR by the end of this segment, and that is expected.</p></template>
+</section>
+
+<!-- ==================================================================== 17 -->
+<section class="slide slide--tint" data-label="Likely bugs, named in advance" data-section="Lab kickoff" data-minutes="8">
+  <div class="lu-eyebrow">Read this before you hit it, not after</div>
+  <h2 class="lu-h2">Three bugs account for most of what stops teams here</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)">
+    <table class="lu-table">
+      <thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead>
+      <tbody>
+        <tr><td>A field is always empty</td><td>The schema marks it optional when the utterance always states it, or the reverse</td></tr>
+        <tr><td>Fields reset every turn</td><td>Current state is not being passed into the next call, see slide 7</td></tr>
+        <tr><td>The call raises an error</td><td>The provider key was never actually tested, run <code>verify_setup.py</code> again</td></tr>
+      </tbody>
+    </table>
+    <div class="lu-reveal">
+      <button class="lu-reveal__btn" type="button">If your fallback design feels arbitrary right now</button>
+      <div class="lu-reveal__panel" hidden><p>It is fine to pick one and revisit it. What matters for Issue 1 is that a decision exists and is written down, not that it is the best possible one. Module 5 will test it against real failures, that is when to reconsider.</p></div>
+    </div>
+  </div>
+  <template data-notes><p>Eight minutes as a whole-room pause partway through the kickoff, then let teams continue. Ask who has hit the first row, it is almost always someone.</p></template>
+</section>
+
+<!-- ==================================================================== 18 -->
+<section class="slide slide--tint" data-label="Discussion and wrap" data-section="Wrap" data-minutes="12">
+  <div class="lu-eyebrow">Discussion and wrap · 20 minutes</div>
+  <div class="lu-split lu-split--wide-left">
+    <div class="lu-stack">
+      <h2 class="lu-h2">What ships pre-built, so you know what not to rebuild</h2>
+      <ul class="lu-list">
+        <li>Module 2 gives you the raw agent loop and LangGraph, you will not write dialogue state management from scratch.</li>
+        <li>The team template's <code>notebooks/</code> folder is where each module's demo work lives, alongside the growing <code>app.py</code>.</li>
+        <li>Report any blocker from today in your team's channel before Module 2, not at the start of it.</li>
+      </ul>
+      <div class="lu-callout">
+        <span class="lu-callout__label">Before Module 2</span>
+        <p class="lu-sub">AI Engineering, structured output and function calling. AI Agents in LangGraph, build an agent from scratch. Finish and merge Issue 1.</p>
+      </div>
+    </div>
+    <div class="lu-card">
+      <span class="lu-card__label">Next module</span>
+      <h3 class="lu-h3">Module 2 · Agentic Dialogue Management</h3>
+      <p class="lu-sub">The same agent gets a real multi-turn policy, first as a raw loop, then on LangGraph, with one routing or escalation pattern.</p>
+    </div>
+  </div>
+  <template data-notes><p>Twelve minutes of the twenty. Use the rest for open questions and to confirm every team actually knows what "finished" means for Issue 1 before they leave.</p></template>
+</section>
+
+<!-- ==================================================================== 19 -->
+<section class="slide" data-label="Self-check" data-section="Wrap" data-minutes="4">
+  <div class="lu-eyebrow">Self-check</div>
+  <div class="lu-split lu-split--wide-left">
+    <div class="lu-stack">
+      <h2 class="lu-h2">How you did on this module's questions</h2>
+      <div data-score></div>
+    </div>
+    <div class="lu-stack">
+      <div class="lu-callout lu-callout--concept">
+        <span class="lu-callout__label">Studying alone?</span>
+        <p class="lu-sub">Press <kbd>S</kbd> for study mode. Every definition popup becomes an inline note, every reveal opens, and answers are filled in. Press <kbd>S</kbd> again to go back.</p>
+      </div>
+      <div class="lu-card lu-card--flat">
+        <span class="lu-card__label">Also available</span>
+        <ul class="lu-list lu-list--tight">
+          <li><kbd>O</kbd> contents · <kbd>/</kbd> search this lecture · <kbd>?</kbd> all shortcuts</li>
+          <li><b>Handout</b> in the bottom bar prints one page per slide with the instructor notes attached.</li>
+        </ul>
+      </div>
+      <p class="lu-caption">Your answers and position are stored in this browser only.</p>
+    </div>
+  </div>
+  <template data-notes><p>Close here so students leave knowing where the self-study affordances are.</p></template>
+</section>
+
+</div><!-- /stage -->
+</div><!-- /deck -->
+
+<script src="../assets/sparql-lite.js?v=1.1.0"></script>
+<script src="../assets/lu-deck.js?v=1.1.0" defer></script>
+</body>
+</html>
