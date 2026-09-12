@@ -28,7 +28,9 @@ from an orphaned file six months from now.
 3. Run `pip install -r requirements.txt` in that environment, or run the
    notebook's own first code cell, which does the same thing.
 4. `cp .env.example .env`, then fill in `OPENAI_API_KEY` or
-   `ANTHROPIC_API_KEY`. This is the instructor's own key, separate from any
+   `ANTHROPIC_API_KEY`, either is enough, `hook_demo.ipynb` picks whichever
+   is set (OpenAI first if both are, matching the team template's own
+   `verify_setup.py`). This is the instructor's own key, separate from any
    team's key in their own project repository. See the main course
    `README.md`'s setup note for where to get a free trial credit.
 5. Confirm the notebook runs end to end once, then save it with its output
