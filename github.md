@@ -5,8 +5,10 @@ upstream template: ahmabboud/LebUniv_Course_Template @ `39c8880` (v1.1.0)
 ## Last sync
 
 date: 2026-09-11
-commits: initial scaffold
-status: pushed to `main`.
+commits: `7e1039c` (initial scaffold)
+status: **committed locally on `main`, not pushed.** Run `git push -u origin main`
+from this directory. The push has to happen from a machine with GitHub
+credentials.
 direction: this repository is DOWNSTREAM of the template. The stylesheet,
 runtime, authoring contract and audit script were authored in
 `LebUniv_Course_Template`. Defects in `assets/`, `scripts/` or `AGENTS.md`
