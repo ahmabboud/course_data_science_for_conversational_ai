@@ -27,13 +27,13 @@ from an orphaned file six months from now.
    Lab: `New > Python 3`, or select an existing kernel).
 3. Run `pip install -r requirements.txt` in that environment, or run the
    notebook's own first code cell, which does the same thing.
-4. `cp .env.example .env`, then fill in `OPENAI_API_KEY` or
-   `ANTHROPIC_API_KEY`, either is enough, `hook_demo.ipynb` picks whichever
-   is set (OpenAI first if both are, matching the team template's own
-   `verify_setup.py`). This is the instructor's own key, separate from any
-   team's key in their own project repository. See the main course
-   `README.md`'s setup note for where to get a free trial credit.
-5. Confirm the notebook runs end to end once, then save it with its output
+4. Get a Gemini key: go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey),
+   sign in with a Google account, click "Create API key." No card, no
+   purchase, the free tier is enough for this notebook.
+5. `cp .env.example .env`, then paste the key in as `GOOGLE_API_KEY`. This
+   is the instructor's own key, separate from any team's key in their own
+   project repository.
+6. Confirm the notebook runs end to end once, then save it with its output
    intact. That saved output is the safety net if the room's connection has a
    bad moment during the live session.
 

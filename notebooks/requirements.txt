@@ -1,6 +1,5 @@
 # Instructor-side dependencies for the notebooks in this folder. Separate from
 # any team's own requirements.txt in their project repository.
-openai>=1.40
-anthropic>=0.34
+google-genai>=1.0
 python-dotenv>=1.0
 ipykernel>=6.29

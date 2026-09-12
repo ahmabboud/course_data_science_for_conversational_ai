@@ -276,27 +276,26 @@ state = {
 <!-- ==================================================================== 09 -->
 <section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="9">
   <div class="lu-eyebrow">What you are actually calling</div>
-  <h2 class="lu-h1" style="max-width:32ch">Two providers, one shape of call, for the whole course</h2>
+  <h2 class="lu-h1" style="max-width:32ch">One provider, one shape of call, for the whole course</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
     <div class="lu-stack">
       <table class="lu-table">
         <thead><tr><th>Provider</th><th>Structured output mechanism</th><th>Model used in the lab</th></tr></thead>
         <tbody>
-          <tr><td>OpenAI</td><td>JSON schema response format</td><td>gpt-4o-mini</td></tr>
-          <tr><td>Anthropic</td><td>Tool use with a required tool call</td><td>Claude Haiku</td></tr>
+          <tr><td>Gemini</td><td>JSON schema via response format</td><td>gemini-3.8-flash</td></tr>
         </tbody>
       </table>
       <div class="lu-callout">
-        <span class="lu-callout__label">Pick one, either is fine</span>
-        <p class="lu-sub">Your team's pre-course setup already tested one key. Use that provider today, nothing in the acceptance criteria depends on which.</p>
+        <span class="lu-callout__label">One key, the whole course</span>
+        <p class="lu-sub">Your team's pre-course setup already tested this key. Every lecture demo and every team's agent calls the same provider, no branching on which one you picked.</p>
       </div>
     </div>
     <div class="lu-stack">
       <div class="lu-reveal">
         <button class="lu-reveal__btn" type="button">Cost and latency, since you will call this a lot</button>
-        <div class="lu-reveal__panel" hidden><p>A single extraction call on a small model is a fraction of a cent and well under a second. Your free signup credit comfortably covers every module. The number to actually watch is calls per test run once Module 5's harness exists, not any single call today.</p></div>
+        <div class="lu-reveal__panel" hidden><p>A single extraction call on a small model is a fraction of a cent and well under a second. Your free-tier key comfortably covers every module, no card ever required. The number to actually watch is calls per test run once Module 5's harness exists, not any single call today.</p></div>
       </div>
-      <p class="lu-caption">Both providers enforce the schema at decode time. Neither is "asked nicely" to format correctly, the constraint is structural.</p>
+      <p class="lu-caption">Gemini enforces the schema at decode time. It is not "asked nicely" to format correctly, the constraint is structural.</p>
     </div>
   </div>
   <template data-notes>
