@@ -414,16 +414,105 @@ state = {
 <!-- ==================================================================== 15 -->
 <section class="slide slide--night" data-chrome="none" data-label="Part 3 · Build it" data-section="Lab kickoff" data-minutes="1">
   <div class="slide__body lu-center" style="gap:var(--lu-s5)">
-    <div class="lu-eyebrow">70 minutes, most of it off this deck</div>
+    <div class="lu-eyebrow">70 minutes: the method, then time to use it</div>
     <h2 class="lu-display-xl" style="max-width:20ch">Build it</h2>
-    <p class="lu-lead" style="max-width:40ch">Pattern, pairing, and the bugs most likely to hit you. The commit happens off-session.</p>
+    <p class="lu-lead" style="max-width:40ch">Pattern, pairing, and the bugs most likely to hit you. The method is taught here, the commit happens off-session.</p>
   </div>
   <template data-notes><p>Ten seconds.</p></template>
 </section>
 
+<!-- ==================================================================== 15a -->
+<section class="slide" data-label="The adaptation checklist" data-section="Lab kickoff" data-minutes="4">
+  <div class="lu-eyebrow">Same method, your own domain</div>
+  <h2 class="lu-h1" style="max-width:32ch">Four blanks to fill, not a new architecture</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <ol class="lu-list lu-list--num">
+      <li>Name the fields your domain needs, the way <code>party_size</code> named one for booking.</li>
+      <li>Write the one-line description the model sees for each field.</li>
+      <li>Decide what counts as valid for each field.</li>
+      <li>Decide the fallback: what happens when a field cannot be filled.</li>
+    </ol>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">What does not change</span>
+      <p class="lu-sub">The call, the validation, and the fallback wiring from this morning's lecture are already correct. Only the field names and descriptions are yours to write.</p>
+    </div>
+  </div>
+  <template data-notes><p>Four minutes. Say this plainly: nobody in the room is inventing a new mechanism today, they are filling in four blanks in a mechanism already proven on screen an hour ago. The walkthrough is next.</p></template>
+</section>
+
+<!-- ==================================================================== 15b -->
+<section class="slide" data-label="Walkthrough: adapting the schema to a new domain" data-section="Lab kickoff" data-minutes="10">
+  <div class="lu-eyebrow">Live walkthrough · a helpdesk ticket, not a table booking</div>
+  <h2 class="lu-h2">The same four steps, worked on a domain nobody in the lecture used</h2>
+  <div class="lu-walk" data-label="Schema adaptation walkthrough">
+    <div class="lu-walk__view">
+      <div data-walk-step="1" data-caption-short="Start here"
+           data-caption="<b>Step 1.</b> The schema from this morning, as a reminder of the shape.">
+        <div class="lu-code lu-code--sm" data-name="this morning's schema">
+<pre><code><span class="tok-com"># booking, from the lecture</span>
+SCHEMA = {
+  <span class="tok-str">"party_size"</span>: <span class="tok-str">"integer | null"</span>,
+  <span class="tok-str">"day"</span>:        <span class="tok-str">"string | null"</span>,
+  <span class="tok-str">"time"</span>:       <span class="tok-str">"string | null"</span>,
+}</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="2" data-caption-short="Name the fields"
+           data-caption="<b>Step 2.</b> A helpdesk ticket needs different information, named for what it actually is.">
+        <div class="lu-code lu-code--sm" data-name="what a helpdesk ticket needs">
+<pre><code><span class="tok-com"># three fields, not three that happen to rhyme with the example</span>
+issue_category   <span class="tok-com"># billing, access, or outage</span>
+urgency          <span class="tok-com"># low, medium, or high</span>
+affected_system  <span class="tok-com"># which internal tool broke</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="3" data-caption-short="Write the schema"
+           data-caption="<b>Step 3.</b> The same three lines of Python, new names.">
+        <div class="lu-code lu-code--sm" data-name="the adapted schema">
+<pre><code>SCHEMA = {
+  <span class="tok-str">"issue_category"</span>:  <span class="tok-str">"billing | access | outage | null"</span>,
+  <span class="tok-str">"urgency"</span>:          <span class="tok-str">"low | medium | high | null"</span>,
+  <span class="tok-str">"affected_system"</span>:  <span class="tok-str">"string | null"</span>,
+}</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="4" data-caption-short="What stayed fixed"
+           data-caption="<b>Step 4.</b> The call, the validation, and the fallback did not change at all.">
+        <div class="lu-code lu-code--sm" data-name="unchanged from this morning">
+<pre><code><span class="tok-com"># same call shape, same rule</span>
+<span class="tok-com"># the call fails validation and the</span>
+<span class="tok-com"># fallback runs, or it returns exactly this</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template data-notes><p>Ten minutes, and this is the segment to actually slow down on. Step through it once for the room using this domain, then tell teams the same four steps apply to whatever domain they picked. The point to land: nothing about the mechanism is domain-specific, only the three field names and their descriptions are.</p></template>
+</section>
+
+<!-- ==================================================================== 15c -->
+<section class="slide slide--tint" data-label="Choosing utterances that actually test the schema" data-section="Lab kickoff" data-minutes="5">
+  <div class="lu-eyebrow">Three utterances, chosen to fail in different ways</div>
+  <h2 class="lu-h1" style="max-width:34ch">A good test set breaks your own fallback on purpose</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <table class="lu-table">
+      <thead><tr><th>Utterance</th><th>What it tests</th></tr></thead>
+      <tbody>
+        <tr><td>States every field cleanly</td><td>The happy path works at all</td></tr>
+        <tr><td>Leaves one required field out</td><td>Validation actually catches the gap</td></tr>
+        <tr><td>Is ambiguous or contradicts itself</td><td>The fallback you chose actually runs</td></tr>
+      </tbody>
+    </table>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Trap</span>
+      <p class="lu-sub">Three clean utterances is not a test set, it is one utterance said three ways. If none of your three can fail, you have not written your fallback yet, you have just not needed it.</p>
+    </div>
+  </div>
+  <template data-notes><p>Five minutes. Have each team say their three utterances out loud to a neighboring team, the fastest way to catch "these are all the same utterance" is another team hearing it cold.</p></template>
+</section>
+
 <!-- ==================================================================== 16 -->
 <section class="slide" data-label="Lab kickoff · what you build" data-section="Lab kickoff" data-minutes="10">
-  <div class="lu-eyebrow">Adapt the pattern from slide 8 to your own domain</div>
+  <div class="lu-eyebrow">Adapt the pattern you just saw to your own domain</div>
   <h2 class="lu-h1" style="max-width:32ch">Issue 1, in your own repository</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
     <ol class="lu-list lu-list--num">
@@ -438,6 +527,63 @@ state = {
     </div>
   </div>
   <template data-notes><p>Ten minutes to brief, then circulate. This room time is for getting unstuck, not for finishing. Most teams will not have a merged PR by the end of this segment, and that is expected.</p></template>
+</section>
+
+<!-- ==================================================================== 16a -->
+<section class="slide" data-label="The three fallback strategies" data-section="Lab kickoff" data-minutes="8">
+  <div class="lu-eyebrow">When extraction fails or is incomplete</div>
+  <h2 class="lu-h1" style="max-width:34ch">Three honest options, not one correct answer</h2>
+  <table class="lu-table" style="margin-top:var(--lu-s4)">
+    <thead><tr><th>Strategy</th><th>What it costs</th><th>What it protects</th></tr></thead>
+    <tbody>
+      <tr><td>Ask a clarifying follow-up</td><td>One more turn</td><td>Never acts on a guess</td></tr>
+      <tr><td>Apply a safe default</td><td>Risks a wrong assumption</td><td>Keeps the conversation moving</td></tr>
+      <tr><td>Escalate or refuse cleanly</td><td>Worst experience of the three</td><td>Never silently fails</td></tr>
+    </tbody>
+  </table>
+  <div class="lu-callout lu-callout--concept" style="margin-top:var(--lu-s4)">
+    <span class="lu-callout__label">There is no house style yet</span>
+    <p class="lu-sub">This course does not mandate one strategy. Your team picks based on what your domain can tolerate getting wrong, and writes that reasoning down. Module 5 is where you find out if the choice held up.</p>
+  </div>
+  <template data-notes><p>Eight minutes. If a team asks which one is "right," push it back to them: what does their domain actually tolerate getting wrong? A booking system defaulting to a wrong day is recoverable, a system taking an action on a wrong guess may not be.</p></template>
+</section>
+
+<!-- ==================================================================== 16b -->
+<section class="slide slide--tint" data-label="Pick yours: a paired decision" data-section="Lab kickoff" data-minutes="5">
+  <div class="lu-eyebrow">Decide out loud, with your partner, before you code</div>
+  <div class="lu-mcq" data-qid="m1-q2" data-answer="c"
+       data-label="Fallback strategy for an ambiguous urgency field"
+       data-fb-correct=" Reasonable, and defensible: a ticket with unclear urgency is exactly the case worth one more turn before anything happens."
+       data-fb-wrong=" Not wrong on its face, but weigh it against what a guess here actually costs in your own domain before you commit to it.">
+    <p class="lu-mcq__q">A ticket's urgency field cannot be determined from the utterance. Which strategy fits best for a domain where acting on a wrong urgency wastes a technician's morning?</p>
+    <div class="lu-mcq__opts">
+      <button class="lu-mcq__opt" type="button" data-key="a">Default to "low," most tickets are not urgent<span class="lu-mcq__why" hidden>Cheapest option, but it is exactly the guess that wastes someone's morning if wrong.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="b">Default to "high," better safe than sorry<span class="lu-mcq__why" hidden>Also a guess, and it burns urgent-response capacity on tickets that were never actually urgent.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="c">Ask one clarifying question before filing the ticket<span class="lu-mcq__why" hidden>Correct for this domain: the cost of one more turn is small next to the cost of a wrong dispatch.</span></button>
+    </div>
+    <div class="lu-mcq__fb" hidden></div>
+  </div>
+  <template data-notes><p>Five minutes. There is no universally correct answer here, the scenario is written so the cost of a wrong guess is high on purpose. Use the discussion to have pairs argue their own domain's version of this trade-off.</p></template>
+</section>
+
+<!-- ==================================================================== 16c -->
+<section class="slide" data-label="Documenting the decision for the PR" data-section="Lab kickoff" data-minutes="4">
+  <div class="lu-eyebrow">Issue 1's third acceptance criterion, satisfied in two sentences</div>
+  <h2 class="lu-h2">Write the reasoning down, not just the code</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-code lu-code--sm" data-name="pull request description, excerpt">
+<pre><code><span class="tok-com"># Fallback behavior</span>
+<span class="tok-com">#</span>
+<span class="tok-com"># When urgency cannot be determined, we ask one</span>
+<span class="tok-com"># clarifying question rather than defaulting, because</span>
+<span class="tok-com"># a wrong default here costs a technician's morning.</span></code></pre>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">This is graded</span>
+      <p class="lu-sub">"The fallback behavior is documented in the pull request" is a checklist item on Issue 1, not a suggestion. A decision that only lives in someone's head does not satisfy it.</p>
+    </div>
+  </div>
+  <template data-notes><p>Four minutes. Point at the actual issue template on screen or in their repo if you can, this is the exact checklist item it maps to, so there should be no ambiguity about what "done" requires here.</p></template>
 </section>
 
 <!-- ==================================================================== 17 -->
@@ -459,6 +605,26 @@ state = {
     </div>
   </div>
   <template data-notes><p>Eight minutes as a whole-room pause partway through the kickoff, then let teams continue. Ask who has hit the first row, it is almost always someone.</p></template>
+</section>
+
+<!-- ==================================================================== 17a -->
+<section class="slide slide--tint" data-label="Now, in pairs: the rest of this block" data-section="Lab kickoff" data-minutes="15">
+  <div class="lu-eyebrow">The rest of this block, no network required</div>
+  <h2 class="lu-h1" style="max-width:30ch">Design it on paper before you code it off-session</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <ol class="lu-list lu-list--num">
+      <li>Form pairs, if you have not already.</li>
+      <li>Write your three utterances.</li>
+      <li>Name your schema's fields and their descriptions.</li>
+      <li>Decide and write down your fallback strategy.</li>
+      <li>Flag the instructor for anything that does not fit the pattern shown today.</li>
+    </ol>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">"Done" for today</span>
+      <p class="lu-sub">A design on paper, not working code. The call, the tests, and the pull request happen off-session, on whatever connection is reliable.</p>
+    </div>
+  </div>
+  <template data-notes><p>Brief this in under a minute, then this slide stays up while the room works for the rest of the block. Circulate pair to pair. Nothing here requires a network connection, that is deliberate: save any "does my API key work" troubleshooting for teams who already have a connection today.</p></template>
 </section>
 
 <!-- ==================================================================== 18 -->
