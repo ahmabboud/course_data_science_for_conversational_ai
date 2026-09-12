@@ -56,7 +56,7 @@ Enable GitHub Pages with **GitHub Actions** as the source, then push to `main`. 
 - Replace every `.lu-figure__ph` placeholder with a real capture. Each one states the path and what must be visible in the shot.
 - The course syllabus lives one directory up, in `Data Science for Conversational AI - Syllabus.docx`. Module objectives, segment minutes, deliverables and readings all come from it, and each deliverable names the GitHub issue it corresponds to. A deck whose section minutes do not sum to the syllabus budget will overrun.
 - Each team needs its own GitHub repository for the continuous project, seeded in Module 1. That repository is separate from this one: this repository holds the lecture decks, team repositories hold the agents students build.
-- `notebooks/hook_demo.ipynb` is the Module 1 hook, instructor only. Set it up and run it once before Module 1, see `notebooks/README.md` for the exact steps and for which notebook belongs to which lecture as more get added.
+- `notebooks/module-01/hook_demo.ipynb` is the Module 1 hook, instructor only. Set it up and run it once before Module 1, see `notebooks/README.md` for the exact steps, the one-folder-per-module convention, and which notebook belongs to which lecture as more get added.
 
 ## Accessibility
 
