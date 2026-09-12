@@ -1,5 +1,9 @@
 # Instructor-side dependencies for the notebooks in this folder. Separate from
 # any team's own requirements.txt in their project repository.
-google-genai>=1.0
+# google-genai must be at least 2.3.0: the Interactions API this course's code
+# calls (client.interactions.create) does not exist on older 1.x releases,
+# and a bare ">=1.0" floor let pip resolve to one of those and fail at
+# runtime with "'Client' object has no attribute 'interactions'".
+google-genai>=2.3.0
 python-dotenv>=1.0
 ipykernel>=6.29

@@ -56,3 +56,15 @@ per module.
 
 This `.venv`, `.env`, and any `__pycache__` this creates are gitignored at the
 repository root. Never commit a real API key.
+
+## Troubleshooting
+
+`AttributeError: 'Client' object has no attribute 'interactions'`: your
+installed `google-genai` is older than 2.3.0, the version this course's code
+needs for the Interactions API. Run `pip install --upgrade -r requirements.txt`
+(from the `notebooks/` folder) in that environment, then restart the
+notebook's kernel before rerunning. `requirements.txt` now pins
+`google-genai>=2.3.0` for exactly this reason, so a fresh environment
+installing from it for the first time will not hit this; it only bites an
+environment where an older `google-genai` was installed before this pin was
+added.
