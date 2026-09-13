@@ -36,6 +36,7 @@ No framework. No bundler. No npm. No CDN at runtime except the two webfonts. A l
 
 ## 1. The workflow
 
+0. **Read §12, the content depth bar, before you draft a single slide of content.** Everything below this point is mechanics: layout, pacing, components. None of it checks whether the content is actually graduate-level. That is a separate, equally mandatory bar, and it does not get relaxed just because a deck otherwise passes the audit script.
 1. **Read `design-system.html`** in a browser. It has every component live, with the markup.
 2. **Read `lectures/_reference.html`.** It is 21 slides and uses all nine layouts and all twelve components. Imitate its structure.
 3. **Copy `lectures/_template.html`** to `lectures/dsca-module-NN.html`.
@@ -261,3 +262,24 @@ Only when a genuine teaching interaction has no home. Then, in order:
 6. Bump the `?v=` query on the asset links (see §10).
 
 A component that is not documented in `design-system.html` does not exist, because the next agent will not find it.
+
+---
+
+## 12. The content depth bar (read before drafting any slide content)
+
+This is an MSc course (Lebanese University, Faculty of Sciences, Master of Research), not an undergraduate survey. A slide that only names a mechanism and gives one intuitive example is a draft, not a finished slide. This applies to every core-concept slide (not dividers, not check questions, not lab briefs, though walkthroughs and research dives are very much in scope).
+
+Before a module is called done, walk every core-concept slide against this table. If a slide fails a row that genuinely applies to it, fix the slide, do not lower the bar.
+
+| Bar | What clears it | What shallow looks like |
+|---|---|---|
+| **Mechanism has a formalism, when the field has one** | The actual formula, not just the word for it (BM25's TF/IDF with saturation, RRF's `1/(k+rank)`, cosine similarity, a loss function). | "Ranks by term overlap" with no formula at all, when one exists and is standard. |
+| **A black-box call gets opened at least once** | Say what `VectorIndex.build(...)` or `reranker.score(...)` is actually doing underneath (approximate nearest-neighbour search over an index like HNSW or IVF, not a linear scan; a cross-encoder's joint forward pass, not a lookup). | Treating a library call as a magic box for an entire module, when a graduate student is expected to know what is inside it. |
+| **Cost is stated, not just implied by adjectives** | A real complexity or latency comparison ("O(1) at query time once embeddings are precomputed" vs "O(n) forward passes, one per candidate"). | "Expensive" and "cheap" used as the whole explanation. |
+| **At least one named alternative, and why not it** | Naming a real competing method and the actual reason it was not chosen (CombSUM/CombMNZ vs RRF; IVF vs HNSW; a fixed 70/30 weighted blend vs rank fusion). | Presenting the chosen method as the only method that exists. |
+| **The metric the field actually uses, not just the one the demo prints** | Standard IR metrics where retrieval quality is the actual question (Recall@k, MRR, nDCG), even if the running code only prints an end-task score. | One end-to-end score (BERTScore, accuracy) standing in for retrieval evaluation entirely. |
+| **A cited paper gets read critically, not just summarized** | The paper's claim, stated accurately, next to a real tension: a limitation it does not itself emphasize, a competing finding, a cost the paper's own framing underplays. | Presenting a single paper's result as settled, with only the caveat the paper itself chose to state. |
+
+Self-check question for every core-concept slide: would a student who already knows the term's definition learn something new from this slide, or does it only define the term more slowly? If it is only the definition, it has not cleared this bar yet.
+
+This is a standing requirement, not a per-module reminder. Apply it while drafting, not as a pass at the end, and re-apply it when revisiting an already-shipped module.
