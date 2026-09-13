@@ -20,6 +20,10 @@ for every demo in this folder):
    (sign in, click "Create API key," no card needed), then
    `cp .env.example .env` and paste it in as `GOOGLE_API_KEY`.
    The scripts and LangGraph Studio both read this shared demos `.env`.
+   To use Studio, also add a free `LANGSMITH_API_KEY` from
+   [LangSmith settings](https://smith.langchain.com/settings). Leave
+   `LANGSMITH_TRACING=false` for this local demo unless you want runs stored
+   in LangSmith.
 4. **Only needed for Studio, not for `raw_loop.py` or `graph.py`'s own
    quick check below:** get a free LangSmith API key. Studio is a hosted
    page (`smith.langchain.com`) that connects to your local server, so it
@@ -58,7 +62,7 @@ LangGraph Studio in your browser, connected to that local server. In
 Studio:
 
 1. Pick the `dialogue_agent` graph (named in `langgraph.json`).
-2. Start a new run with an input message, for example
+2. Start a new thread and use the Chat tab to send an input message, for example
    `can you check if order A100 shipped yet?` (the two fake orders in
    `graph.py` are `A100` and `A200`; anything else returns "no order found").
 3. Step through the run: you will see the `agent` node decide, the `tool`

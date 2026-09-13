@@ -19,11 +19,12 @@ side by side if that is not obvious yet.
 import json
 import os
 from pathlib import Path
-from typing import Optional, TypedDict
+from typing import Optional
 
 from dotenv import load_dotenv
 from google import genai
-from langgraph.graph import END, START, StateGraph
+from langchain_core.messages import AIMessage, ToolMessage
+from langgraph.graph import END, START, MessagesState, StateGraph
 
 DEMO_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(DEMO_ROOT / ".env")
@@ -61,8 +62,9 @@ SYSTEM_PROMPT = (
 )
 
 
-class AgentState(TypedDict):
-    messages: list[dict]
+class AgentState(MessagesState):
+    """Studio-compatible conversation history plus the routing fields."""
+
     order_id: Optional[str]
     route: Optional[str]
 
@@ -73,14 +75,16 @@ def get_order_status(order_id: str) -> str:
     return FAKE_ORDERS.get(order_id, f"no order found for '{order_id}'")
 
 
-def call_model(messages: list[dict]) -> dict:
+def call_model(messages) -> dict:
     """Send the whole state's message history to Gemini and get back a
     structured decision. Identical call to raw_loop.py's call_model, this
     is not a LangGraph-specific idea."""
-    transcript = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
+    transcript = "\n".join(
+        f"{message.type}: {message.content}" for message in messages
+    )
     interaction = client.interactions.create(
         model="gemini-3.8-flash",
-        input=transcript,
+        input=f"system: {SYSTEM_PROMPT}\n{transcript}",
         response_format={
             "type": "text",
             "mime_type": "application/json",
@@ -95,12 +99,9 @@ def agent_node(state: AgentState) -> dict:
     is the raw loop's call_model step, wrapped as a graph node that reads
     and returns the explicit state object instead of a bare list."""
     decision = call_model(state["messages"])
-    note = {
-        "role": "assistant",
-        "content": decision.get("reply") or f"[{decision['action']}]",
-    }
+    note = AIMessage(content=decision.get("reply") or f"[{decision['action']}]")
     return {
-        "messages": state["messages"] + [note],
+        "messages": [note],
         "order_id": decision.get("order_id") or state.get("order_id"),
         "route": decision["action"],
     }
@@ -112,17 +113,21 @@ def tool_node(state: AgentState) -> dict:
     into a reply. Same append-and-loop-back idea as the raw loop, now a
     named step instead of an implicit repeat."""
     result = get_order_status(state.get("order_id") or "")
-    return {"messages": state["messages"] + [{"role": "tool", "content": result}]}
+    return {
+        "messages": [
+            ToolMessage(content=result, tool_call_id="order_status_lookup")
+        ]
+    }
 
 
 def escalate_node(state: AgentState) -> dict:
     """Terminal node: the turn is flagged for a person instead of answered
     automatically. This is the clean failure from slide 9, not a bug."""
-    note = {
-        "role": "system",
-        "content": "Escalated to a human. No automatic reply was sent.",
+    return {
+        "messages": [
+            AIMessage(content="Escalated to a human. No automatic reply was sent.")
+        ]
     }
-    return {"messages": state["messages"] + [note]}
 
 
 def route_from_agent(state: AgentState) -> str:
@@ -152,8 +157,7 @@ if __name__ == "__main__":
     result = graph.invoke(
         {
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": "can you check if order A100 shipped yet?"},
+                {"role": "user", "content": "can you check if order A100 shipped yet?"}
             ],
             "order_id": None,
             "route": None,
