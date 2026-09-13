@@ -1,10 +1,11 @@
 # Module 2 demo: raw loop, then LangGraph
 
 Used in `lectures/dsca-module-02.html`: slide 3 ("The raw agent loop, with
-nothing hidden") and slide 12 use `raw_loop.py`; slide 5 ("LangGraph: nodes,
-edges, and state as one object") and slide 13 use `graph.py` via
-`langgraph dev`. Both build the same order-status agent, once with nothing
-hidden, once on LangGraph with explicit state.
+nothing hidden") and slide 14 ("Walkthrough: the raw loop, one call at a
+time") use `raw_loop.py`; slide 5 ("LangGraph: nodes, edges, and state as one
+object") and slide 15 ("Walkthrough: the same behavior, now on LangGraph")
+use `graph.py` via `langgraph dev`. Both build the same order-status agent,
+once with nothing hidden, once on LangGraph with explicit state.
 
 ## One-time setup
 
@@ -31,7 +32,7 @@ for every demo in this folder):
    Add it to the same `demos/.env` as `LANGSMITH_API_KEY=lsv2...`.
    `langgraph dev` reads it from there.
 
-## Run `raw_loop.py` (slides 3 and 12)
+## Run `raw_loop.py` (slides 3 and 14)
 
 From the `demos/` folder, with the environment above active:
 
@@ -43,7 +44,7 @@ Prints the messages array after every step: the user's turn, the model's
 first decision, the tool result, and the model's final reply. No server, no
 browser, nothing else to start.
 
-## Run `graph.py` in LangGraph Studio (slides 5 and 13)
+## Run `graph.py` in LangGraph Studio (slides 5 and 15)
 
 From this folder (`demos/module-02/`), same environment:
 

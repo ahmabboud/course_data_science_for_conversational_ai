@@ -70,7 +70,7 @@
 </section>
 
 <!-- ==================================================================== 03 -->
-<section class="slide" data-label="The raw agent loop, with nothing hidden" data-section="Lecture" data-minutes="8">
+<section class="slide" data-label="The raw agent loop, with nothing hidden" data-section="Lecture" data-minutes="7">
   <div class="lu-eyebrow">What you are actually calling, underneath any framework</div>
   <h2 class="lu-h1" style="max-width:34ch">One array, one call, one appended result. That is the whole loop.</h2>
   <div class="lu-board" style="margin-top:var(--lu-s4)">
@@ -87,12 +87,12 @@
   </div>
   <p class="lu-caption" style="margin-top:var(--lu-s4)">Then the loop just repeats: append the result, call the model again with the whole array, see what it does next. There is no separate "state," the array is the state.</p>
   <template data-notes>
-    <p>Eight minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different. If there is time, run <code>demos/module-02/raw_loop.py</code> live, it prints this exact array after every step.</p>
+    <p>Seven minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different. If there is time, run <code>demos/module-02/raw_loop.py</code> live, it prints this exact array after every step.</p>
   </template>
 </section>
 
 <!-- ==================================================================== 04 -->
-<section class="slide slide--tint" data-label="Why the raw loop breaks down at scale" data-section="Lecture" data-minutes="4">
+<section class="slide slide--tint" data-label="Why the raw loop breaks down at scale" data-section="Lecture" data-minutes="3">
   <div class="lu-eyebrow">Where "just an array" stops being enough</div>
   <h2 class="lu-h1" style="max-width:34ch">Three questions the raw loop cannot answer about itself</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -106,11 +106,11 @@
       <p class="lu-sub">The same three answers, but as an explicit, inspectable state object and a graph with real branches, not a convention you have to remember to follow.</p>
     </div>
   </div>
-  <template data-notes><p>Four minutes. This is the pitch for LangGraph, not a takedown of the raw loop, the raw loop is correct, it is just unmanaged. Say plainly: everything on the next slide is still the same messages-and-tool-calls idea, just with structure wrapped around it.</p></template>
+  <template data-notes><p>Three minutes. This is the pitch for LangGraph, not a takedown of the raw loop, the raw loop is correct, it is just unmanaged. Say plainly: everything on the next slide is still the same messages-and-tool-calls idea, just with structure wrapped around it.</p></template>
 </section>
 
 <!-- ==================================================================== 05 -->
-<section class="slide" data-label="LangGraph: nodes, edges, and state as one object" data-section="Lecture" data-minutes="8">
+<section class="slide" data-label="LangGraph: nodes, edges, and state as one object" data-section="Lecture" data-minutes="7">
   <div class="lu-eyebrow">The same loop, given structure</div>
   <h2 class="lu-h1" style="max-width:34ch">A graph with an explicit state object, instead of one growing array</h2>
   <div class="lu-board" style="margin-top:var(--lu-s4)">
@@ -131,7 +131,7 @@
   </div>
   <p class="lu-caption" style="margin-top:var(--lu-s4)">The state object can be printed or logged at any point, mid-conversation, by a person, not just replayed as a wall of messages. That is the actual, concrete thing "explicit state" buys you.</p>
   <template data-notes>
-    <p>Eight minutes. Open the agent node's popover and read the state-object framing out loud, it is the single most important idea on this slide. The tool node's return edge is the same "loop back" behavior as the raw loop's append-and-repeat, name that connection explicitly so it does not read as a new concept. If the room has a connection, run <code>langgraph dev</code> from <code>demos/module-02/</code> and open Studio to trace this exact graph live, see <code>demos/README.md</code> for setup.</p>
+    <p>Seven minutes. Open the agent node's popover and read the state-object framing out loud, it is the single most important idea on this slide. The tool node's return edge is the same "loop back" behavior as the raw loop's append-and-repeat, name that connection explicitly so it does not read as a new concept. If the room has a connection, run <code>langgraph dev</code> from <code>demos/module-02/</code> and open Studio to trace this exact graph live, see <code>demos/README.md</code> for setup.</p>
   </template>
 </section>
 
@@ -161,7 +161,7 @@
 </section>
 
 <!-- ==================================================================== 07 -->
-<section class="slide" data-label="MCP: one standard for wiring tools" data-section="Lecture" data-minutes="9">
+<section class="slide" data-label="MCP: one standard for wiring tools" data-section="Lecture" data-minutes="6">
   <div class="lu-eyebrow">The part that is not LangGraph-specific</div>
   <h2 class="lu-h1" style="max-width:32ch">One protocol for "what tools exist and how do I call them"</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
@@ -187,11 +187,48 @@
       </div>
     </div>
   </div>
-  <template data-notes><p>Nine minutes. Expected question: "why not just write a Python function per tool?" That still works for one tool in one codebase, MCP matters once a tool needs to be discoverable and callable from more than one agent or framework without re-wiring it each time.</p></template>
+  <template data-notes><p>Six minutes. Expected question: "why not just write a Python function per tool?" That still works for one tool in one codebase, MCP matters once a tool needs to be discoverable and callable from more than one agent or framework without re-wiring it each time.</p></template>
 </section>
 
 <!-- ==================================================================== 08 -->
-<section class="slide" data-label="Chain-of-thought for tool selection" data-section="Lecture" data-minutes="8">
+<section class="slide slide--tint" data-label="Walkthrough: one tool call through MCP" data-section="Lecture" data-minutes="5">
+  <div class="lu-eyebrow">What "discover, then call" looks like turn by turn</div>
+  <h2 class="lu-h2">The agent node never hardcodes what a tool takes</h2>
+  <div class="lu-walk" data-label="MCP call walkthrough">
+    <div class="lu-walk__view">
+      <div data-walk-step="1" data-caption-short="Ask what exists"
+           data-caption="<b>Step 1.</b> Before deciding anything, the agent node asks the MCP server what tools it exposes right now, it does not assume a fixed list baked into the code.">
+        <div class="lu-code lu-code--sm" data-name="discover">
+<pre><code>tools = mcp_client.list_tools()
+<span class="tok-com"># names, argument shapes, all supplied by the server</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="2" data-caption-short="Model picks one" hidden
+           data-caption="<b>Step 2.</b> The model chooses from that discovered list, the same reasoning-then-tool-call shape as the raw loop, only the list of options came from the server, not from code you wrote.">
+        <div class="lu-code lu-code--sm" data-name="model's choice">
+<pre><code>reply.tool_call: <span class="tok-str">"get_order_status"</span>, {order_id: <span class="tok-str">"A100"</span>}</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="3" data-caption-short="Call through the client" hidden
+           data-caption="<b>Step 3.</b> Your tool node hands the call to the MCP client, which knows how to reach that specific server. Swap servers, and this line does not change.">
+        <div class="lu-code lu-code--sm" data-name="call it">
+<pre><code>result = mcp_client.call(<span class="tok-str">"get_order_status"</span>, order_id=<span class="tok-str">"A100"</span>)</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="4" data-caption-short="Typed result, or a clean error" hidden
+           data-caption="<b>Step 4.</b> A typed result comes back the same way regardless of server. A tool that raises gets caught here too, the same failure shape either way, not a surprise exception type per server.">
+        <div class="lu-code lu-code--sm" data-name="typed either way">
+<pre><code>result: {order_id: <span class="tok-str">"A100"</span>, status: <span class="tok-str">"shipped"</span>}
+<span class="tok-com"># or, on failure: a typed error, not a raw traceback</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template data-notes><p>Five minutes. Step through all four, then connect it forward explicitly: this is the exact shape today's lab codes by hand in the tool node, not a new pattern to learn separately.</p></template>
+</section>
+
+<!-- ==================================================================== 09 -->
+<section class="slide" data-label="Chain-of-thought for tool selection" data-section="Lecture" data-minutes="7">
   <div class="lu-eyebrow">How the agent node actually decides</div>
   <h2 class="lu-h2">Watching the model reason its way to the right tool</h2>
   <div class="lu-walk" data-label="Tool selection walkthrough">
@@ -227,11 +264,11 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
       </div>
     </div>
   </div>
-  <template data-notes><p>Eight minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today.</p></template>
+  <template data-notes><p>Seven minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today.</p></template>
 </section>
 
-<!-- ==================================================================== 09 -->
-<section class="slide" data-label="The one multi-agent pattern this course teaches: routing and escalation" data-section="Lecture" data-minutes="8">
+<!-- ==================================================================== 10 -->
+<section class="slide" data-label="The one multi-agent pattern this course teaches: routing and escalation" data-section="Lecture" data-minutes="6">
   <div class="lu-eyebrow">On purpose, only this one</div>
   <h2 class="lu-h1" style="max-width:36ch">One router, two places it can send a turn</h2>
   <div class="lu-board" style="margin-top:var(--lu-s4)">
@@ -246,10 +283,45 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
     <button type="button" class="lu-node lu-node--instance" style="left:72%;top:25%" data-term="Specialist path" data-kind="LangGraph"><template>A node scoped to one job, in your domain (say, order-status lookups). It only ever sees the state the router decided to hand it.</template>Specialist path</button>
     <button type="button" class="lu-node" style="left:72%;top:78%;border-color:var(--lu-red-700);background:var(--lu-red-050)" data-term="Human escalation" data-kind="LangGraph"><template>The turn is flagged for a person instead of answered automatically, because it is outside what any specialist path should decide alone, a refund dispute, say. This is the "clean failure," not a bug.</template>Human escalation</button>
   </div>
-  <template data-notes><p>Eight minutes. Name why this is the ONE multi-agent pattern taught: routing to a specialist or a human is a narrow, well-understood shape. General multi-agent orchestration is out of scope for this course on purpose, say that directly if asked.</p></template>
+  <template data-notes><p>Six minutes. Name why this is the ONE multi-agent pattern taught: routing to a specialist or a human is a narrow, well-understood shape. General multi-agent orchestration is out of scope for this course on purpose, say that directly if asked.</p></template>
 </section>
 
-<!-- ==================================================================== 10 -->
+<!-- ==================================================================== 11 -->
+<section class="slide slide--tint" data-label="Walkthrough: a turn that gets escalated" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Watching the router make the boring, correct choice</div>
+  <h2 class="lu-h2">The router decides, it never answers</h2>
+  <div class="lu-walk" data-label="Escalation walkthrough">
+    <div class="lu-walk__view">
+      <div data-walk-step="1" data-caption-short="A turn outside scope"
+           data-caption="<b>Step 1.</b> The router node reads the current state, nothing about this turn matches the specialist path's job.">
+        <div class="lu-code lu-code--sm" data-name="incoming state">
+<pre><code>user: <span class="tok-str">"can I dispute a charge from three months ago?"</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="2" data-caption-short="Router names the reason" hidden
+           data-caption="<b>Step 2.</b> The router's own decision is a visible, loggable value, not a silent branch. It names why, not just which way.">
+        <div class="lu-code lu-code--sm" data-name="router's decision">
+<pre><code>route: <span class="tok-str">"escalate"</span>, reason: <span class="tok-str">"billing dispute, out of scope"</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="3" data-caption-short="No specialist call happens" hidden
+           data-caption="<b>Step 3.</b> Critically, no specialist path node runs at all. The router does not attempt an answer and then override it, it never tries.">
+        <div class="lu-code lu-code--sm" data-name="what does NOT run">
+<pre><code><span class="tok-com"># specialist_node is never invoked on this turn</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="4" data-caption-short="A person sees it" hidden
+           data-caption="<b>Step 4.</b> The turn, with the router's stated reason attached, is what a person actually reviews, they are not left to guess why the agent stopped here.">
+        <div class="lu-code lu-code--sm" data-name="what the human sees">
+<pre><code>flagged_for_human: {turn, reason: <span class="tok-str">"billing dispute, out of scope"</span>}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template data-notes><p>Four minutes. The point to land: escalation is a clean, deliberate stop, not a failure state. The reason string is what makes it reviewable rather than a mystery drop.</p></template>
+</section>
+
+<!-- ==================================================================== 12 -->
 <section class="slide slide--night" data-chrome="none" data-label="Part 2 · Build it, twice" data-section="Hands-on lab" data-minutes="1">
   <div class="slide__body lu-center" style="gap:var(--lu-s5)">
     <div class="lu-eyebrow">Part two of three · 100 minutes</div>
@@ -259,7 +331,7 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
   <template data-notes><p>Ten seconds. "Twice" is the whole point, say it plainly before moving on.</p></template>
 </section>
 
-<!-- ==================================================================== 11 -->
+<!-- ==================================================================== 13 -->
 <section class="slide" data-label="What you build today" data-section="Hands-on lab" data-minutes="8">
   <div class="lu-eyebrow">Hands-on lab · 100 minutes · starts now</div>
   <h2 class="lu-h1" style="max-width:32ch">Rebuild your Module 1 agent's understanding step as a stateful policy</h2>
@@ -279,8 +351,8 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
   <template data-notes><p>Brief this in under two minutes, then let the room start. The most common early blocker: teams try to skip step 1 and go straight to LangGraph, then cannot debug their own graph because they never saw the raw mechanics it is managing.</p></template>
 </section>
 
-<!-- ==================================================================== 12 -->
-<section class="slide" data-label="Walkthrough: the raw loop, one call at a time" data-section="Hands-on lab" data-minutes="10">
+<!-- ==================================================================== 14 -->
+<section class="slide" data-label="Walkthrough: the raw loop, one call at a time" data-section="Hands-on lab" data-minutes="9">
   <div class="lu-eyebrow">Do this part by hand first</div>
   <h2 class="lu-h2">Four calls, the whole mechanism, before any framework</h2>
   <div class="lu-walk" data-label="Raw loop build walkthrough">
@@ -316,11 +388,11 @@ messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"too
       </div>
     </div>
   </div>
-  <template data-notes><p>Ten minutes. Have every team actually run this by hand once, printing the array after each step, before touching LangGraph. This is the single best debugging habit this module can install: when the graph misbehaves later, they already know what the array underneath should look like. <code>demos/module-02/raw_loop.py</code> is this exact code, working, if a team wants a reference to check against.</p></template>
+  <template data-notes><p>Nine minutes. Have every team actually run this by hand once, printing the array after each step, before touching LangGraph. This is the single best debugging habit this module can install: when the graph misbehaves later, they already know what the array underneath should look like. <code>demos/module-02/raw_loop.py</code> is this exact code, working, if a team wants a reference to check against.</p></template>
 </section>
 
-<!-- ==================================================================== 13 -->
-<section class="slide" data-label="Walkthrough: the same behavior, now on LangGraph" data-section="Hands-on lab" data-minutes="10">
+<!-- ==================================================================== 15 -->
+<section class="slide" data-label="Walkthrough: the same behavior, now on LangGraph" data-section="Hands-on lab" data-minutes="9">
   <div class="lu-eyebrow">Rebuild, do not rewrite from scratch</div>
   <h2 class="lu-h2">Same call, same tool, now as an explicit graph</h2>
   <div class="lu-walk" data-label="LangGraph rebuild walkthrough">
@@ -357,11 +429,11 @@ messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"too
       </div>
     </div>
   </div>
-  <template data-notes><p>Ten minutes. Expected blocker: teams reach for LangGraph's prebuilt agent helper before writing their own agent_node by hand once. Push back gently, once, then let them use the helper for real work, the point of doing it by hand here is understanding, not policy. <code>demos/module-02/graph.py</code> is a working reference at this same shape (agent node, tool node, escalate node) if a team gets stuck on the wiring itself rather than the concept.</p></template>
+  <template data-notes><p>Nine minutes. Expected blocker: teams reach for LangGraph's prebuilt agent helper before writing their own agent_node by hand once. Push back gently, once, then let them use the helper for real work, the point of doing it by hand here is understanding, not policy. <code>demos/module-02/graph.py</code> is a working reference at this same shape (agent node, tool node, escalate node) if a team gets stuck on the wiring itself rather than the concept.</p></template>
 </section>
 
-<!-- ==================================================================== 14 -->
-<section class="slide" data-label="Wiring your tools through MCP" data-section="Hands-on lab" data-minutes="9">
+<!-- ==================================================================== 16 -->
+<section class="slide" data-label="Wiring your tools through MCP" data-section="Hands-on lab" data-minutes="8">
   <div class="lu-eyebrow">Not a hand-rolled function call</div>
   <h2 class="lu-h1" style="max-width:32ch">Discover the tool, do not hardcode its shape</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
@@ -377,11 +449,32 @@ messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"too
       <p class="lu-sub">A tool call that raises instead of returning cleanly. Catch it in the tool node and append a tool-role error message, the same way a failed extraction call gets a fallback in Module 1, do not let it crash the graph.</p>
     </div>
   </div>
-  <template data-notes><p>Nine minutes. This is where clarification actually gets wired: if the tool node's result says a required field is missing, route back to the agent node with a message asking for it, rather than failing the whole turn.</p></template>
+  <template data-notes><p>Eight minutes. This is where clarification actually gets wired: if the tool node's result says a required field is missing, route back to the agent node with a message asking for it, rather than failing the whole turn.</p></template>
 </section>
 
-<!-- ==================================================================== 15 -->
-<section class="slide" data-label="Choosing your routing or escalation case" data-section="Hands-on lab" data-minutes="6">
+<!-- ==================================================================== 17 -->
+<section class="slide slide--tint" data-label="Checkpoint: confirm your MCP wiring" data-section="Hands-on lab" data-minutes="6">
+  <div class="lu-eyebrow">Pause here before you touch routing</div>
+  <h2 class="lu-h1" style="max-width:34ch">Three things to check before moving on</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <table class="lu-table">
+      <thead><tr><th>Check</th><th>How to confirm it</th></tr></thead>
+      <tbody>
+        <tr><td>The tool node calls through the MCP client, not a hardcoded function</td><td>Grep your tool node for a direct import of the lookup function, it should call <code>mcp_client</code> instead</td></tr>
+        <tr><td>A failed tool call does not crash the graph</td><td>Pass an invalid order id on purpose and confirm the graph still reaches END with a message, not a traceback</td></tr>
+        <tr><td>State actually threads across turns</td><td>Print <code>state["order_id"]</code> at the top of the agent node on a second turn, it should already be set</td></tr>
+      </tbody>
+    </table>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Why pause here</span>
+      <p class="lu-sub">Routing built on top of a shaky tool node just hides the real bug under a new one. Confirm this part is solid first, it is faster than debugging both at once later.</p>
+    </div>
+  </div>
+  <template data-notes><p>Six minutes. Circulate and have each team run through all three checks out loud before starting the routing case. A team that cannot confirm the second check almost always has no try/except in the tool node, point them back one slide.</p></template>
+</section>
+
+<!-- ==================================================================== 18 -->
+<section class="slide" data-label="Choosing your routing or escalation case" data-section="Hands-on lab" data-minutes="5">
   <div class="lu-eyebrow">One case, chosen deliberately</div>
   <h2 class="lu-h1" style="max-width:34ch">Pick the one boundary your agent should never cross alone</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -391,10 +484,10 @@ messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"too
       <p class="lu-sub">A second specialist path, or a general-purpose router. One clean branch, done well, is the acceptance criterion, not a bigger graph.</p>
     </div>
   </div>
-  <template data-notes><p>Six minutes. Circulate and ask each team, out loud, "what is the one thing your agent should refuse to just handle?" Most teams can answer immediately once asked directly, even if they had not written it down yet.</p></template>
+  <template data-notes><p>Five minutes. Circulate and ask each team, out loud, "what is the one thing your agent should refuse to just handle?" Most teams can answer immediately once asked directly, even if they had not written it down yet.</p></template>
 </section>
 
-<!-- ==================================================================== 16 -->
+<!-- ==================================================================== 19 -->
 <section class="slide slide--tint" data-label="Pick yours: a paired decision" data-section="Hands-on lab" data-minutes="5">
   <div class="lu-eyebrow">Decide out loud, with your partner, before you code</div>
   <div class="lu-mcq" data-qid="m2-q2" data-answer="b"
@@ -412,7 +505,7 @@ messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"too
   <template data-notes><p>Five minutes. If a team asks which is "right," push it back: what does their domain actually tolerate, a request going unanswered for a moment, or a confidently wrong answer? Module 5 is where they find out if the choice held up.</p></template>
 </section>
 
-<!-- ==================================================================== 17 -->
+<!-- ==================================================================== 20 -->
 <section class="slide" data-label="Documenting the decision for the PR" data-section="Hands-on lab" data-minutes="4">
   <div class="lu-eyebrow">Write it down where the reviewer will look</div>
   <h2 class="lu-h1" style="max-width:32ch">One paragraph in the PR description, not a design doc</h2>
@@ -431,8 +524,8 @@ a short delay. No other routing was added.</code></pre>
   <template data-notes><p>Four minutes. This mirrors Module 1's fallback documentation exactly, on purpose, say so if anyone asks why it feels familiar.</p></template>
 </section>
 
-<!-- ==================================================================== 18 -->
-<section class="slide" data-label="Likely bugs, named in advance" data-section="Hands-on lab" data-minutes="8">
+<!-- ==================================================================== 21 -->
+<section class="slide" data-label="Likely bugs, named in advance" data-section="Hands-on lab" data-minutes="7">
   <div class="lu-eyebrow">So you recognize them instead of debugging blind</div>
   <h2 class="lu-h1" style="max-width:32ch">Four bugs that show up in almost every team's graph today</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -450,12 +543,26 @@ a short delay. No other routing was added.</code></pre>
       <div class="lu-reveal__panel" hidden><p>Print the state object at the top of every node. If it does not change between turns, it is the first bug. If it changes but the router ignores it, it is the second. Do this before reading any stack trace.</p></div>
     </div>
   </div>
-  <template data-notes><p>Eight minutes. All four of these are print-the-state-object bugs, reinforce that habit from the raw-loop walkthrough rather than teaching four separate debugging techniques.</p></template>
+  <template data-notes><p>Seven minutes. All four of these are print-the-state-object bugs, reinforce that habit from the raw-loop walkthrough rather than teaching four separate debugging techniques.</p></template>
 </section>
 
-<!-- ==================================================================== 19 -->
-<section class="slide" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="39">
-  <div class="lu-eyebrow">Open work · rest of the 100 minutes</div>
+<!-- ==================================================================== 22 -->
+<section class="slide slide--tint" data-label="Stretch: a second routing case" data-section="Hands-on lab" data-minutes="8">
+  <div class="lu-eyebrow">Only once your one required case is merged-ready</div>
+  <h2 class="lu-h1" style="max-width:32ch">Finished early? Add a second boundary, do not widen the first one</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <p class="lu-p">Issue 2 only requires one routing or escalation case. If your team's is done, tested, and documented, a second, genuinely different case is a good use of remaining time: a different kind of out-of-scope request, or a second high-stakes action that should stop for a person. Do not spend this time widening the first case's conditions instead, that is the over-engineering trap the discussion at the end of today names directly.</p>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Not a requirement</span>
+      <p class="lu-sub">A team with one clean, well-tested case and time left over should keep testing it, not necessarily add a second. This slide is for teams asking "what next," not a new minimum bar.</p>
+    </div>
+  </div>
+  <template data-notes><p>Eight minutes, only for teams who reach it. Most teams will not get here today, that is fine, this is explicitly a stretch, not a hidden requirement. For teams still on their first case, skip this slide and let them keep working, do not present it as a checklist item everyone must reach.</p></template>
+</section>
+
+<!-- ==================================================================== 23 -->
+<section class="slide" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="30">
+  <div class="lu-eyebrow">Open work · rest of the block</div>
   <h2 class="lu-h1" style="max-width:30ch">Raw loop, then LangGraph, then routing. In that order.</h2>
   <div class="lu-split lu-split--wide-left">
     <ol class="lu-list lu-list--num">
@@ -472,9 +579,9 @@ a short delay. No other routing was added.</code></pre>
   <template data-notes><p>Brief this in under a minute, then this slide stays up for the rest of the block. Circulate team to team, and check specifically for the "state resets every turn" bug, it is the most common and the least obvious from the outside.</p></template>
 </section>
 
-<!-- ==================================================================== 20 -->
-<section class="slide slide--tint" data-label="Discussion and wrap" data-section="Wrap" data-minutes="24">
-  <div class="lu-eyebrow">Discussion and wrap · 24 minutes</div>
+<!-- ==================================================================== 24 -->
+<section class="slide slide--tint" data-label="Discussion: when routing earns its complexity" data-section="Wrap" data-minutes="14">
+  <div class="lu-eyebrow">Discussion · 14 minutes</div>
   <div class="lu-split lu-split--wide-left">
     <div class="lu-stack">
       <h2 class="lu-h2">When routing earns its complexity, and when it is over-engineering</h2>
@@ -483,9 +590,31 @@ a short delay. No other routing was added.</code></pre>
         <li>Module 3 gives every specialist path a real retrieval-grounded answer, so today's routing is what decides which questions even reach it.</li>
         <li>Report any blocker from today in your team's channel before Module 3, not at the start of it.</li>
       </ul>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Ask the room</span>
+      <p class="lu-sub">If a team built the stretch slide's second routing case today, ask them to name the actual boundary out loud, it is a good live check for whether "genuinely different case" landed or whether it just widened the first one.</p>
+    </div>
+  </div>
+  <template data-notes><p>Fourteen minutes. Lead with the over-engineering point, it is the one most teams get wrong in the direction of adding routing complexity nobody asked for. Save the reading list and next-module framing for the following slide, keep this one to the discussion itself.</p></template>
+</section>
+
+<!-- ==================================================================== 25 -->
+<section class="slide" data-label="Before Module 3" data-section="Wrap" data-minutes="10">
+  <div class="lu-eyebrow">Before Module 3 · what to read, what to finish</div>
+  <h2 class="lu-h1" style="max-width:30ch">Two readings, one checkpoint, one thing due</h2>
+  <div class="lu-split lu-split--wide-left">
+    <div class="lu-stack">
+      <div class="lu-callout lu-callout--concept">
+        <span class="lu-callout__label">Reading, before the next session</span>
+        <ul class="lu-list">
+          <li>LangGraph documentation: persistence and human-in-the-loop, the two capabilities that build on the graph structure from today.</li>
+          <li>Anthropic, "Building Effective Agents," the routing pattern section specifically, it is the same pattern today's lab implemented.</li>
+        </ul>
+      </div>
       <div class="lu-callout">
-        <span class="lu-callout__label">Before Module 3</span>
-        <p class="lu-sub">AI Agents in LangGraph, persistence and human-in-the-loop. Anthropic, Building Effective Agents, the routing pattern. Finish and merge Issue 2.</p>
+        <span class="lu-callout__label">Checkpoint</span>
+        <p class="lu-sub">Issue 2 finished and merged: graph running end to end on LangGraph, one routing or escalation case, documented in the PR. Report any blocker in your team's channel before Module 3 starts, not during it.</p>
       </div>
     </div>
     <div class="lu-card">
@@ -494,10 +623,10 @@ a short delay. No other routing was added.</code></pre>
       <p class="lu-sub">The specialist path your router sends a turn to gets a real source to answer from, with hybrid search, reranking, and a genuine refusal when the source does not cover it.</p>
     </div>
   </div>
-  <template data-notes><p>Sixteen of the twenty-four minutes for discussion, the rest for open questions. Confirm every team knows what "finished" means for Issue 2 before they leave: graph running end to end, one routing case, documented.</p></template>
+  <template data-notes><p>Ten minutes. Point at this slide specifically, do not let the reading list get lost inside the discussion, that is exactly the complaint this slide exists to fix. Confirm out loud that every team knows what "finished" means for Issue 2 before they leave.</p></template>
 </section>
 
-<!-- ==================================================================== 21 -->
+<!-- ==================================================================== 26 -->
 <section class="slide" data-label="Self-check" data-section="Wrap" data-minutes="4">
   <div class="lu-eyebrow">Self-check</div>
   <div class="lu-split lu-split--wide-left">
