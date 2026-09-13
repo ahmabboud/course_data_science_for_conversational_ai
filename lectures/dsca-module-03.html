@@ -86,7 +86,7 @@
     <button type="button" class="lu-node lu-node--instance" style="left:70%;top:52%" data-term="Combined candidate set" data-kind="Merged"><template>Both ranked lists are kept, not just one. Neither method's blind spot is fatal, because the other method covers it. This combined set is what reciprocal rank fusion, next slide, turns into one ordering.</template>Combined candidate set</button>
   </div>
   <p class="lu-caption" style="margin-top:var(--lu-s4)">Keyword search alone misses a paraphrase. Vector search alone misses an exact identifier. Run both, every time, and let fusion decide what actually floats to the top.</p>
-  <template data-notes><p>Six minutes. Open both nodes and name a concrete failure for each: BM25 alone on "the thing that broke my order" (no exact terms to match), vector search alone on "SKU-88204-B" (an identifier with no semantic content to embed meaningfully). This is why "default architecture, not an advanced option" is the framing, not a hedge.</p></template>
+  <template data-notes><p>Six minutes. Open both nodes and name a concrete failure for each: BM25 alone on "the thing that broke my order" (no exact terms to match), vector search alone on "SKU-88204-B" (an identifier with no semantic content to embed meaningfully). This is why "default architecture, not an advanced option" is the framing, not a hedge. If there is time, run <code>demos/module-03/grounded_rag.py</code> live and show its step 1 versus step 2 output for the same effect.</p></template>
 </section>
 
 <!-- ==================================================================== 04 -->
@@ -170,7 +170,7 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
     <div class="lu-node" style="left:94%;top:52%">Top 5 to the LLM</div>
   </div>
   <p class="lu-caption" style="margin-top:var(--lu-s4)">Retrieval is cheap and wide on purpose. Reranking is expensive and narrow on purpose. Running the expensive step over the whole corpus, instead of a few dozen candidates, is the mistake this two-stage split exists to prevent.</p>
-  <template data-notes><p>Five minutes. Open the reranker node and name the actual cost tradeoff: a cross-encoder scores a query-passage pair jointly, which is why it cannot run over a million-document corpus directly, it has to be handed a small, already-plausible shortlist first. That shortlist is exactly what hybrid search plus RRF produced on the last two slides.</p></template>
+  <template data-notes><p>Five minutes. Open the reranker node and name the actual cost tradeoff: a cross-encoder scores a query-passage pair jointly, which is why it cannot run over a million-document corpus directly, it has to be handed a small, already-plausible shortlist first. That shortlist is exactly what hybrid search plus RRF produced on the last two slides. <code>demos/module-03/grounded_rag.py</code> reranks with one more Gemini call rather than a dedicated cross-encoder model, say so if asked why there is no separate reranker library.</p></template>
 </section>
 
 <!-- ==================================================================== 07 -->
@@ -228,7 +228,7 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
     <button type="button" class="lu-node lu-node--instance" style="left:72%;top:25%" data-term="Answer with citation" data-kind="Grounded"><template>The answer names which passage(s) it drew from, by id or source span, so a reader can check the claim against the actual source, not just trust the model's word for it.</template>Answer + citation</button>
     <button type="button" class="lu-node" style="left:72%;top:78%;border-color:var(--lu-red-700);background:var(--lu-red-050)" data-term="Refusal" data-kind="Clean failure"><template>The agent says plainly that its source material does not cover the question, instead of generating a fluent, unsupported guess. This is the intended outcome for an uncovered question, not a bug to route around.</template>Refusal</button>
   </div>
-  <template data-notes><p>Six minutes. Name the trap directly: an ungrounded model will happily generate a fluent, wrong-sounding-right answer from a passage that is merely topically related but does not actually address the question. The coverage check is what a citation-and-refusal system has that a plain RAG-without-refusal system does not.</p></template>
+  <template data-notes><p>Six minutes. Name the trap directly: an ungrounded model will happily generate a fluent, wrong-sounding-right answer from a passage that is merely topically related but does not actually address the question. The coverage check is what a citation-and-refusal system has that a plain RAG-without-refusal system does not. <code>demos/module-03/grounded_rag.py</code>'s third example question is built specifically to trigger the refusal branch live.</p></template>
 </section>
 
 <!-- ==================================================================== 09 -->
@@ -432,7 +432,7 @@ vector_hits = vector_index.search(query, top_k=20)</code></pre>
       </div>
     </div>
   </div>
-  <template data-notes><p>Nine minutes. Have every team run one exact-identifier query and one paraphrased query separately against BM25-only and vector-only, so they see the actual failure each mode has on its own, before trusting the fused result. This is the fastest way to make hybrid search feel necessary rather than theoretical.</p></template>
+  <template data-notes><p>Nine minutes. Have every team run one exact-identifier query and one paraphrased query separately against BM25-only and vector-only, so they see the actual failure each mode has on its own, before trusting the fused result. This is the fastest way to make hybrid search feel necessary rather than theoretical. <code>demos/module-03/grounded_rag.py</code> is a working reference at this same shape (BM25 index, vector index, RRF merge) if a team gets stuck on the wiring itself rather than the concept.</p></template>
 </section>
 
 <!-- ==================================================================== 19 -->

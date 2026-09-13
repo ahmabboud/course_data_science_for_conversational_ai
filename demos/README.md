@@ -13,8 +13,9 @@ not cells of output. Pick whatever tool actually shows the concept; do not
 default to a notebook out of habit.
 
 **For exact, copy-pasteable run steps, see each module's own README**
-(`module-01/README.md`, `module-02/README.md`): this page covers the
-one-time setup shared by all of them, not how to run any one demo.
+(`module-01/README.md`, `module-02/README.md`, `module-03/README.md`): this
+page covers the one-time setup shared by all of them, not how to run any
+one demo.
 
 ## Folder convention
 
@@ -39,6 +40,7 @@ When you add a new module's demo, create its `module-NN/` folder, write its
 |---|---|---|---|
 | `module-01/hook_demo.ipynb` | `lectures/dsca-module-01.html` | 2 ("Before we watch this"), 3 ("The five stages, already in front of you") | A naive keyword bot losing its own booking mid-conversation, then a reference agent holding state correctly across the same correction. |
 | `module-02/` (`raw_loop.py`, `graph.py` via `langgraph dev`) | `lectures/dsca-module-02.html` | 3 ("The raw agent loop, with nothing hidden"), 5 ("LangGraph: nodes, edges, and state as one object") | The same order-status agent built twice: a plain Python loop printing the messages array after every step, then a LangGraph graph (agent / tool / escalate nodes) traced live in Studio. |
+| `module-03/grounded_rag.py` | `lectures/dsca-module-03.html` | 3 (hybrid search), 4 (reciprocal rank fusion), 6 (reranking), 8 (citation and refusal), 18, 19, 21, 22 (the matching hands-on lab walkthroughs) | A small fake FAQ knowledge base run through the full pipeline: BM25 plus vector search merged by reciprocal rank fusion, a reranking pass, then either a cited answer or a refusal, depending on a coverage check. |
 
 Add a row here whenever a later module gets its own instructor demo. The
 lecture file's own speaker notes should say when to switch to the demo

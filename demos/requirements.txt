@@ -10,8 +10,16 @@
 # `python3 --version` before installing here if your environment predates
 # that: see module-02/README.md and this folder's own README.md for the
 # exact setup and how to run each module's demo.
+#
+# rank_bm25 and numpy are module-03's demo: a pure-Python BM25 index and
+# the vector math for cosine similarity against Gemini embeddings. Neither
+# needs a real vector database or a cross-encoder model, see
+# module-03/README.md for why reranking uses one more Gemini call instead
+# of a dedicated reranker model.
 google-genai>=2.3.0
 python-dotenv>=1.0
 ipykernel>=6.29
 langgraph>=1.2
 langgraph-cli[inmem]>=0.4
+rank_bm25>=0.2
+numpy>=1.26
