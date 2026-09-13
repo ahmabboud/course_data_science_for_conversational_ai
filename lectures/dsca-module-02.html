@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en" class="lu-deck-page">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic Dialogue Management · Data Science for Conversational AI, Module 2</title>
+<meta name="description" content="Module 2 of Data Science for Conversational AI, MSc, Lebanese University. The raw agent loop, then LangGraph with explicit state, MCP for tools, and one routing or escalation pattern.">
+<meta name="theme-color" content="#96122B">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/lu.css?v=1.2.0">
+</head>
+
+<body
+  data-deck-id="dsca-m02"
+  data-course="Data Science for Conversational AI"
+  data-session="Module 2 of 6"
+  data-duration="180"
+  data-app-root="../"
+  data-unit="Lebanese University · MSc">
+
+<a class="lu-skip" href="#slide-2">Skip to the first content slide</a>
+
+<div class="deck">
+<div class="deck__stage">
+
+<!-- ==================================================================== 01 -->
+<section class="slide slide--night" data-chrome="none" data-label="Title" data-section="Opening" data-minutes="2">
+  <div class="slide__body" style="justify-content:space-between">
+    <div class="lu-row" style="justify-content:space-between;align-items:flex-start">
+      <div class="lu-lockup">
+        <span class="lu-lockup__mark">LU</span>
+        <span class="lu-lockup__text">
+          <span class="lu-lockup__name">Lebanese University</span>
+          <span class="lu-lockup__unit">Faculty of Sciences · MSc, Master of Research</span>
+        </span>
+      </div>
+      <div class="lu-tag lu-tag--red" style="background:transparent;color:#FF9AA7;border-color:#96122B">Module 2 · Agentic dialogue management</div>
+    </div>
+
+    <div class="lu-stack">
+      <div class="lu-eyebrow">Data Science for Conversational AI · Module 2 of 6</div>
+      <h1 class="lu-display" style="max-width:26ch">Agentic Dialogue Management</h1>
+      <p class="lu-lead" style="max-width:46ch">Give the agent explicit, inspectable state and a real multi-turn policy, first by hand, then on a framework built for exactly that.</p>
+    </div>
+
+    <div class="lu-row" style="justify-content:space-between;font-size:var(--lu-t-caption);color:var(--lu-on-night-2)">
+      <span>180 minutes · 50 lecture · 100 hands-on lab · 30 discussion and wrap</span>
+      <span>Press <kbd>&rarr;</kbd> to begin · <kbd>?</kbd> for shortcuts</span>
+    </div>
+  </div>
+  <template data-notes>
+    <p>First ninety seconds: Module 1 gave every team a working structured-extraction call. Today that call gets a memory of the conversation and a policy for what to do next, first the raw mechanics with nothing hidden, then the same behavior rebuilt on LangGraph, which is what every team actually ships.</p>
+    <ul>
+      <li>Confirm out loud that Issue 1 is merged for every team. A team without a working extraction call cannot build a dialogue policy on top of it today.</li>
+    </ul>
+  </template>
+</section>
+
+<!-- ==================================================================== 02 -->
+<section class="slide slide--night" data-chrome="none" data-label="Part 1 · From a raw loop to a managed graph" data-section="Lecture" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">Part one of three · 50 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">From a raw loop to a managed graph</h2>
+    <p class="lu-lead" style="max-width:42ch">The same behavior, twice: once with nothing hidden, once with a framework that makes state explicit.</p>
+  </div>
+  <template data-notes><p>Ten seconds. Say "we build this exact thing twice today, on purpose" and move on.</p></template>
+</section>
+
+<!-- ==================================================================== 03 -->
+<section class="slide" data-label="The raw agent loop, with nothing hidden" data-section="Lecture" data-minutes="8">
+  <div class="lu-eyebrow">What you are actually calling, underneath any framework</div>
+  <h2 class="lu-h1" style="max-width:34ch">One array, one call, one appended result. That is the whole loop.</h2>
+  <div class="lu-board" style="margin-top:var(--lu-s4)">
+    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 440" preserveAspectRatio="none" aria-hidden="true">
+      <defs><marker id="m2-arrow-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m2-arrow-loop)" d="M 290 220 L 530 220"/>
+      <text class="lu-edge-label" x="410" y="200">model responds</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m2-arrow-loop)" d="M 720 220 L 900 220"/>
+      <text class="lu-edge-label" x="810" y="200">code executes</text>
+    </svg>
+    <button type="button" class="lu-node lu-node--class" style="left:15%;top:50%" data-term="Messages array" data-kind="Raw loop"><template>A single growing list of role-tagged messages: <code>system</code>, <code>user</code>, <code>assistant</code>, <code>tool</code>. Nothing is hidden in a separate "memory" object, this list is the whole state, every call sends the whole thing.</template>Messages array</button>
+    <button type="button" class="lu-node lu-node--class" style="left:60%;top:50%" data-term="Tool call" data-kind="Raw loop"><template>The model's response can be a tool call instead of plain text: a function name and arguments, chosen by the model from the tools you described to it, not hardcoded by you.</template>Tool call</button>
+    <button type="button" class="lu-node lu-node--instance" style="left:92%;top:50%" data-term="Tool result" data-kind="Raw loop"><template>Your code actually runs that function and appends the result as a new message with role <code>tool</code>. The model sees its own tool call's result on the next turn, because that result is now just one more message in the array.</template>Result</button>
+  </div>
+  <p class="lu-caption" style="margin-top:var(--lu-s4)">Then the loop just repeats: append the result, call the model again with the whole array, see what it does next. There is no separate "state," the array is the state.</p>
+  <template data-notes>
+    <p>Eight minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 04 -->
+<section class="slide slide--tint" data-label="Why the raw loop breaks down at scale" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Where "just an array" stops being enough</div>
+  <h2 class="lu-h1" style="max-width:34ch">Three questions the raw loop cannot answer about itself</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <ul class="lu-list">
+      <li>Which fields are actually filled in right now, without re-reading the whole message history yourself?</li>
+      <li>Can you pause here and resume later, from exactly this point, in a different process?</li>
+      <li>If two things could happen next, depending on what the user just said, where does that branch live?</li>
+    </ul>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">What today builds</span>
+      <p class="lu-sub">The same three answers, but as an explicit, inspectable state object and a graph with real branches, not a convention you have to remember to follow.</p>
+    </div>
+  </div>
+  <template data-notes><p>Four minutes. This is the pitch for LangGraph, not a takedown of the raw loop, the raw loop is correct, it is just unmanaged. Say plainly: everything on the next slide is still the same messages-and-tool-calls idea, just with structure wrapped around it.</p></template>
+</section>
+
+<!-- ==================================================================== 05 -->
+<section class="slide" data-label="LangGraph: nodes, edges, and state as one object" data-section="Lecture" data-minutes="8">
+  <div class="lu-eyebrow">The same loop, given structure</div>
+  <h2 class="lu-h1" style="max-width:34ch">A graph with an explicit state object, instead of one growing array</h2>
+  <div class="lu-board" style="margin-top:var(--lu-s4)">
+    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 440" preserveAspectRatio="none" aria-hidden="true">
+      <defs><marker id="m2-arrow-lg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m2-arrow-lg)" d="M 220 220 L 370 220"/>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m2-arrow-lg)" d="M 560 190 L 680 110"/>
+      <text class="lu-edge-label" x="580" y="130">needs a tool</text>
+      <path class="lu-edge" style="color:var(--lu-ink-3);stroke:var(--lu-ink-3);marker-end:url(#m2-arrow-lg)" d="M 680 150 L 560 220"/>
+      <text class="lu-edge-label" x="600" y="185">result, loop back</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-green-700);marker-end:url(#m2-arrow-lg)" d="M 560 250 L 680 330"/>
+      <text class="lu-edge-label" x="580" y="310" style="fill:var(--lu-green-700)">done, no tool needed</text>
+    </svg>
+    <div class="lu-node" style="left:12%;top:50%">START</div>
+    <button type="button" class="lu-node lu-node--class" style="left:48%;top:50%" data-term="Agent node" data-kind="LangGraph"><template>Calls the model with the current state and decides, from its response, which edge to take next. The state passed in is one explicit object your code defines, not an implicit array only the model's context window holds.</template>Agent node</button>
+    <button type="button" class="lu-node lu-node--instance" style="left:82%;top:25%" data-term="Tool node" data-kind="LangGraph"><template>Runs the tool the agent node asked for and writes the result back into the state object, then routes back to the agent node. Same idea as the raw loop's tool call, now a named, inspectable step in the graph.</template>Tool node</button>
+    <div class="lu-node" style="left:82%;top:75%">END</div>
+  </div>
+  <p class="lu-caption" style="margin-top:var(--lu-s4)">The state object can be printed or logged at any point, mid-conversation, by a person, not just replayed as a wall of messages. That is the actual, concrete thing "explicit state" buys you.</p>
+  <template data-notes>
+    <p>Eight minutes. Open the agent node's popover and read the state-object framing out loud, it is the single most important idea on this slide. The tool node's return edge is the same "loop back" behavior as the raw loop's append-and-repeat, name that connection explicitly so it does not read as a new concept.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 06 -->
+<section class="slide slide--tint" data-label="Check: what LangGraph actually adds" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Check question</div>
+  <div class="lu-split lu-split--wide-left">
+    <div class="lu-mcq" data-qid="m2-q1" data-answer="c"
+         data-label="What LangGraph adds over the raw loop"
+         data-fb-correct=" Correct: the mechanics (a call, a tool, a result) are identical. What changes is that the state and the branching are explicit, named, and inspectable."
+         data-fb-wrong=" The model's underlying behavior is not what changed here, the raw loop already called the same model the same way.">
+      <p class="lu-mcq__q">What does LangGraph actually add that the raw loop, run correctly, did not already have?</p>
+      <div class="lu-mcq__opts">
+        <button class="lu-mcq__opt" type="button" data-key="a">A more capable underlying model<span class="lu-mcq__why" hidden>Neither approach changes which model answers the call.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="b">The ability to call a tool at all<span class="lu-mcq__why" hidden>The raw loop already called tools, that part is identical.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="c">An explicit, named state object and graph structure instead of an implicit convention<span class="lu-mcq__why" hidden>Correct: the mechanics are the same, the structure around them is what is new.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="d">Persistence and human-in-the-loop, automatically, with no extra work<span class="lu-mcq__why" hidden>Those are real LangGraph features, but they are opt-in capabilities on top of the graph, not automatic just from switching frameworks.</span></button>
+      </div>
+      <div class="lu-mcq__fb" hidden></div>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">The idea behind the question</span>
+      <p class="lu-sub">Frameworks earn their keep by making an existing idea inspectable and reusable, not by inventing a new idea.</p>
+    </div>
+  </div>
+  <template data-notes><p>Forty seconds, then reveal. The distractor that catches people is d, since persistence and human-in-the-loop are genuinely in the reading before today and easy to conflate with "what the graph itself does." Distinguish: the graph gives you the structure those features attach to, it does not turn them on by itself.</p></template>
+</section>
+
+<!-- ==================================================================== 07 -->
+<section class="slide" data-label="MCP: one standard for wiring tools" data-section="Lecture" data-minutes="9">
+  <div class="lu-eyebrow">The part that is not LangGraph-specific</div>
+  <h2 class="lu-h1" style="max-width:32ch">One protocol for "what tools exist and how do I call them"</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <div class="lu-board" style="aspect-ratio:16/6">
+        <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 375" preserveAspectRatio="none" aria-hidden="true">
+          <defs><marker id="m2-arrow-mcp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+          <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m2-arrow-mcp)" d="M 260 190 L 700 190"/>
+          <text class="lu-edge-label" x="480" y="170">discover, call, get typed results</text>
+        </svg>
+        <button type="button" class="lu-node lu-node--class" style="left:22%;top:50%" data-term="Agent, as MCP client" data-kind="MCP"><template>Your agent node does not hardcode which tools exist or how to call each one. It asks the MCP server what is available, in a standard shape, the same way regardless of which tool server it is talking to.</template>Agent (client)</button>
+        <button type="button" class="lu-node lu-node--instance" style="left:72%;top:50%" data-term="Tool server" data-kind="MCP"><template>Exposes tools behind one standard interface. Swap which server you point at, and your agent code calling it does not change, only what tools it discovers does.</template>Tool server</button>
+      </div>
+    </div>
+    <div class="lu-stack">
+      <div class="lu-callout">
+        <span class="lu-callout__label">Without a standard</span>
+        <p class="lu-sub">Every tool integration is its own bespoke function signature and error shape, wired by hand, and adding a new tool source means writing new glue code again.</p>
+      </div>
+      <div class="lu-reveal">
+        <button class="lu-reveal__btn" type="button">Is this a LangGraph feature?</button>
+        <div class="lu-reveal__panel" hidden><p>No. MCP is a protocol, independent of any one framework. LangGraph nodes can call tools wired through MCP, but the standard itself exists so an agent built on a different framework entirely could call the exact same tool server.</p></div>
+      </div>
+    </div>
+  </div>
+  <template data-notes><p>Nine minutes. Expected question: "why not just write a Python function per tool?" That still works for one tool in one codebase, MCP matters once a tool needs to be discoverable and callable from more than one agent or framework without re-wiring it each time.</p></template>
+</section>
+
+<!-- ==================================================================== 08 -->
+<section class="slide" data-label="Chain-of-thought for tool selection" data-section="Lecture" data-minutes="8">
+  <div class="lu-eyebrow">How the agent node actually decides</div>
+  <h2 class="lu-h2">Watching the model reason its way to the right tool</h2>
+  <div class="lu-walk" data-label="Tool selection walkthrough">
+    <div class="lu-walk__view">
+      <div data-walk-step="1" data-caption-short="The ambiguous request"
+           data-caption="<b>Step 1.</b> The user's message alone does not name a tool. The agent node has to decide what kind of request this even is before picking anything.">
+        <div class="lu-code lu-code--sm" data-name="incoming message">
+<pre><code><span class="tok-com"># the state object's latest user turn</span>
+user: <span class="tok-str">"can you check if my order shipped yet?"</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="2" data-caption-short="Reasoning about intent" hidden
+           data-caption="<b>Step 2.</b> The model's own reasoning trace names the ambiguity out loud before committing: a status check, not a change request.">
+        <div class="lu-code lu-code--sm" data-name="model's reasoning">
+<pre><code><span class="tok-com"># this is a read, not a write: no order details</span>
+<span class="tok-com"># are being changed, only looked up</span>
+reasoning: <span class="tok-str">"user wants order status, not a change"</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="3" data-caption-short="Choosing the tool" hidden
+           data-caption="<b>Step 3.</b> Given that reasoning, exactly one available tool matches: a read-only lookup, not the cancellation or refund tools also wired to this agent.">
+        <div class="lu-code lu-code--sm" data-name="tool call chosen">
+<pre><code>tool_call: get_order_status(order_id=<span class="tok-str">"…"</span>)
+<span class="tok-com"># not cancel_order, not issue_refund</span></code></pre>
+        </div>
+      </div>
+      <div data-walk-step="4" data-caption-short="Why this matters" hidden
+           data-caption="<b>Step 4.</b> The reasoning step is what makes the choice auditable. Without it, a wrong tool call looks arbitrary; with it, you can see exactly which assumption was wrong.">
+        <div class="lu-code lu-code--sm" data-name="what you get for free">
+<pre><code><span class="tok-com"># a wrong tool call now has a visible reason attached,</span>
+<span class="tok-com"># not just a mysterious wrong function name</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template data-notes><p>Eight minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today.</p></template>
+</section>
+
+<!-- ==================================================================== 09 -->
+<section class="slide" data-label="The one multi-agent pattern this course teaches: routing and escalation" data-section="Lecture" data-minutes="8">
+  <div class="lu-eyebrow">On purpose, only this one</div>
+  <h2 class="lu-h1" style="max-width:36ch">One router, two places it can send a turn</h2>
+  <div class="lu-board" style="margin-top:var(--lu-s4)">
+    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 375" preserveAspectRatio="none" aria-hidden="true">
+      <defs><marker id="m2-arrow-route" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m2-arrow-route)" d="M 260 190 L 660 100"/>
+      <text class="lu-edge-label" x="380" y="115">in scope</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-red-700);stroke:var(--lu-red-700);marker-end:url(#m2-arrow-route)" d="M 260 210 L 660 300"/>
+      <text class="lu-edge-label" x="380" y="290" style="fill:var(--lu-red-700)">out of scope, or high stakes</text>
+    </svg>
+    <button type="button" class="lu-node lu-node--class" style="left:22%;top:52%" data-term="Router node" data-kind="LangGraph"><template>Reads the current state and decides which of the two branches this turn belongs on. It makes no model call to answer the user's actual request, that is the specialist path's job.</template>Router</button>
+    <button type="button" class="lu-node lu-node--instance" style="left:72%;top:25%" data-term="Specialist path" data-kind="LangGraph"><template>A node scoped to one job, in your domain (say, order-status lookups). It only ever sees the state the router decided to hand it.</template>Specialist path</button>
+    <button type="button" class="lu-node" style="left:72%;top:78%;border-color:var(--lu-red-700);background:var(--lu-red-050)" data-term="Human escalation" data-kind="LangGraph"><template>The turn is flagged for a person instead of answered automatically, because it is outside what any specialist path should decide alone, a refund dispute, say. This is the "clean failure," not a bug.</template>Human escalation</button>
+  </div>
+  <template data-notes><p>Eight minutes. Name why this is the ONE multi-agent pattern taught: routing to a specialist or a human is a narrow, well-understood shape. General multi-agent orchestration is out of scope for this course on purpose, say that directly if asked.</p></template>
+</section>
+
+<!-- ==================================================================== 10 -->
+<section class="slide slide--night" data-chrome="none" data-label="Part 2 · Build it, twice" data-section="Hands-on lab" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">Part two of three · 100 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:20ch">Build it, twice</h2>
+    <p class="lu-lead" style="max-width:40ch">Once as a raw loop, so nothing is hidden. Then again on LangGraph, which is what ships in Issue 2.</p>
+  </div>
+  <template data-notes><p>Ten seconds. "Twice" is the whole point, say it plainly before moving on.</p></template>
+</section>
+
+<!-- ==================================================================== 11 -->
+<section class="slide" data-label="What you build today" data-section="Hands-on lab" data-minutes="8">
+  <div class="lu-eyebrow">Hands-on lab · 100 minutes · starts now</div>
+  <h2 class="lu-h1" style="max-width:32ch">Rebuild your Module 1 agent's understanding step as a stateful policy</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <ol class="lu-list lu-list--num">
+      <li>Wire your Module 1 extraction call into a raw loop by hand, briefly, so the mechanics are visible with nothing hidden.</li>
+      <li>Rebuild the same behavior as a LangGraph graph with an explicit state object.</li>
+      <li>Wire your tools through MCP, not a hand-rolled function call.</li>
+      <li>Add clarification (ask for a missing detail) and correction (the user changes their mind mid-turn) as real, tested behavior.</li>
+      <li>Add one routing or escalation case, to a specialist path or to a human.</li>
+    </ol>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Deliverable · Issue 2</span>
+      <p class="lu-sub">Merged: the team's agent runs on LangGraph with inspectable state, handles clarification and correction, and has one working routing or escalation path.</p>
+    </div>
+  </div>
+  <template data-notes><p>Brief this in under two minutes, then let the room start. The most common early blocker: teams try to skip step 1 and go straight to LangGraph, then cannot debug their own graph because they never saw the raw mechanics it is managing.</p></template>
+</section>
+
+<!-- ==================================================================== 12 -->
+<section class="slide" data-label="Walkthrough: the raw loop, one call at a time" data-section="Hands-on lab" data-minutes="10">
+  <div class="lu-eyebrow">Do this part by hand first</div>
+  <h2 class="lu-h2">Four calls, the whole mechanism, before any framework</h2>
+  <div class="lu-walk" data-label="Raw loop build walkthrough">
+    <div class="lu-walk__view">
+      <div data-walk-step="1" data-caption-short="Start the array"
+           data-caption="<b>Step 1.</b> One list, one system message naming the tools available. Nothing else exists yet.">
+        <div class="lu-code lu-code--sm" data-name="the whole state, so far">
+<pre><code>messages = [
+  {<span class="tok-str">"role"</span>: <span class="tok-str">"system"</span>, <span class="tok-str">"content"</span>: <span class="tok-str">"You can call get_order_status."</span>}
+]</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="2" data-caption-short="Append the user turn" hidden
+           data-caption="<b>Step 2.</b> The user's message is appended, nothing summarized or hidden away, then the model is called with the whole array.">
+        <div class="lu-code lu-code--sm" data-name="append and call">
+<pre><code>messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"user"</span>, <span class="tok-str">"content"</span>: turn})
+reply = call_model(messages, tools=[get_order_status])</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="3" data-caption-short="Handle the tool call" hidden
+           data-caption="<b>Step 3.</b> If the reply is a tool call, run the real function yourself, and append its result as a tool-role message. This append is the entire "memory" mechanism.">
+        <div class="lu-code lu-code--sm" data-name="run it, append the result">
+<pre><code>result = get_order_status(**reply.tool_call.args)
+messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"tool"</span>, <span class="tok-str">"content"</span>: result})</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="4" data-caption-short="Loop" hidden
+           data-caption="<b>Step 4.</b> Call the model again with the now-longer array. This is the entire loop, everything else this session builds is structure around exactly this.">
+        <div class="lu-code lu-code--sm" data-name="the loop">
+<pre><code>reply = call_model(messages, tools=[get_order_status])
+<span class="tok-com"># repeat from step 3 if reply is another tool call</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template data-notes><p>Ten minutes. Have every team actually run this by hand once, printing the array after each step, before touching LangGraph. This is the single best debugging habit this module can install: when the graph misbehaves later, they already know what the array underneath should look like.</p></template>
+</section>
+
+<!-- ==================================================================== 13 -->
+<section class="slide" data-label="Walkthrough: the same behavior, now on LangGraph" data-section="Hands-on lab" data-minutes="10">
+  <div class="lu-eyebrow">Rebuild, do not rewrite from scratch</div>
+  <h2 class="lu-h2">Same call, same tool, now as an explicit graph</h2>
+  <div class="lu-walk" data-label="LangGraph rebuild walkthrough">
+    <div class="lu-walk__view">
+      <div data-walk-step="1" data-caption-short="Define the state"
+           data-caption="<b>Step 1.</b> One typed object, not a bare list. Every field the agent needs to track gets a name.">
+        <div class="lu-code lu-code--sm" data-name="state definition">
+<pre><code><span class="tok-kw">class</span> AgentState(TypedDict):
+    messages: list
+    order_id: str | None</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="2" data-caption-short="Write the agent node" hidden
+           data-caption="<b>Step 2.</b> The agent node is the same call_model logic from the raw loop, wrapped in a function that reads and returns the state object.">
+        <div class="lu-code lu-code--sm" data-name="agent_node">
+<pre><code><span class="tok-kw">def</span> agent_node(state: AgentState):
+    reply = call_model(state[<span class="tok-str">"messages"</span>], tools=[get_order_status])
+    <span class="tok-kw">return</span> {<span class="tok-str">"messages"</span>: state[<span class="tok-str">"messages"</span>] + [reply]}</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="3" data-caption-short="Wire the conditional edge" hidden
+           data-caption="<b>Step 3.</b> The branch that used to be an if-statement in the raw loop becomes a named, inspectable edge condition.">
+        <div class="lu-code lu-code--sm" data-name="the branch, now named">
+<pre><code>graph.add_conditional_edges(
+  <span class="tok-str">"agent"</span>, needs_tool, {<span class="tok-str">True</span>: <span class="tok-str">"tool"</span>, <span class="tok-str">False</span>: END}
+)</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="4" data-caption-short="Print the state, mid-run" hidden
+           data-caption="<b>Step 4.</b> This is the payoff: pause here and print state directly, no replaying the message history to figure out what is currently true.">
+        <div class="lu-code lu-code--sm" data-name="inspect it, live">
+<pre><code>print(state[<span class="tok-str">"order_id"</span>])  <span class="tok-com"># readable, not reconstructed</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template data-notes><p>Ten minutes. Expected blocker: teams reach for LangGraph's prebuilt agent helper before writing their own agent_node by hand once. Push back gently, once, then let them use the helper for real work, the point of doing it by hand here is understanding, not policy.</p></template>
+</section>
+
+<!-- ==================================================================== 14 -->
+<section class="slide" data-label="Wiring your tools through MCP" data-section="Hands-on lab" data-minutes="9">
+  <div class="lu-eyebrow">Not a hand-rolled function call</div>
+  <h2 class="lu-h1" style="max-width:32ch">Discover the tool, do not hardcode its shape</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-code" data-name="tool_node, MCP-wired">
+<pre><code><span class="tok-kw">def</span> tool_node(state: AgentState):
+    tool = mcp_client.get_tool(<span class="tok-str">"get_order_status"</span>)
+    <span class="tok-com"># the client, not your code, knows the call shape</span>
+    result = tool.call(order_id=state[<span class="tok-str">"order_id"</span>])
+    <span class="tok-kw">return</span> {<span class="tok-str">"messages"</span>: state[<span class="tok-str">"messages"</span>] + [result]}</code></pre>
+    </div>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Likely blocker</span>
+      <p class="lu-sub">A tool call that raises instead of returning cleanly. Catch it in the tool node and append a tool-role error message, the same way a failed extraction call gets a fallback in Module 1, do not let it crash the graph.</p>
+    </div>
+  </div>
+  <template data-notes><p>Nine minutes. This is where clarification actually gets wired: if the tool node's result says a required field is missing, route back to the agent node with a message asking for it, rather than failing the whole turn.</p></template>
+</section>
+
+<!-- ==================================================================== 15 -->
+<section class="slide" data-label="Choosing your routing or escalation case" data-section="Hands-on lab" data-minutes="6">
+  <div class="lu-eyebrow">One case, chosen deliberately</div>
+  <h2 class="lu-h1" style="max-width:34ch">Pick the one boundary your agent should never cross alone</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <p class="lu-p">Every domain has at least one request type that should not be handled by the same path as everything else: something outside scope, something irreversible, something that needs a person's judgment. That is your routing or escalation case for Issue 2, exactly one, not a general router for everything.</p>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Not required</span>
+      <p class="lu-sub">A second specialist path, or a general-purpose router. One clean branch, done well, is the acceptance criterion, not a bigger graph.</p>
+    </div>
+  </div>
+  <template data-notes><p>Six minutes. Circulate and ask each team, out loud, "what is the one thing your agent should refuse to just handle?" Most teams can answer immediately once asked directly, even if they had not written it down yet.</p></template>
+</section>
+
+<!-- ==================================================================== 16 -->
+<section class="slide slide--tint" data-label="Pick yours: a paired decision" data-section="Hands-on lab" data-minutes="5">
+  <div class="lu-eyebrow">Decide out loud, with your partner, before you code</div>
+  <div class="lu-mcq" data-qid="m2-q2" data-answer="b"
+       data-label="Routing choice for a request outside the agent's stated scope"
+       data-fb-correct=" Reasonable, and defensible: a request outside scope should stop, not get a confident wrong answer from a specialist path that was never meant to handle it."
+       data-fb-wrong=" Weigh what happens if the specialist path answers something it was not actually built to handle, confidently and wrong, against simply stopping and flagging it.">
+    <p class="lu-mcq__q">A user asks something clearly outside your agent's domain (say, a legal question to a booking agent). Which routing choice fits best?</p>
+    <div class="lu-mcq__opts">
+      <button class="lu-mcq__opt" type="button" data-key="a">Send it to the specialist path anyway, it will probably manage<span class="lu-mcq__why" hidden>The specialist path was built for one job, not general competence. Sending it out-of-scope requests invites a confident wrong answer.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="b">Route to human escalation, with a note on why it was flagged<span class="lu-mcq__why" hidden>Correct for this case: out of scope should stop cleanly, not get answered by a path that was never meant to cover it.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="c">Answer it directly from the router node itself<span class="lu-mcq__why" hidden>The router's job is deciding where a turn goes, not answering it. Giving it a second job blurs exactly the separation this pattern exists to keep.</span></button>
+    </div>
+    <div class="lu-mcq__fb" hidden></div>
+  </div>
+  <template data-notes><p>Five minutes. If a team asks which is "right," push it back: what does their domain actually tolerate, a request going unanswered for a moment, or a confidently wrong answer? Module 5 is where they find out if the choice held up.</p></template>
+</section>
+
+<!-- ==================================================================== 17 -->
+<section class="slide" data-label="Documenting the decision for the PR" data-section="Hands-on lab" data-minutes="4">
+  <div class="lu-eyebrow">Write it down where the reviewer will look</div>
+  <h2 class="lu-h1" style="max-width:32ch">One paragraph in the PR description, not a design doc</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-code" data-name="PR description, routing section">
+<pre><code><span class="tok-com">## Routing decision</span>
+Legal questions route to human escalation because a
+booking agent answering them confidently is worse than
+a short delay. No other routing was added.</code></pre>
+    </div>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Trap</span>
+      <p class="lu-sub">"We added routing" with no reasoning is not a documented decision. Acceptance criteria ask for the reasoning, not just the branch existing.</p>
+    </div>
+  </div>
+  <template data-notes><p>Four minutes. This mirrors Module 1's fallback documentation exactly, on purpose, say so if anyone asks why it feels familiar.</p></template>
+</section>
+
+<!-- ==================================================================== 18 -->
+<section class="slide" data-label="Likely bugs, named in advance" data-section="Hands-on lab" data-minutes="8">
+  <div class="lu-eyebrow">So you recognize them instead of debugging blind</div>
+  <h2 class="lu-h1" style="max-width:32ch">Four bugs that show up in almost every team's graph today</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <table class="lu-table">
+      <thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead>
+      <tbody>
+        <tr><td>State resets every turn</td><td>The graph is invoked fresh each call instead of threading the same state object through</td></tr>
+        <tr><td>Router always picks the same branch</td><td>The condition function reads a field the agent node never actually sets</td></tr>
+        <tr><td>Tool node loops forever</td><td>The conditional edge back to the agent node has no exit condition once the tool succeeds</td></tr>
+        <tr><td>MCP call raises and crashes the graph</td><td>No try/except in the tool node, see the previous slide's callout</td></tr>
+      </tbody>
+    </table>
+    <div class="lu-reveal">
+      <button class="lu-reveal__btn" type="button">Fastest way to check which one you have</button>
+      <div class="lu-reveal__panel" hidden><p>Print the state object at the top of every node. If it does not change between turns, it is the first bug. If it changes but the router ignores it, it is the second. Do this before reading any stack trace.</p></div>
+    </div>
+  </div>
+  <template data-notes><p>Eight minutes. All four of these are print-the-state-object bugs, reinforce that habit from the raw-loop walkthrough rather than teaching four separate debugging techniques.</p></template>
+</section>
+
+<!-- ==================================================================== 19 -->
+<section class="slide" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="39">
+  <div class="lu-eyebrow">Open work · rest of the 100 minutes</div>
+  <h2 class="lu-h1" style="max-width:30ch">Raw loop, then LangGraph, then routing. In that order.</h2>
+  <div class="lu-split lu-split--wide-left">
+    <ol class="lu-list lu-list--num">
+      <li>Finish the raw-loop walkthrough against your own tool, printing state after every step.</li>
+      <li>Rebuild it on LangGraph: state definition, agent node, tool node wired through MCP.</li>
+      <li>Add your one routing or escalation case and its PR paragraph.</li>
+      <li>Open the PR. <code>Closes #2</code> in the description links it automatically.</li>
+    </ol>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">A design on paper is not the deliverable</span>
+      <p class="lu-sub">Issue 2 needs the graph running end to end today. If a live connection drops mid-session, keep building against the raw loop's printed state, the LangGraph rebuild can catch up once it returns.</p>
+    </div>
+  </div>
+  <template data-notes><p>Brief this in under a minute, then this slide stays up for the rest of the block. Circulate team to team, and check specifically for the "state resets every turn" bug, it is the most common and the least obvious from the outside.</p></template>
+</section>
+
+<!-- ==================================================================== 20 -->
+<section class="slide slide--tint" data-label="Discussion and wrap" data-section="Wrap" data-minutes="24">
+  <div class="lu-eyebrow">Discussion and wrap · 24 minutes</div>
+  <div class="lu-split lu-split--wide-left">
+    <div class="lu-stack">
+      <h2 class="lu-h2">When routing earns its complexity, and when it is over-engineering</h2>
+      <ul class="lu-list">
+        <li>One clean routing case, well-tested, beats three speculative ones nobody has actually triggered yet.</li>
+        <li>Module 3 gives every specialist path a real retrieval-grounded answer, so today's routing is what decides which questions even reach it.</li>
+        <li>Report any blocker from today in your team's channel before Module 3, not at the start of it.</li>
+      </ul>
+      <div class="lu-callout">
+        <span class="lu-callout__label">Before Module 3</span>
+        <p class="lu-sub">AI Agents in LangGraph, persistence and human-in-the-loop. Anthropic, Building Effective Agents, the routing pattern. Finish and merge Issue 2.</p>
+      </div>
+    </div>
+    <div class="lu-card">
+      <span class="lu-card__label">Next module</span>
+      <h3 class="lu-h3">Module 3 · Grounded Generation</h3>
+      <p class="lu-sub">The specialist path your router sends a turn to gets a real source to answer from, with hybrid search, reranking, and a genuine refusal when the source does not cover it.</p>
+    </div>
+  </div>
+  <template data-notes><p>Sixteen of the twenty-four minutes for discussion, the rest for open questions. Confirm every team knows what "finished" means for Issue 2 before they leave: graph running end to end, one routing case, documented.</p></template>
+</section>
+
+<!-- ==================================================================== 21 -->
+<section class="slide" data-label="Self-check" data-section="Wrap" data-minutes="4">
+  <div class="lu-eyebrow">Self-check</div>
+  <div class="lu-split lu-split--wide-left">
+    <div class="lu-stack">
+      <h2 class="lu-h2">How you did on this module's questions</h2>
+      <div data-score></div>
+    </div>
+    <div class="lu-stack">
+      <div class="lu-callout lu-callout--concept">
+        <span class="lu-callout__label">Studying alone?</span>
+        <p class="lu-sub">Press <kbd>S</kbd> for study mode. Every definition popup becomes an inline note, board legends appear under their diagrams, every reveal opens, and answers are filled in. Press <kbd>S</kbd> again to go back.</p>
+      </div>
+      <div class="lu-card lu-card--flat">
+        <span class="lu-card__label">Also available</span>
+        <ul class="lu-list lu-list--tight">
+          <li><kbd>O</kbd> contents · <kbd>/</kbd> search this lecture · <kbd>?</kbd> all shortcuts</li>
+          <li><b>Handout</b> in the bottom bar prints one page per slide with the instructor notes attached.</li>
+        </ul>
+      </div>
+      <p class="lu-caption">Your answers and position are stored in this browser only.</p>
+    </div>
+  </div>
+  <template data-notes><p>Close here so students leave knowing where the self-study affordances are.</p></template>
+</section>
+
+</div><!-- /stage -->
+</div><!-- /deck -->
+
+<script src="../assets/sparql-lite.js?v=1.1.0"></script>
+<script src="../assets/lu-deck.js?v=1.2.0" defer></script>
+</body>
+</html>
