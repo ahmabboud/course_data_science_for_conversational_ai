@@ -12,30 +12,26 @@ Studio, because the thing worth showing there is the actual graph, traced,
 not cells of output. Pick whatever tool actually shows the concept; do not
 default to a notebook out of habit.
 
+**For exact, copy-pasteable run steps, see each module's own README**
+(`module-01/README.md`, `module-02/README.md`): this page covers the
+one-time setup shared by all of them, not how to run any one demo.
+
 ## Folder convention
 
 Each module's demo lives in its own `module-NN/` subfolder, named for the
 lecture it belongs to (`module-01/` for `dsca-module-01.html`, `module-02/`
-for `dsca-module-02.html`, and so on). That subfolder holds the demo itself
-and anything specific to it (a small data file, a `langgraph.json`, a second
-script). When you add a new module's demo, create its `module-NN/` folder
-and add a row to the table below.
-
-Shared setup (the one Gemini key every module's demo calls) lives once, at
-this level, in `requirements.txt` and `.env.example`: a module's subfolder
-does not get its own copy of either just because it is a new module. The one
-exception is a demo whose tool has a genuinely different dependency floor
-from the shared environment, not just different packages. `module-02/` is
-that exception: `langgraph-cli` requires Python 3.10 or newer, and the
-shared environment set up for `module-01/`'s notebook may still be on an
-older Python (3.9 has come up on this course before, see
-`../requirements.txt`'s own `google-genai` history for a similar floor
-lesson). Forcing that floor onto every module's environment would risk
-breaking a working notebook setup over a CLI tool only one module needs. So
-`module-02/` gets its own `requirements.txt`, in its own subfolder, with a
-comment saying why. That is a deliberate, documented exception, not the
-default: do not add a per-module `requirements.txt` just because a module
-happens to want one extra package that runs fine on the shared floor.
+for `dsca-module-02.html`, and so on). That subfolder holds the demo itself,
+its own `README.md` with exact run steps, and anything specific to it (a
+small data file, a `langgraph.json`, a second script). It does not hold its
+own `requirements.txt` or `.env.example`: every module's demo installs from
+the one shared `requirements.txt` at this level and reads the one shared
+`.env`. When a later module's tool needs a package the others don't, add it
+to this shared file with a comment saying which module needs it, rather
+than forking a second requirements file, even if that package has a
+noticeably different floor than the rest (see `requirements.txt`'s own
+comment on `langgraph-cli`'s Python 3.10+ floor for the current example).
+When you add a new module's demo, create its `module-NN/` folder, write its
+`README.md`, and add a row to the table below.
 
 ## Which demo belongs to which lecture
 
@@ -55,27 +51,27 @@ months from now.
 
 ## One-time setup, per instructor machine
 
-This setup is shared across every module's demo except where a module's own
-subfolder says otherwise (currently `module-02/`, see above).
+This setup is shared across every module's demo, done once, not repeated
+per module. Each module's own `README.md` assumes this is already done and
+only adds the steps specific to running that one demo.
 
 1. `cd demos`
-2. Create a Python environment and select it as the kernel for whichever
-   module notebook you open (in VS Code: the kernel picker in the top right
-   of the notebook; in Jupyter Lab: `New > Python 3`, or select an existing
-   kernel). For a non-notebook demo, activate the same environment in your
-   terminal instead.
-3. Run `pip install -r requirements.txt` in that environment. If the
-   module's own subfolder has its own `requirements.txt` (currently
-   `module-02/`), read that subfolder's own setup note first, it likely
-   wants a separate environment, not this shared one.
+2. Check your Python version: `python3 --version`. This course's demos need
+   **3.10 or newer** (`langgraph-cli`'s floor, for Module 2's demo).
+   Create a Python environment on 3.10+ and select it as the kernel for
+   whichever module notebook you open (in VS Code: the kernel picker in the
+   top right of the notebook; in Jupyter Lab: `New > Python 3`, or select an
+   existing kernel). For a non-notebook demo, activate the same environment
+   in your terminal instead.
+3. Run `pip install -r requirements.txt` in that environment. This installs
+   everything every module's demo needs, not just the one you are about to
+   run.
 4. Get a Gemini key: go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey),
    sign in with a Google account, click "Create API key." No card, no
    purchase, the free tier is enough for every module's demos.
 5. `cp .env.example .env`, then paste the key in as `GOOGLE_API_KEY`. This
    is the instructor's own key, separate from any team's key in their own
-   project repository, and every module's demo reads it from here (a
-   subfolder with its own environment, like `module-02/`, still points back
-   at this same `.env`, it does not need its own copy of the key).
+   project repository, and every module's demo reads it from here.
 6. Confirm each module's demo runs end to end once, then save its output
    (a notebook's cell output, a terminal transcript, whatever the demo
    produces) as the safety net if the room's connection has a bad moment
@@ -89,16 +85,15 @@ the repository root. Never commit a real API key.
 `AttributeError: 'Client' object has no attribute 'interactions'`: your
 installed `google-genai` is older than 2.3.0, the version this course's code
 needs for the Interactions API. Run `pip install --upgrade -r requirements.txt`
-(from the `demos/` folder, or the module's own subfolder if it has its own
-`requirements.txt`) in that environment, then restart before rerunning.
-`requirements.txt` now pins `google-genai>=2.3.0` for exactly this reason,
-so a fresh environment installing from it for the first time will not hit
-this; it only bites an environment where an older `google-genai` was
-installed before this pin was added.
+(from the `demos/` folder) in that environment, then restart before
+rerunning. `requirements.txt` now pins `google-genai>=2.3.0` for exactly
+this reason, so a fresh environment installing from it for the first time
+will not hit this; it only bites an environment where an older
+`google-genai` was installed before this pin was added.
 
-`module-02/`'s `langgraph dev` refuses to start, or `pip install` for it
-fails on a package resolution error: check your Python version first
-(`python --version`), `langgraph-cli` needs 3.10 or newer. This is exactly
-why `module-02/` has its own `requirements.txt` and, in practice, wants its
-own virtual environment rather than the one set up for `module-01/`'s
-notebook.
+`langgraph dev` (Module 2) refuses to start, or `pip install -r requirements.txt`
+fails on a package resolution error: check `python3 --version` first,
+`langgraph-cli` needs 3.10 or newer, and that floor applies to this whole
+shared environment now, not just Module 2's demo. If your existing
+environment predates 3.10, create a new one on a newer interpreter and
+reinstall (see step 2 above) rather than trying to patch the old one.

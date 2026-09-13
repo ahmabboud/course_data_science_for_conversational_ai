@@ -1,12 +1,17 @@
-# Instructor-side dependencies shared by the demos in this folder (currently
-# module-01's notebook). Separate from any team's own requirements.txt in
-# their project repository. A module whose demo needs a genuinely different
-# dependency floor gets its own requirements.txt in its own subfolder instead
-# of changing this shared one, see module-02/requirements.txt and demos/README.md.
-# google-genai must be at least 2.3.0: the Interactions API this course's code
-# calls (client.interactions.create) does not exist on older 1.x releases,
-# and a bare ">=1.0" floor let pip resolve to one of those and fail at
-# runtime with "'Client' object has no attribute 'interactions'".
+# Instructor-side dependencies shared by every demo in this folder. Separate
+# from any team's own requirements.txt in their project repository.
+#
+# google-genai must be at least 2.3.0: the Interactions API this course's
+# code calls (client.interactions.create) does not exist on older 1.x
+# releases, and a bare ">=1.0" floor let pip resolve to one of those and
+# fail at runtime with "'Client' object has no attribute 'interactions'".
+#
+# langgraph-cli needs Python 3.10 or newer (module-02's demo). Check
+# `python3 --version` before installing here if your environment predates
+# that: see module-02/README.md and this folder's own README.md for the
+# exact setup and how to run each module's demo.
 google-genai>=2.3.0
 python-dotenv>=1.0
 ipykernel>=6.29
+langgraph>=1.2
+langgraph-cli[inmem]>=0.4
