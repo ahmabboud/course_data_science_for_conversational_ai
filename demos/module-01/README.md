@@ -8,8 +8,8 @@ correctly across the same correction.
 ## Run it
 
 1. One-time setup only, do this once for every module's demo, not per
-   module: see `../README.md`'s "One-time setup" section (Python
-   environment, `pip install -r ../requirements.txt`, Gemini key in `../.env`).
+   module: see `../README.md`'s "One-time setup" section (the shared
+   `demos/.venv`, `requirements.txt`, and Gemini key in `demos/.env`).
 2. Open `hook_demo.ipynb` in Jupyter Lab, VS Code, or any notebook UI, and
    pick the environment from step 1 as its kernel.
 3. Run all cells top to bottom. The first cell installs anything missing;

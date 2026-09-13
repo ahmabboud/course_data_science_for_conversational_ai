@@ -11,13 +11,25 @@ hidden, once on LangGraph with explicit state.
 Do this once, not per module (it is the same setup `../README.md` describes
 for every demo in this folder):
 
-1. Work from the repository root and activate its `.venv`. **Module 2 needs
-   Python 3.10 or newer** (`langgraph-cli`'s floor).
-2. `pip install -r demos/requirements.txt`.
+1. From the repository root, run `cd demos` and activate its shared `.venv`
+   with `source .venv/bin/activate`. **Module 2 needs Python 3.10 or newer**
+   (`langgraph-cli`'s floor).
+2. `python -m pip install -r requirements.txt`.
 3. Get a Gemini key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
    (sign in, click "Create API key," no card needed), then
-   `cp demos/.env.example demos/.env` and paste it in as `GOOGLE_API_KEY`.
+   `cp .env.example .env` and paste it in as `GOOGLE_API_KEY`.
    The scripts and LangGraph Studio both read this shared demos `.env`.
+4. **Only needed for Studio, not for `raw_loop.py` or `graph.py`'s own
+   quick check below:** get a free LangSmith API key. Studio is a hosted
+   page (`smith.langchain.com`) that connects to your local server, so it
+   needs its own credential to authenticate that connection, separate from
+   the Gemini key. Go to [smith.langchain.com](https://smith.langchain.com),
+   sign up (no card required, the Developer plan is $0/seat with 5,000
+   traces a month included, far more than one lecture's live demo uses),
+   then create a key at
+   [smith.langchain.com/settings](https://smith.langchain.com/settings).
+   Add it to the same `demos/.env` as `LANGSMITH_API_KEY=lsv2...`.
+   `langgraph dev` reads it from there.
 
 ## Run `raw_loop.py` (slides 3 and 12)
 
@@ -56,7 +68,10 @@ Studio:
 Stop the server with `Ctrl+C` when done. If `langgraph dev` refuses to
 start or `pip install` fails on a resolution error, check
 `python3 --version` again first, see `../README.md`'s troubleshooting
-section.
+section. If Studio itself says something like "missing LangSmith API key"
+or refuses to connect, that is step 4 above, not a Gemini or Python
+problem: confirm `LANGSMITH_API_KEY` is actually in `demos/.env`, not just
+`GOOGLE_API_KEY`.
 
 ## Quick check with no browser and no Studio
 
