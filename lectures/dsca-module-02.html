@@ -87,7 +87,7 @@
   </div>
   <p class="lu-caption" style="margin-top:var(--lu-s4)">Then the loop just repeats: append the result, call the model again with the whole array, see what it does next. There is no separate "state," the array is the state.</p>
   <template data-notes>
-    <p>Eight minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different.</p>
+    <p>Eight minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different. If there is time, run <code>demos/module-02/raw_loop.py</code> live, it prints this exact array after every step.</p>
   </template>
 </section>
 
@@ -131,7 +131,7 @@
   </div>
   <p class="lu-caption" style="margin-top:var(--lu-s4)">The state object can be printed or logged at any point, mid-conversation, by a person, not just replayed as a wall of messages. That is the actual, concrete thing "explicit state" buys you.</p>
   <template data-notes>
-    <p>Eight minutes. Open the agent node's popover and read the state-object framing out loud, it is the single most important idea on this slide. The tool node's return edge is the same "loop back" behavior as the raw loop's append-and-repeat, name that connection explicitly so it does not read as a new concept.</p>
+    <p>Eight minutes. Open the agent node's popover and read the state-object framing out loud, it is the single most important idea on this slide. The tool node's return edge is the same "loop back" behavior as the raw loop's append-and-repeat, name that connection explicitly so it does not read as a new concept. If the room has a connection, run <code>langgraph dev</code> from <code>demos/module-02/</code> and open Studio to trace this exact graph live, see <code>demos/README.md</code> for setup.</p>
   </template>
 </section>
 
@@ -316,7 +316,7 @@ messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"too
       </div>
     </div>
   </div>
-  <template data-notes><p>Ten minutes. Have every team actually run this by hand once, printing the array after each step, before touching LangGraph. This is the single best debugging habit this module can install: when the graph misbehaves later, they already know what the array underneath should look like.</p></template>
+  <template data-notes><p>Ten minutes. Have every team actually run this by hand once, printing the array after each step, before touching LangGraph. This is the single best debugging habit this module can install: when the graph misbehaves later, they already know what the array underneath should look like. <code>demos/module-02/raw_loop.py</code> is this exact code, working, if a team wants a reference to check against.</p></template>
 </section>
 
 <!-- ==================================================================== 13 -->
@@ -357,7 +357,7 @@ messages.append({<span class="tok-str">"role"</span>: <span class="tok-str">"too
       </div>
     </div>
   </div>
-  <template data-notes><p>Ten minutes. Expected blocker: teams reach for LangGraph's prebuilt agent helper before writing their own agent_node by hand once. Push back gently, once, then let them use the helper for real work, the point of doing it by hand here is understanding, not policy.</p></template>
+  <template data-notes><p>Ten minutes. Expected blocker: teams reach for LangGraph's prebuilt agent helper before writing their own agent_node by hand once. Push back gently, once, then let them use the helper for real work, the point of doing it by hand here is understanding, not policy. <code>demos/module-02/graph.py</code> is a working reference at this same shape (agent node, tool node, escalate node) if a team gets stuck on the wiring itself rather than the concept.</p></template>
 </section>
 
 <!-- ==================================================================== 14 -->

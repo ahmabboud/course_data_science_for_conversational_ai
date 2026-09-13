@@ -25,12 +25,12 @@ Module length is 180 minutes. At the deck pacing of 3 to 4 minutes per content s
 
 - **`index.html`**, the course index students land on.
 - **`lectures/dsca-module-NN.html`**, one self-contained lecture per file, for Modules 1 to 5.
-- **`design-system.html`**, the design system and a live gallery of all twelve interactive components. Start here before authoring.
+- **`design-system.html`**, the design system and a live gallery of all thirteen interactive components. Start here before authoring.
 - **`lectures/_template.html`**, copy this to start a new module.
 - **`lectures/_reference.html`**, a fully built deck from the Knowledge Representation course, kept as a worked example of the structure. It is not part of this course and is not linked from the index.
 - **`AGENTS.md`**, the authoring contract. Read it before writing a lecture, whether you are a person or an agent.
 - **`PROMPT.md`**, the paste-ready brief for handing a new module to an agent.
-- **`notebooks/`**, instructor-only demo notebooks used live during specific lectures. See `notebooks/README.md` for the setup steps and which notebook belongs to which lecture, both directions of that link matter.
+- **`demos/`**, instructor-only demo material used live during specific lectures, a notebook for one module, a `langgraph dev` / Studio demo for another. See `demos/README.md` for the setup steps and which demo belongs to which lecture, both directions of that link matter.
 
 Built from the [`LebUniv_Course_Template`](https://github.com/ahmabboud/LebUniv_Course_Template) design system. Fixes to the stylesheet or runtime belong upstream in the template, not here.
 
@@ -56,7 +56,7 @@ Enable GitHub Pages with **GitHub Actions** as the source, then push to `main`. 
 - Replace every `.lu-figure__ph` placeholder with a real capture. Each one states the path and what must be visible in the shot.
 - The course syllabus lives one directory up, in `Data Science for Conversational AI - Syllabus.docx`. Module objectives, segment minutes, deliverables and readings all come from it, and each deliverable names the GitHub issue it corresponds to. A deck whose section minutes do not sum to the syllabus budget will overrun.
 - Each team needs its own GitHub repository for the continuous project, seeded in Module 1. That repository is separate from this one: this repository holds the lecture decks, team repositories hold the agents students build.
-- `notebooks/module-01/hook_demo.ipynb` is the Module 1 hook, instructor only. Set it up and run it once before Module 1, see `notebooks/README.md` for the exact steps, the one-folder-per-module convention, and which notebook belongs to which lecture as more get added.
+- `demos/module-01/hook_demo.ipynb` is the Module 1 hook, instructor only; `demos/module-02/` is a `langgraph dev` / Studio demo for Module 2. Set each up before its module, see `demos/README.md` for the exact steps, the one-folder-per-module convention, and which demo belongs to which lecture as more get added.
 
 ## Accessibility
 
