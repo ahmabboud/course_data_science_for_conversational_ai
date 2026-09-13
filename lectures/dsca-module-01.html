@@ -196,7 +196,39 @@ SCHEMA = {
     </div>
   </div>
   <template data-notes>
-    <p>Four minutes. Expected question: "so is the model just guessing the schema?" No, the API enforces it at decode time for both providers this course uses. Say that plainly, it removes a real source of anxiety before the lab.</p>
+    <p>Four minutes. Expected question: "so is the model just guessing the schema?" No, Gemini enforces it at decode time, the shape is structurally guaranteed. Say that plainly, it removes a real source of anxiety before the lab.</p>
+  </template>
+</section>
+
+<!-- ==================================================================== 06c -->
+<section class="slide" data-label="How the enforcement actually works" data-section="Lecture" data-minutes="6">
+  <div class="lu-eyebrow">Not a request, a constraint</div>
+  <h2 class="lu-h1" style="max-width:34ch">The schema is compiled into the decoding process itself</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <p class="lu-p">"Structured output" is not the model being asked nicely to format its reply as JSON. The schema you pass in is compiled into a grammar, and that grammar constrains which tokens the model is even allowed to produce at each step of generation.</p>
+      <div class="lu-code lu-code--sm" data-name="what decoding actually enforces">
+<pre><code><span class="tok-com">after {"party_size": 4, "day": "tue, the only legal</span>
+<span class="tok-com">next tokens are ones that keep the output on a path</span>
+<span class="tok-com">matching SCHEMA. A token that would produce invalid</span>
+<span class="tok-com">JSON, or a field the schema does not define, gets</span>
+<span class="tok-com">zero probability. It is never sampled, not just</span>
+<span class="tok-com">discouraged.</span></code></pre>
+      </div>
+    </div>
+    <div class="lu-stack">
+      <div class="lu-callout">
+        <span class="lu-callout__label">What this guarantees, and what it does not</span>
+        <p class="lu-sub">The output will parse as valid JSON matching your schema's shape, every time. It says nothing about whether a value inside that shape is correct. <code>"party_size": 4</code> can be perfectly valid and still be a hallucinated guess.</p>
+      </div>
+      <div class="lu-reveal">
+        <button class="lu-reveal__btn" type="button">Why not just ask for JSON in the prompt?</button>
+        <div class="lu-reveal__panel" hidden><p>You can, and it often works. But "often" is the problem: a model asked nicely can still reply with a trailing sentence, a markdown code fence, or a field it invented. Grammar-constrained decoding removes that failure mode structurally, not by getting better at prompting.</p></div>
+      </div>
+    </div>
+  </div>
+  <template data-notes>
+    <p>Six minutes. This slide answers the question the last one only asserted: how does the schema actually get enforced? Land the distinction hard: shape is guaranteed, correctness is not, and that gap is exactly why the fallback design in the lab kickoff matters, a schema-valid wrong answer never trips validation.</p>
   </template>
 </section>
 
@@ -274,7 +306,7 @@ state = {
 </section>
 
 <!-- ==================================================================== 09 -->
-<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="9">
+<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">What you are actually calling</div>
   <h2 class="lu-h1" style="max-width:32ch">One provider, one shape of call, for the whole course</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
@@ -299,7 +331,7 @@ state = {
     </div>
   </div>
   <template data-notes>
-    <p>Nine minutes. Keep this practical, not a product comparison. The one thing worth dwelling on: schema enforcement is structural on both, so the fallback exists for cases the schema cannot rule out (a wrong value in a valid shape), not for malformed JSON, which the API already prevents.</p>
+    <p>Five minutes. Keep this practical and short, there is one provider, not a comparison to walk through. The one thing worth naming: schema enforcement is structural, so the fallback exists for cases the schema cannot rule out (a wrong value in a valid shape), not for malformed JSON, which the API already prevents. The previous slide covered why that enforcement is structural in the first place.</p>
   </template>
 </section>
 
@@ -594,7 +626,7 @@ affected_system  <span class="tok-com"># which internal tool broke</span></code>
       <thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead>
       <tbody>
         <tr><td>A field is always empty</td><td>The schema marks it optional when the utterance always states it, or the reverse</td></tr>
-        <tr><td>Fields reset every turn</td><td>Current state is not being passed into the next call, see slide 8</td></tr>
+        <tr><td>Fields reset every turn</td><td>Current state is not being passed into the next call, see slide 10</td></tr>
         <tr><td>The call raises an error</td><td>The provider key was never actually tested, run <code>verify_setup.py</code> again</td></tr>
       </tbody>
     </table>
