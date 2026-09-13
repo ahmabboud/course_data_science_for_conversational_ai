@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/lu.css?v=1.1.0">
+<link rel="stylesheet" href="assets/lu.css?v=1.2.0">
 </head>
 <body class="page-mode" data-deck-id="design-system" data-app-root="./">
 
@@ -25,7 +25,7 @@
     </span>
   </div>
   <h1>The design system behind the lectures</h1>
-  <p class="page-lede">One stylesheet, one runtime, twelve interactive components. Everything here is plain HTML, CSS and JavaScript with no build step and no dependencies, so a lecture is a single file an instructor can open from a USB stick or publish to GitHub Pages unchanged.</p>
+  <p class="page-lede">One stylesheet, one runtime, thirteen interactive components. Everything here is plain HTML, CSS and JavaScript with no build step and no dependencies, so a lecture is a single file an instructor can open from a USB stick or publish to GitHub Pages unchanged.</p>
   <div class="lu-row" style="gap:var(--lu-s3)">
     <a class="lu-btn lu-btn--primary lu-btn--sm" href="lectures/_reference.html">Open the worked example lecture</a>
     <a class="lu-btn lu-btn--sm" href="lectures/_template.html">Open the empty template</a>
@@ -367,7 +367,7 @@
 <!-- ============================================================ 8 -->
 <section id="components">
   <h2>8 · Interactive components</h2>
-  <p class="ds-note" style="margin-top:var(--lu-s4)">Twelve components, all live below. Everything with a <code>data-qid</code> is graded and reports into the end-of-deck self-check automatically; give every one a unique id within the lecture. Answers persist in <code>localStorage</code> under the deck's own namespace and are never sent anywhere.</p>
+  <p class="ds-note" style="margin-top:var(--lu-s4)">Thirteen components, all live below. Everything with a <code>data-qid</code> is graded and reports into the end-of-deck self-check automatically; give every one a unique id within the lecture. Answers persist in <code>localStorage</code> under the deck's own namespace and are never sent anywhere.</p>
 
   <!-- 1 -->
   <div class="ds-demo">
@@ -589,7 +589,36 @@ ORDER BY DESC(?days)
 
   <!-- 12 -->
   <div class="ds-demo">
-    <div class="ds-demo__head"><b>12 · Self-check</b><span>collects every graded component in the deck</span><code>[data-score]</code></div>
+    <div class="ds-demo__head"><b>12 · Interactive diagram node</b><span>click or tab to a node on a board for a definition, same mechanism as a term popover</span><code>.lu-node[data-term]</code></div>
+    <div class="ds-demo__stage">
+      <div class="lu-board" style="aspect-ratio:16/6">
+        <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 375" preserveAspectRatio="none" aria-hidden="true">
+          <defs><marker id="ds-arrow-node" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+          <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#ds-arrow-node)" d="M 250 90 L 700 90"/>
+          <text class="lu-edge-label" x="400" y="75">routes to</text>
+        </svg>
+        <button type="button" class="lu-node lu-node--class" style="left:22%;top:24%" data-term="Router node" data-kind="LangGraph">Router<template>Reads the graph's state object and decides which node runs next: the specialist path, or back to the model for another turn. It makes no model call of its own.</template></button>
+        <button type="button" class="lu-node lu-node--instance" style="left:72%;top:24%" data-term="Specialist node" data-kind="LangGraph">Specialist<template>A node scoped to one job (say, cancellations). It only ever sees the state the router decided to hand it, never the full conversation history by default.</template></button>
+      </div>
+      <p class="lu-caption" style="margin-top:var(--lu-s5)">Same trigger, popover, and keyboard behaviour as a term popover, so nothing new to learn to use it. The difference is entirely in <code>Term.inline()</code>: a paragraph term becomes an inline note in study mode, but a node cannot, inserting a block note at an absolutely-positioned node would overlap the diagram, so every interactive node on a board instead contributes one row to a single legend placed after that board. Press <kbd>S</kbd> to see it.</p>
+      <div class="lu-reveal" style="margin-top:var(--lu-s4)">
+        <button class="lu-reveal__btn" type="button">Markup</button>
+        <div class="lu-reveal__panel" hidden>
+<pre class="lu-mono" style="font-size:14px;line-height:1.6;overflow:auto">&lt;button type="button" class="lu-node lu-node--class"
+        style="left:22%;top:24%"
+        data-term="Router node" data-kind="LangGraph"&gt;
+  Router
+  &lt;template&gt;Reads the graph's state object and decides…&lt;/template&gt;
+&lt;/button&gt;</pre>
+          <p class="lu-caption">A plain, non-interactive <code>.lu-node</code> is still a <code>&lt;div&gt;</code>, as in the node-edge board example above. Only give a node <code>data-term</code>, wrap it in a <code>&lt;button type="button"&gt;</code>, and it gets a definition, when the node itself needs explaining, not every node on every board.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13 -->
+  <div class="ds-demo">
+    <div class="ds-demo__head"><b>13 · Self-check</b><span>collects every graded component in the deck</span><code>[data-score]</code></div>
     <div class="ds-demo__stage">
       <div data-score></div>
       <p class="lu-caption" style="margin-top:var(--lu-s5)">One empty <code>&lt;div data-score&gt;&lt;/div&gt;</code> on the last slide. It finds every component with a <code>data-qid</code>, reports attempted against correct, links back to the slide each question is on, and offers a clear-answers button scoped to this deck alone. The three demos above are feeding it right now.</p>
@@ -671,6 +700,6 @@ ORDER BY DESC(?days)
 </main>
 
 <script src="assets/sparql-lite.js?v=1.1.0"></script>
-<script src="assets/lu-deck.js?v=1.1.0" defer></script>
+<script src="assets/lu-deck.js?v=1.2.0" defer></script>
 </body>
 </html>

@@ -341,7 +341,7 @@
       var btn = qs('.lu-hud__btn[data-act="selfstudy"]');
       if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
       qsa('.lu-reveal__btn').forEach(function (b) { if (on) Reveal.set(b, true); });
-      qsa('.lu-term').forEach(function (t) { Term.inline(t, !!on); });
+      qsa('.lu-term, .lu-node[data-term]').forEach(function (t) { Term.inline(t, !!on); });
       Deck.setStep(on ? Deck.steps.length : Deck.step, true);
       if (!quiet) toast(on ? 'Study mode on, everything expanded' : 'Study mode off');
     },
@@ -584,7 +584,12 @@
   var Term = {
     open: null,
     init: function () {
-      qsa('.lu-term').forEach(function (t, n) {
+      /* .lu-node[data-term] is a diagram node wired the same way as a
+         .lu-term, so a board's own nodes get click-to-reveal too. Matched
+         by data-term rather than by adding the .lu-term class, so none of
+         that class's inline-text styling (dotted underline, "?" marker)
+         leaks onto a boxed node; see the CSS comment by .lu-node[data-term]. */
+      qsa('.lu-term, .lu-node[data-term]').forEach(function (t, n) {
         if (t.tagName !== 'BUTTON') return;
         t.type = 'button';
         t.setAttribute('aria-expanded', 'false');
@@ -592,7 +597,7 @@
         t.addEventListener('click', function (e) { e.stopPropagation(); Term.toggle(t); });
       });
       d.addEventListener('click', function (e) {
-        if (Term.open && !e.target.closest('.lu-pop') && !e.target.closest('.lu-term')) Term.closeAll();
+        if (Term.open && !e.target.closest('.lu-pop') && !e.target.closest('.lu-term') && !e.target.closest('.lu-node[data-term]')) Term.closeAll();
       });
     },
     body: function (t) {
@@ -639,6 +644,8 @@
     },
     /* Study mode: definitions become inline notes instead of popovers. */
     inline: function (t, on) {
+      var board = t.closest('.lu-board');
+      if (board) return Term.inlineBoard(t, board, on);
       var id = 'lu-inline-' + (t.id || '');
       var existing = t.parentNode && qs('#' + CSS.escape(id), t.closest('.slide') || d);
       if (!on) { if (existing) existing.remove(); return; }
@@ -654,6 +661,34 @@
          the grid keeps pairing dt with dd correctly. */
       if (host.tagName === 'DD') note.style.gridColumn = '1 / -1';
       if (host.parentNode) host.parentNode.insertBefore(note, host.nextSibling);
+    },
+    /* A board's own nodes are absolutely positioned inside .lu-board's
+       percentage-based canvas, so an inline note at the node itself would
+       overlap the diagram instead of reading as a definition (the same
+       failure the .lu-defs grid had, one layer up). Every interactive node
+       on a board contributes one row to a single legend placed right after
+       that board instead. */
+    inlineBoard: function (t, board, on) {
+      var legendId = 'lu-board-legend-' + (board.id || (board.id = 'lu-board-' + (Term._boardSeq = (Term._boardSeq || 0) + 1)));
+      var legend = qs('#' + CSS.escape(legendId));
+      if (!on) {
+        if (legend) {
+          var row = t.id && qs('[data-node-for="' + CSS.escape(t.id) + '"]', legend);
+          if (row) row.remove();
+          if (legend && !legend.children.length) legend.remove();
+        }
+        return;
+      }
+      if (!legend) {
+        legend = el('div', 'lu-board__legend');
+        legend.id = legendId;
+        board.insertAdjacentElement('afterend', legend);
+      }
+      if (t.id && qs('[data-node-for="' + CSS.escape(t.id) + '"]', legend)) return;
+      var row = el('div', 'lu-board__legend-row');
+      if (t.id) row.setAttribute('data-node-for', t.id);
+      row.innerHTML = '<b>' + (t.getAttribute('data-term') || t.textContent.trim()) + '.</b> ' + Term.body(t);
+      legend.appendChild(row);
     }
   };
 

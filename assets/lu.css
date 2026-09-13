@@ -426,6 +426,15 @@ strong, .lu-strong { font-weight: 600; }
 .lu-node--literal  { border-color: var(--lu-ink-3); background: var(--lu-paper-2); font-family: var(--lu-mono); font-weight: 500; }
 .lu-node[data-state="muted"] { opacity: .3; }
 .lu-node[data-state="active"] { box-shadow: 0 0 0 4px rgba(150,18,43,.18); }
+/* Interactive node: a <button class="lu-node ..." data-term="…"> gets the
+   same click-to-reveal wiring as .lu-term (see Term.init in lu-deck.js),
+   keyed off data-term rather than the .lu-term class so none of that
+   class's inline-text styling (dotted underline, "?" marker, cursor:help)
+   leaks onto a boxed diagram node. */
+.lu-node[data-term] { appearance: none; -webkit-appearance: none; font-family: inherit; cursor: pointer; }
+.lu-node[data-term]:hover,
+.lu-node[data-term][aria-expanded="true"] { box-shadow: 0 0 0 4px rgba(150,18,43,.18); }
+.lu-selfstudy .lu-node[data-term] { cursor: default; }
 .lu-edge { fill: none; stroke: var(--lu-line-2); stroke-width: 2; }
 .lu-edge--strong { stroke: var(--lu-ink-2); }
 .lu-edge--infer  { stroke: var(--lu-green-600); stroke-dasharray: 7 5; }
@@ -606,6 +615,19 @@ strong, .lu-strong { font-weight: 600; }
 .lu-selfstudy .lu-term { cursor: default; }
 .lu-inline-def {
   display: block; margin: var(--lu-s3) 0;
+  border-left: 3px solid var(--lu-red-700); padding: var(--lu-s2) var(--lu-s4);
+  background: var(--lu-red-050); font-size: var(--lu-t-small); color: var(--lu-ink-2);
+}
+/* A board's own nodes cannot take an inline note the way a paragraph term
+   can: .lu-node is absolutely positioned inside .lu-board's percentage-based
+   canvas, so inserting a block note at the node itself would overlap the
+   diagram. Instead every interactive node on a board contributes one row to
+   a single legend placed after the board (see Term.inlineBoard). */
+.lu-board__legend {
+  display: flex; flex-direction: column; gap: var(--lu-s2);
+  margin-top: var(--lu-s3);
+}
+.lu-board__legend-row {
   border-left: 3px solid var(--lu-red-700); padding: var(--lu-s2) var(--lu-s4);
   background: var(--lu-red-050); font-size: var(--lu-t-small); color: var(--lu-ink-2);
 }

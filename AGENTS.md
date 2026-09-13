@@ -173,6 +173,7 @@ Full live examples with markup: `design-system.html` §8. Graded components are 
 | Component | Class | Notes |
 |---|---|---|
 | Term popover | `.lu-term` on a `<button type="button">` | `data-term`, `data-kind`, and either `data-def="…"` or a nested `<template>` for rich content. Becomes an inline note in study mode. |
+| Interactive diagram node | `.lu-node` on a `<button type="button">` with `data-term` | Same popover as a term, keyed off `data-term` rather than the `.lu-term` class so a node keeps its box styling instead of inheriting the term's dotted-underline look. In study mode it cannot become an inline note like a paragraph term (it would overlap the board), so it contributes a row to one `.lu-board__legend` placed after that board instead. A plain `.lu-node` with no `data-term` stays a non-interactive `<div>`, unaffected. |
 | Click to reveal | `.lu-reveal` > `.lu-reveal__btn` + `.lu-reveal__panel[hidden]` | Runtime wires `aria-expanded`/`aria-controls`. Forced open in study mode and in handouts. |
 | Multiple choice ⓖ | `.lu-mcq` | `data-answer="b"`, `data-label`, `data-fb-correct`, `data-fb-wrong`; each `.lu-mcq__opt` has `data-key` and a hidden `.lu-mcq__why`. |
 | Walkthrough | `.lu-walk` | Children `[data-walk-step]` with `data-caption` (HTML ok) and `data-caption-short`. Arrow keys when focused. |
