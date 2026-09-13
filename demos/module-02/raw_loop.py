@@ -15,11 +15,13 @@ whether the state and the branching are explicit or implicit.
 
 import json
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from google import genai
 
-load_dotenv()
+DEMO_ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(DEMO_ROOT / ".env")
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 FAKE_ORDERS = {

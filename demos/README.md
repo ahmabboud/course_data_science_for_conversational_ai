@@ -24,8 +24,8 @@ for `dsca-module-02.html`, and so on). That subfolder holds the demo itself,
 its own `README.md` with exact run steps, and anything specific to it (a
 small data file, a `langgraph.json`, a second script). It does not hold its
 own `requirements.txt` or `.env.example`: every module's demo installs from
-the one shared `requirements.txt` at this level and reads the one shared
-`.env`. When a later module's tool needs a package the others don't, add it
+the one shared `requirements.txt` at this level and reads the shared
+`demos/.env`. When a later module's tool needs a package the others don't, add it
 to this shared file with a comment saying which module needs it, rather
 than forking a second requirements file, even if that package has a
 noticeably different floor than the rest (see `requirements.txt`'s own
@@ -55,45 +55,44 @@ This setup is shared across every module's demo, done once, not repeated
 per module. Each module's own `README.md` assumes this is already done and
 only adds the steps specific to running that one demo.
 
-1. `cd demos`
-2. Check your Python version: `python3 --version`. This course's demos need
+1. Work from the repository root. Check your Python version: `python3 --version`. This course's demos need
    **3.10 or newer** (`langgraph-cli`'s floor, for Module 2's demo).
    Create a Python environment on 3.10+ and select it as the kernel for
    whichever module notebook you open (in VS Code: the kernel picker in the
    top right of the notebook; in Jupyter Lab: `New > Python 3`, or select an
    existing kernel). For a non-notebook demo, activate the same environment
    in your terminal instead.
-3. Run `pip install -r requirements.txt` in that environment. This installs
+2. Run `pip install -r demos/requirements.txt` in that environment. This installs
    everything every module's demo needs, not just the one you are about to
    run.
-4. Get a Gemini key: go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey),
+3. Get a Gemini key: go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey),
    sign in with a Google account, click "Create API key." No card, no
    purchase, the free tier is enough for every module's demos.
-5. `cp .env.example .env`, then paste the key in as `GOOGLE_API_KEY`. This
+4. `cp demos/.env.example demos/.env`, then paste the key in as `GOOGLE_API_KEY`. This
    is the instructor's own key, separate from any team's key in their own
-   project repository, and every module's demo reads it from here.
-6. Confirm each module's demo runs end to end once, then save its output
+   project repository, and every module's demo reads it from `demos/.env`.
+5. Confirm each module's demo runs end to end once, then save its output
    (a notebook's cell output, a terminal transcript, whatever the demo
    produces) as the safety net if the room's connection has a bad moment
    during that module's live session.
 
-This `.venv`, `.env`, and any `__pycache__` this creates are gitignored at
+The root `.venv`, `demos/.env`, and any `__pycache__` this creates are gitignored at
 the repository root. Never commit a real API key.
 
 ## Troubleshooting
 
 `AttributeError: 'Client' object has no attribute 'interactions'`: your
 installed `google-genai` is older than 2.3.0, the version this course's code
-needs for the Interactions API. Run `pip install --upgrade -r requirements.txt`
-(from the `demos/` folder) in that environment, then restart before
-rerunning. `requirements.txt` now pins `google-genai>=2.3.0` for exactly
-this reason, so a fresh environment installing from it for the first time
-will not hit this; it only bites an environment where an older
-`google-genai` was installed before this pin was added.
+needs for the Interactions API. Run `pip install --upgrade -r demos/requirements.txt`
+in that environment, then restart before rerunning. `requirements.txt` now
+pins `google-genai>=2.3.0` for exactly this reason, so a fresh environment
+installing from it for the first time will not hit this; it only bites an
+environment where an older `google-genai` was installed before this pin was
+added.
 
-`langgraph dev` (Module 2) refuses to start, or `pip install -r requirements.txt`
+`langgraph dev` (Module 2) refuses to start, or `pip install -r demos/requirements.txt`
 fails on a package resolution error: check `python3 --version` first,
 `langgraph-cli` needs 3.10 or newer, and that floor applies to this whole
 shared environment now, not just Module 2's demo. If your existing
 environment predates 3.10, create a new one on a newer interpreter and
-reinstall (see step 2 above) rather than trying to patch the old one.
+reinstall (see step 1 above) rather than trying to patch the old one.

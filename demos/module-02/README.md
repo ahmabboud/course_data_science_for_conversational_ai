@@ -11,15 +11,13 @@ hidden, once on LangGraph with explicit state.
 Do this once, not per module (it is the same setup `../README.md` describes
 for every demo in this folder):
 
-1. `cd demos` (from the repository root).
-2. Create a Python environment. **This folder needs Python 3.10 or newer**
-   (`langgraph-cli`'s floor): run `python3 --version` first, and if it is
-   older, create the environment with a newer interpreter, for example
-   `python3.11 -m venv .venv && source .venv/bin/activate`.
-3. `pip install -r requirements.txt`.
-4. Get a Gemini key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
-   (sign in, click "Create API key," no card needed), then `cp .env.example .env`
-   and paste it in as `GOOGLE_API_KEY`.
+1. Work from the repository root and activate its `.venv`. **Module 2 needs
+   Python 3.10 or newer** (`langgraph-cli`'s floor).
+2. `pip install -r demos/requirements.txt`.
+3. Get a Gemini key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+   (sign in, click "Create API key," no card needed), then
+   `cp demos/.env.example demos/.env` and paste it in as `GOOGLE_API_KEY`.
+   The scripts and LangGraph Studio both read this shared demos `.env`.
 
 ## Run `raw_loop.py` (slides 3 and 12)
 
