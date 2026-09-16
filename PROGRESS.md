@@ -92,7 +92,7 @@ set for every module, on top of the mechanical authoring contract in
 | 1 | Foundations and Modern Understanding | Not started | Not started | Not started | Not started |
 | 2 | Agentic Dialogue Management | Not started | Not started | Not started | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
-| 4 | Memory | Not started | Not started | Not started | Not started |
+| 4 | Memory | Done, see below | Done, see below | Not started | Not started |
 | 5 | Evaluation and Responsible Deployment | Not started | Not started | Not started | Not started |
 
 Module 6 has no lecture deck (live defense session), so it carries no row
@@ -232,6 +232,97 @@ reverting to it.
 - **Readiness:** not ready. The instructor owns running the coding agent's
   output and the tests; update this line to "ready, tests passing as of
   <date>" once that happens, or note what failed.
+
+## Module 4, Memory, detail
+
+Planned 2026-09-15, following the module build order above (this is the
+first module built under that process; nothing in this section has been
+turned into slides yet).
+
+### Syllabus row (Session 4, from the syllabus docx)
+
+- **Objective.** Let the agent remember, across turns and across separate
+  sessions, without quietly becoming a privacy liability.
+- **Segments.** Lecture 50 min (session vs persistent memory, the
+  extract-and-update pattern and the temporal-knowledge-graph pattern with
+  Mem0 and Zep as working examples, summarization and compaction, privacy
+  cost previewing Module 5); Hands-on lab 100 min (add persistent memory,
+  recognize a returning user across two separate sessions, add
+  summarization so long conversations do not overflow); Discussion and wrap
+  30 min (memory failure modes: stale facts, wrong recall, forget requests;
+  Issue 4 checkpoint). Total 180, matching Module 3's internal
+  lecture/research-dive split pattern: propose ~30 min core concepts + ~20
+  min research dive inside the 50-minute Lecture line.
+- **Deliverable (Issue 4).** The team's agent demonstrably remembers a
+  specific user across two separate sessions, with a working compaction
+  strategy for long conversations.
+- **Reading.** "On Memory Construction and Retrieval for Personalized
+  Conversational Agents" (this module's research-dive paper). Mem0 and Zep
+  documentation.
+- **Rubric row (Memory, 15 pts).** The agent correctly recalls a specific
+  user across two separate sessions, and long conversations are compacted
+  rather than silently truncated or overflowed.
+
+### Lecture-notes track — done
+
+- **Written to:** `research/module-04/lecture-notes.md`. Covers session vs
+  persistent memory, the extract-and-update pattern (Mem0), the
+  temporal-knowledge-graph pattern (Zep/Graphiti), summarization and
+  compaction, privacy cost, the full SeCom research-dive close read, the
+  hands-on lab's planned build order, and the discussion-and-wrap failure
+  modes, at the `AGENTS.md` §12 depth bar (formalism for each pattern, real
+  cost numbers, named alternatives, a critical read of two papers, not just
+  the one required reading).
+- **Not yet done:** instructor review and edit. Per this file's own
+  division of labor, an agent drafts this document but the instructor
+  reviews it like any other drafted document before it becomes the source
+  for slides or a NotebookLM prompt. Do not treat it as final until that
+  happens.
+
+### Paper track — done
+
+- **Paper:** Pan, Wu, Jiang, Luo, Cheng, Li, Yang, Lin, Zhao, Qiu & Gao,
+  "On Memory Construction and Retrieval for Personalized Conversational
+  Agents," published as a conference paper at ICLR 2025. Open access on
+  arXiv (`2502.05589`). This is the exact paper named in the syllabus's own
+  Module 4 reading line, same selection logic as Module 3 (Chan et al. was
+  also the syllabus's own named reading).
+  Downloaded to `research/module-04/pan-2025-secom-memory.pdf`.
+- **Two supporting papers also downloaded**, for the lecture's two named
+  working examples, not as the research-dive paper: Chhikara et al. (2025),
+  "Mem0: Building Production-Ready AI Agents with Scalable Long-Term
+  Memory," arXiv:2504.19413 (`research/module-04/chhikara-2025-mem0.pdf`),
+  and Rasmussen et al. (2025), "Zep: A Temporal Knowledge Graph Architecture
+  for Agent Memory," arXiv:2501.13956
+  (`research/module-04/rasmussen-2025-zep-graphiti.pdf`). Both verified by
+  extracting their own PDF text on 2026-09-15, same standard as the
+  research-dive paper; their numbers are in `lecture-notes.md` above.
+- **NotebookLM prompt:** not yet sent. Send once the instructor has
+  reviewed `lecture-notes.md` (paper track's prompt is independent of that
+  review, but sending it before the notes are confirmed risks basing the
+  concept-infographic prompt, tracked separately below, on content that is
+  about to change).
+
+### Graphics track — not started
+
+- No NotebookLM prompt sent yet. Once `lecture-notes.md` is reviewed, the
+  natural concept-infographic candidates it surfaces are: (1) extract-and-
+  update vs temporal-knowledge-graph, side by side, the same contrast shape
+  as Module 3's RAG-vs-CAG infographic; (2) the bi-temporal edge model
+  (four timestamps, invalidation), which is the single densest formalism in
+  this module and the one most likely to need a richer visual than a
+  `.lu-board` redraw.
+
+### Code track — not started
+
+- **Tooling decision (confirmed with the instructor, 2026-09-15):** build
+  both memory patterns from scratch, plain Python plus the shared
+  `google-genai` client every other module's demo uses, no new heavy
+  dependency, no Mem0/Zep SDK installed, no vector or graph database stood
+  up. Same precedent as Module 3's `grounded_rag.py`. The lecture cites the
+  real production systems accurately; the runnable demo builds the
+  mechanism directly so students see what is inside it.
+- Demo not yet written. Planned build order is in `lecture-notes.md` §3.
 
 ## Conventions for adding a new module or course
 
