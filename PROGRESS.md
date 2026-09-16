@@ -92,7 +92,7 @@ set for every module, on top of the mechanical authoring contract in
 | 1 | Foundations and Modern Understanding | Not started | Not started | Not started | Not started |
 | 2 | Agentic Dialogue Management | Not started | Not started | Not started | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
-| 4 | Memory | Done, see below | Done, see below | Not started | Not started |
+| 4 | Memory | Done, see below | Done, see below | In progress | Not started |
 | 5 | Evaluation and Responsible Deployment | Not started | Not started | Not started | Not started |
 
 Module 6 has no lecture deck (live defense session), so it carries no row
@@ -303,15 +303,71 @@ turned into slides yet).
   concept-infographic prompt, tracked separately below, on content that is
   about to change).
 
-### Graphics track — not started
+### Graphics track — in progress, verification done, not yet shipped
 
-- No NotebookLM prompt sent yet. Once `lecture-notes.md` is reviewed, the
-  natural concept-infographic candidates it surfaces are: (1) extract-and-
-  update vs temporal-knowledge-graph, side by side, the same contrast shape
-  as Module 3's RAG-vs-CAG infographic; (2) the bi-temporal edge model
-  (four timestamps, invalidation), which is the single densest formalism in
-  this module and the one most likely to need a richer visual than a
-  `.lu-board` redraw.
+- The instructor ran NotebookLM against `lecture-notes.md` before a formal
+  prompt was sent (the "send a prompt" step in the build order was
+  overtaken by the instructor just doing it); five images came back
+  2026-09-15, saved to `research/module-04/notebooklm-reference/`:
+  `mem0-infographic.png`, `zep-infographic.png`, `secom-infographic.png`,
+  `session-vs-persistent-infographic.png`, and
+  `combined-scorecard-infographic.png` (one table comparing all three
+  systems side by side).
+- **Every number checked against the three papers on disk, 2026-09-15.**
+  Findings, precise, because this batch had real errors mixed in with real
+  numbers:
+  - **`mem0-infographic.png` and `combined-scorecard-infographic.png`**:
+    the 91% latency reduction, >90% token savings, and "26% higher
+    accuracy" headline claims are accurate (Mem0's own Table 2, verified;
+    the 26% figure specifically is Mem0's J-score of 66.88% against
+    OpenAI's own memory feature's 52.90%, not against Full-Context, which
+    the same table shows scoring *higher*, 72.90%; both images correctly
+    show 66.9%/72.9% side by side when they show that comparison at all,
+    the risk is a reader conflating "beats OpenAI's memory feature" with
+    "beats full-context," which it does not). **The token-cost figures are
+    wrong in both images**: Mem0's real memory-token count in Table 2 is
+    **1,764**, not the "~7,000" both images show; Mem0g's real count is
+    **3,616**, not the "~14,000" the combined scorecard shows. Full-Context's
+    26,031 tokens and 17.1s p95 latency are correctly reproduced.
+  - **`combined-scorecard-infographic.png` specifically**: its Zep row
+    (latency ~2.9s, J-score 66.0%) is real, but it is **not from Zep's own
+    paper** (which never reports those exact figures), **it is Mem0's own
+    Table 2**, which evaluated Zep on the LOCOMO benchmark as a baseline
+    (Zep: 3,911 memory tokens, p95 total latency 2.926s, J-score 65.99%,
+    matches). The image's **"~600,000+ tokens" for Zep, with a footnote
+    blaming "caching full abstractive summaries at every node," has no
+    source in any of the three papers and appears fabricated.** The SeCom
+    row (3,700 tokens, 71.6%) is accurate but comes from a **third,
+    separate benchmark and metric** (SeCom's own LOCOMO run, GPT4Score, not
+    Mem0's LLM-as-judge "J" score used in the other rows). **This table
+    should not be shown as a single comparison**: it silently combines
+    three different papers' own self-reported numbers on different
+    benchmarks and metrics under one "Accuracy" column as if the three
+    systems were evaluated head-to-head once, which none of the papers
+    actually did.
+  - **`zep-infographic.png`**: the LongMemEval numbers (Full-context gpt-4o
+    60.2%/28.9s/115k tokens vs Zep 71.2%/2.58s/1.6k tokens, an 18.5% gain)
+    are exact, checked against the paper's own Table 2. **One real error**:
+    the image's closing panel says Zep "Outperforms MemGPT by 18.5%," but
+    the 18.5% figure is the LongMemEval gain over a full-context baseline,
+    not a comparison to MemGPT at all; the paper's only head-to-head
+    against MemGPT is the separate, easier DMR benchmark, where Zep leads
+    by 1.4 points (94.8% vs 93.4%), not 18.5. Fix this line before using
+    the image, or drop that panel.
+  - **`secom-infographic.png`**: the LOCOMO GPT4Score bars (Session-Level
+    51.18, Turn-Level 57.99, SECOM 69.33) are an exact match to the paper's
+    Table 1 (the MPNet-retrieval rows specifically). No issues found.
+  - **`session-vs-persistent-infographic.png`**: qualitative framing plus
+    the same three systems' headline numbers (26%/91%, 18.5%/90%,
+    71.57/72% fewer tokens), all independently checked and accurate.
+- **Decision, pending instructor input**: none of these five images are
+  wired into any slide yet. `zep-infographic.png` and `secom-infographic.png`
+  are usable as full-page slides once the MemGPT line is fixed (or cropped
+  out) on the former; `mem0-infographic.png` needs its token-cost numbers
+  corrected before use; `combined-scorecard-infographic.png` should not be
+  used as a single table, its individual accurate rows could still inform
+  separate, honestly-captioned slides but the cross-paper mashup itself is
+  the problem, not any one number in it.
 
 ### Code track — not started
 
