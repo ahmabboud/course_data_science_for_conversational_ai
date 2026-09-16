@@ -36,12 +36,13 @@ No framework. No bundler. No npm. No CDN at runtime except the two webfonts. A l
 
 ## 1. The workflow
 
+-1. **Check `PROGRESS.md` for this module's row before anything else.** If `research/module-NN/lecture-notes.md` does not exist, write it first (see `PROGRESS.md`'s "module build order"): the module's full content in prose, at the §12 depth bar below. Slide prose in step 5 gets pulled from that document, not drafted fresh, and it is also the source for the concept-infographic NotebookLM prompt `PROMPT.md` describes.
 0. **Read §12, the content depth bar, before you draft a single slide of content.** Everything below this point is mechanics: layout, pacing, components. None of it checks whether the content is actually graduate-level. That is a separate, equally mandatory bar, and it does not get relaxed just because a deck otherwise passes the audit script.
 1. **Read `design-system.html`** in a browser. It has every component live, with the markup.
 2. **Read `lectures/_reference.html`.** It is 21 slides and uses all nine layouts and all twelve components. Imitate its structure.
 3. **Copy `lectures/_template.html`** to `lectures/dsca-module-NN.html`.
 4. Fill in `<title>`, the `<meta name="description">`, and the `<body data-*>` attributes.
-5. Write the slides. Delete template slides you do not need; never delete the deck frame (`.deck > .deck__stage > .slide`).
+5. Write the slides, from `lecture-notes.md` where one exists. Delete template slides you do not need; never delete the deck frame (`.deck > .deck__stage > .slide`). Add each NotebookLM infographic that comes back as its own full-page slide (`PROMPT.md`'s recipe), never traced into a CSS redraw.
 6. Add a card for the lecture in `index.html` (copy an existing `<a class="lu-lecture-card">`).
 7. **Verify by measuring, not by reading.** Serve it over http, open with a
    `?cb=` cache-buster, clear this deck's `lu:` localStorage keys, reload, and

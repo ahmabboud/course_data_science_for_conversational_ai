@@ -5,33 +5,80 @@ says what is done, what is in flight, and what a new session should pick up
 next. Update it in the same turn as any work it describes, do not let it
 drift behind the actual state of the repository.
 
-This tracker exists because of three standing quality bars the instructor
+This tracker exists because of four standing quality bars the instructor
 set for every module, on top of the mechanical authoring contract in
 `AGENTS.md`:
 
+0. **Lecture notes come first.** Before any slide gets written, the module's
+   full teaching content exists as its own markdown document,
+   `research/module-NN/lecture-notes.md`. This one document does three jobs:
+   it is the source the slide deck's prose gets pulled from, it is the
+   source handed to NotebookLM to produce the concept-infographic slides
+   (§2 below), and it is posted for students as extended reading in its own
+   right. Skipping straight to slide-by-slide drafting (what happened for
+   Module 3, before this rule existed) means the concept infographic has no
+   real source to build from and the deck's prose has no single place it
+   was drafted against.
 1. **Research dive**: the module's research section must build around a
    real, open-access, important paper, explained so anyone can follow it in
-   about five slides. Not a summary of a summary, a real close read.
+   about five slides. Not a summary of a summary, a real close read. The
+   paper doubles as the source for a NotebookLM research-infographic prompt.
 2. **Graphics**: the concept-explanation graphics must be high quality, not
-   the bare CSS primitives look. Where a slide's diagram is still doing the
-   minimum, it needs a better visual, produced via NotebookLM from an
-   infographic-style prompt, then adapted into the slide (CSS primitives
-   first, inline SVG second, per `AGENTS.md` §7).
+   the bare CSS primitives look. NotebookLM needs a source document to
+   generate an infographic from, it does not invent one from a bare
+   instruction; that source is the module's own `lecture-notes.md` (item 0),
+   not the slide deck and not a one-line prompt. The resulting infographic
+   ships as its own full-page slide (see Module 3's two examples), not
+   traced or forced into a `.lu-board` redraw. CSS primitives and inline SVG
+   (`AGENTS.md` §7) are still the right tool for a diagram genuinely simple
+   enough to hand-draw on brand; the infographic route is for the ones that
+   are not.
 3. **Code**: every demo script must be tested before it is called ready, and
    commented well enough that an instructor who did not write it can run and
    explain it live. The instructor runs the tests and owns readiness
    sign-off; this repository's job is to keep each demo's `README.md`
    accurate and to record the test/readiness status here.
 
+## The module build order (standing process, Module 4 onward)
+
+1. Pull the module's row from the syllabus (`AGENTS.md` §0, `PROMPT.md`):
+   objective, segments and minutes, deliverable, reading.
+2. Write `research/module-NN/lecture-notes.md`: the full content in prose,
+   organised by the syllabus's own segments, at the depth bar `AGENTS.md`
+   §12 sets for a slide, formula, cost, alternative, and metric included,
+   not just named. This is not slide-shorthand, it reads as a real, if
+   compact, lecture text a student could learn from without the deck.
+3. Find and download one open-access, important paper for the research
+   dive; save it to `research/module-NN/<first-author>-<year>-<slug>.pdf`.
+4. Produce two NotebookLM prompts and hand both to the instructor:
+   - one sourced from the paper (PDF upload), for a research-infographic
+     and markdown summary, same shape as Module 3's paper-track prompt;
+   - one sourced from `lecture-notes.md` (paste or upload the markdown), for
+     a concept infographic covering that module's hardest-to-draw ideas.
+   Log both deliveries in this file's per-module section, same convention
+   as Module 3, so a later session does not resend a duplicate.
+5. Only after 1 to 4 exist, build the slide deck (`AGENTS.md` §1's steps),
+   pulling slide prose from `lecture-notes.md` rather than drafting it fresh
+   against the syllabus row directly. Add each infographic as its own
+   full-page slide once it comes back (pattern in `PROMPT.md`'s image-slide
+   recipe), not embedded mid-diagram.
+6. Build the labs and demos, keep `demos/module-NN/README.md` current, hand
+   the instructor the code-testing prompt (Code track below).
+
 ## Division of labor
 
+- **Lecture-notes track**: an agent drafts `research/module-NN/lecture-notes.md`
+  from the syllabus row, at the `AGENTS.md` §12 depth bar. This is the one
+  track that is pure agent-authored content, not a delivered prompt; the
+  instructor reviews and edits it like any other drafted document.
 - **Paper track**: an agent searches for an important, open-access paper per
   module, downloads the PDF into `research/module-NN/`, and hands the
-  instructor a NotebookLM prompt to turn it into a markdown summary or
-  infographic for the concept explanation.
-- **Graphics track**: no paper involved. An agent hands the instructor a
-  NotebookLM prompt, keyed to the specific concept and slide that needs a
-  better visual, for the instructor to run themselves.
+  instructor a NotebookLM prompt (source: the PDF) to turn it into a
+  markdown summary and a research infographic.
+- **Graphics track**: an agent hands the instructor a NotebookLM prompt keyed
+  to `lecture-notes.md` as the source, for the concept infographic, for the
+  instructor to run themselves. An agent does not invent a graphics prompt
+  with no source document behind it.
 - **Code track**: an agent keeps each demo's `README.md` current as the code
   changes, and hands the instructor a prompt for their own coding agent to
   add tests and comments to a demo script. The instructor runs the tests and
@@ -40,13 +87,13 @@ set for every module, on top of the mechanical authoring contract in
 
 ## Status by module
 
-| # | Title | Paper | Graphics | Code |
-|---|---|---|---|---|
-| 1 | Foundations and Modern Understanding | Not started | Not started | Not started |
-| 2 | Agentic Dialogue Management | Not started | Not started | Not started |
-| 3 | Grounded Generation | Done, see below | In progress | In progress |
-| 4 | Memory | Not started | Not started | Not started |
-| 5 | Evaluation and Responsible Deployment | Not started | Not started | Not started |
+| # | Title | Lecture notes | Paper | Graphics | Code |
+|---|---|---|---|---|---|
+| 1 | Foundations and Modern Understanding | Not started | Not started | Not started | Not started |
+| 2 | Agentic Dialogue Management | Not started | Not started | Not started | Not started |
+| 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
+| 4 | Memory | Not started | Not started | Not started | Not started |
+| 5 | Evaluation and Responsible Deployment | Not started | Not started | Not started | Not started |
 
 Module 6 has no lecture deck (live defense session), so it carries no row
 here; see `README.md`.
@@ -190,15 +237,32 @@ reverting to it.
 
 - One row per module in the status table above; update the cell, do not
   append a new table.
-- `research/module-NN/` holds that module's downloaded paper(s) plus nothing
-  else. Name files `<first-author>-<year>-<short-slug>.pdf`.
-- A NotebookLM prompt is delivered to the instructor in chat, not saved as a
-  file, but its delivery date and topic are logged in this file's module
-  section so a later session knows it already went out and does not resend
-  a duplicate without checking first.
+- `research/module-NN/` holds everything that feeds NotebookLM or the deck's
+  research dive for that module, and nothing else:
+  - `lecture-notes.md`, the module's full content, written before the deck
+    (see the build order above).
+  - The downloaded paper(s), named `<first-author>-<year>-<short-slug>.pdf`.
+  - Any NotebookLM output actually saved back (a markdown summary, a
+    reference PNG kept for provenance even when not embedded in the deck),
+    named `<slug>-notebooklm-<summary|reference-N>.<ext>`, matching Module
+    3's files.
+- A NotebookLM prompt itself is delivered to the instructor in chat, not
+  saved as a file, but its delivery date, its source document, and its
+  topic are logged in this file's module section so a later session knows
+  it already went out and does not resend a duplicate without checking
+  first. Always name the source document a prompt was built from (the paper
+  PDF, or `lecture-notes.md`); a NotebookLM prompt with no named source is a
+  sign the source document does not exist yet, fix that first.
+- An infographic that comes back from either prompt ships as its own
+  full-page slide, `<img>` sized with `max-width:100%;max-height:<N>px` (not
+  `.lu-figure__frame`, see Module 3's notes on why that class crops a
+  non-photo image), with an honest caption: say plainly it is a visual aid
+  and not a paper figure or a measured result, link the real source (the
+  paper, or nothing if it is a concept infographic), and link the full-size
+  image with `target="_blank"`. Verify with `scripts/audit-deck.js` before
+  calling it done, per `AGENTS.md` §1 step 7, the same as any other slide.
 - This file lives at the course-repo root, one per course
   (`course_data_science_for_conversational_ai/PROGRESS.md`,
   `course_knowledge_representation/PROGRESS.md` if that course adopts the
-  same three-point workflow later). A session working in a different course
-  folder should create its own tracker there rather than adding sections
-  here.
+  same workflow later). A session working in a different course folder
+  should create its own tracker there rather than adding sections here.

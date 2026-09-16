@@ -31,7 +31,7 @@ Module length is 180 minutes. At the deck pacing of 3 to 4 minutes per content s
 - **`AGENTS.md`**, the authoring contract. Read it before writing a lecture, whether you are a person or an agent.
 - **`PROMPT.md`**, the paste-ready brief for handing a new module to an agent.
 - **`PROGRESS.md`**, read this first. Tracks, per module, the research-paper track, the graphics track, and the code test/readiness track, so a new session knows what is done and what is next without re-deriving it.
-- **`research/module-NN/`**, the paper(s) downloaded for that module's research dive.
+- **`research/module-NN/`**, that module's `lecture-notes.md` (the full content, written before the deck, and the source for its concept-infographic NotebookLM prompt), the paper(s) downloaded for the research dive, and any NotebookLM output worth keeping for provenance.
 - **`demos/`**, instructor-only demo material used live during specific lectures, a notebook for one module, a `langgraph dev` / Studio demo for another. See `demos/README.md` for the setup steps and which demo belongs to which lecture, both directions of that link matter.
 
 Built from the [`LebUniv_Course_Template`](https://github.com/ahmabboud/LebUniv_Course_Template) design system. Fixes to the stylesheet or runtime belong upstream in the template, not here.
