@@ -318,6 +318,17 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
   <template data-notes><p>Three minutes. Open all three nodes in order: query/documents as the inputs, then the RAG path (retrieval inside the request) versus the CAG path (all the expensive work moved offline, ahead of time). The key move is temporal, not algorithmic: nothing about the model changes, only when the knowledge gets fed to it.</p></template>
 </section>
 
+<!-- ==================================================================== 11b -->
+<section class="slide" data-label="Infographic: RAG vs CAG at a glance" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">A visual summary of the same idea, for your own reference</div>
+  <h2 class="lu-h2">RAG vs CAG, side by side</h2>
+  <figure class="lu-figure" style="margin-top:var(--lu-s3);align-items:center">
+    <img src="../assets/img/m03-rag-vs-cag-infographic.png" alt="Infographic contrasting the RAG pipeline, a retriever and ranker pulling from a vector database on every query, against the CAG pipeline, documents pre-indexed once into a precomputed KV cache that the model then queries directly. A results panel reports HotPotQA Large response time: sparse RAG top-10 at 0.0012s retrieval and 1.5175s generation, dense RAG top-10 at 0.4100s and 2.6447s, CAG at 0.0000s and 2.2631s." style="display:block;width:auto;height:auto;max-width:100%;max-height:420px;border-radius:var(--lu-r3)">
+    <figcaption>A visual aid for today's reading, not a figure from the paper. Numbers checked against Chan et al.'s own Table 3. <a href="https://arxiv.org/abs/2412.15605" target="_blank" rel="noopener">Read the paper</a> &middot; <a href="../assets/img/m03-rag-vs-cag-infographic.png" target="_blank" rel="noopener">open full-size</a>.</figcaption>
+  </figure>
+  <template data-notes><p>Two minutes, a breather, not new content. Everything on this image was already said on the previous slide and will be said again with exact numbers on the results slide shortly, this is here purely so a visual thinker has one picture to hold onto. Do not introduce new claims from it: if a detail on the image ever seems to say something the results slide does not, trust the results slide, it is the one checked line by line against the paper's own tables.</p></template>
+</section>
+
 <!-- ==================================================================== 12 -->
 <section class="slide slide--tint" data-label="The challenge: what's actually wrong with retrieval" data-section="Research dive" data-minutes="3">
   <div class="lu-eyebrow">The problem this paper is answering</div>
@@ -366,32 +377,38 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
 </section>
 
 <!-- ==================================================================== 14 -->
-<section class="slide slide--tint" data-label="The results: CAG matches or beats RAG, and it's faster" data-section="Research dive" data-minutes="3">
+<section class="slide slide--tint" data-label="The results: CAG matches or beats RAG, and it's faster" data-section="Research dive" data-minutes="4">
   <div class="lu-eyebrow">What actually happened</div>
-  <h2 class="lu-h1" style="max-width:34ch">Comparable or better accuracy, with retrieval latency at zero</h2>
+  <h2 class="lu-h1" style="max-width:34ch">Higher BERTScore than any RAG baseline, retrieval latency at zero</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
     <div class="lu-stack">
       <table class="lu-table">
-        <thead><tr><th>Sparse RAG, top-k</th><th>BERTScore, HotPotQA</th><th>BERTScore, SQuAD</th></tr></thead>
+        <thead><tr><th>Knowledge size</th><th>Best sparse RAG</th><th>Best dense RAG</th><th>CAG (ours)</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td>0.679</td><td>0.721</td></tr>
-          <tr><td>3</td><td>0.763</td><td>0.762</td></tr>
-          <tr><td>5</td><td>0.768</td><td>0.761</td></tr>
-          <tr><td>10</td><td>0.752</td><td>0.758</td></tr>
+          <tr><td>Small</td><td>0.7676 (top-5)</td><td>0.7582 (top-3)</td><td><b>0.7951</b></td></tr>
+          <tr><td>Medium</td><td>0.7633 (top-5)</td><td>0.7432 (top-3)</td><td><b>0.7821</b></td></tr>
+          <tr><td>Large</td><td>0.7535 (top-5)</td><td>0.7409 (top-3)</td><td><b>0.7407</b></td></tr>
         </tbody>
       </table>
-      <p class="lu-caption">The paper's own reported sparse-RAG numbers, one baseline of several it tested (small knowledge-size condition).</p>
+      <p class="lu-caption">HotPotQA BERTScore, its Table 2. At Large, CAG's edge narrows, see the limits slide.</p>
     </div>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">The paper's own claim</span>
-      <p class="lu-sub">"CAG consistently achieved the highest BERTScore in most cases, outperforming both sparse and dense RAG methods." Retrieval time for CAG is zero by construction; dense RAG's retrieval latency grows as the knowledge base grows, and CAG stays ahead of it in generation time too, once its KV cache is precomputed.</p>
+    <div class="lu-stack">
+      <table class="lu-table">
+        <thead><tr><th>System, large condition</th><th>Retrieval time</th><th>Generation time</th></tr></thead>
+        <tbody>
+          <tr><td>Sparse RAG, top-10</td><td>0.0012s</td><td>1.5175s</td></tr>
+          <tr><td>Dense RAG, top-10</td><td>0.4100s</td><td>2.6447s</td></tr>
+          <tr><td>CAG (ours)</td><td><b>0.0000s</b></td><td>2.2631s</td></tr>
+        </tbody>
+      </table>
+      <p class="lu-caption">HotPotQA Large response time, its Table 3. CAG's generation time is not free, only its retrieval column hits zero.</p>
     </div>
   </div>
-  <template data-notes><p>Three minutes. The table on the left is a real, faithfully reproduced fragment of the paper's own results table, not invented; do not extend it with numbers not confirmed here. The claim on the right is quoted, not paraphrased into something stronger than the paper actually says.</p></template>
+  <template data-notes><p>Four minutes. Both tables are faithfully reproduced fragments of the paper's own Table 2 and Table 3, not invented, checked line by line against the PDF before this class. Read the Large row of the BERTScore table plainly: CAG's advantage over the best RAG baseline is real but small there, which is exactly what motivates the next slide's limitation about long-context degradation, do not let the headline "CAG wins" claim erase that nuance. On the right table, resist the reflex to call CAG's generation time free: it still scales with how much context got preloaded, only the retrieval column hits zero.</p></template>
 </section>
 
 <!-- ==================================================================== 15 -->
-<section class="slide" data-label="The limits, and the applied question for your own team" data-section="Research dive" data-minutes="5">
+<section class="slide" data-label="The limits, and the applied question for your own team" data-section="Research dive" data-minutes="4">
   <div class="lu-eyebrow">What the paper itself says CAG cannot do, and one thing it does not say</div>
   <h2 class="lu-h2">A real limit, stated by the authors, and one they underplay</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -410,7 +427,7 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
       <p class="lu-sub">Does the case for CAG over RAG hold for your team's own domain, and why or why not? Weigh the paper's own limitation and the tension above, not just the paper's headline claim. You will argue this directly at the end of today's session, against your own knowledge base.</p>
     </div>
   </div>
-  <template data-notes><p>Five minutes. This is the honest close of the close read: the paper does not claim CAG replaces RAG everywhere, only that it is a better fit once the knowledge base is small enough to fully preload. Land the added tension plainly, not as a takedown of the paper, a real paper with a real result, but as the kind of second look a graduate student should take of any single-paper claim: is the win coming from a genuinely different cost, or just from that cost getting moved somewhere the paper's own headline metric does not measure. Then move into the hands-on lab, which builds the RAG side of that argument.</p></template>
+  <template data-notes><p>Four minutes. This is the honest close of the close read: the paper does not claim CAG replaces RAG everywhere, only that it is a better fit once the knowledge base is small enough to fully preload. Land the added tension plainly, not as a takedown of the paper, a real paper with a real result, but as the kind of second look a graduate student should take of any single-paper claim: is the win coming from a genuinely different cost, or just from that cost getting moved somewhere the paper's own headline metric does not measure. Then move into the hands-on lab, which builds the RAG side of that argument.</p></template>
 </section>
 
 <!-- ==================================================================== 16 -->
@@ -666,7 +683,7 @@ vector_hits = vector_index.search(query, top_k=20)</code></pre>
 </section>
 
 <!-- ==================================================================== 26 -->
-<section class="slide" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="27">
+<section class="slide" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="25">
   <div class="lu-eyebrow">Open work · rest of the block</div>
   <h2 class="lu-h1" style="max-width:30ch">Hybrid search, then rerank, then citation and refusal. In that order.</h2>
   <div class="lu-split lu-split--wide-left">
