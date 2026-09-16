@@ -127,27 +127,44 @@ here; see `README.md`.
   overflowed the footer by 70px, fixed at `420px` plus a shorter caption).
   Slide budget rebalanced back to 180 minutes by trimming the flexible
   "Now, build" lab slide from 27 to 25 minutes.
-- The hybrid-search-plus-RRF concept (slide 3) could get the same
-  full-page-infographic treatment later if wanted, no NotebookLM prompt
-  sent for it yet.
+- **Hybrid search + RRF + reranking infographic shipped, 2026-09-15.** Same
+  treatment, one new slide, "Infographic: the full retrieval pipeline, at a
+  glance," placed right after the reranking slide (all three concepts it
+  covers have been taught by then) and before the chunking slide. Image:
+  `notebooklm-hybrid-search-rrf-reranking-reference.png` in `research/`,
+  downsized to `assets/img/m03-hybrid-search-rrf-reranking-infographic.png`.
+  This image has no baked-in citation, but it does carry an illustrative
+  precision/latency/cost comparison table with numbers not measured from
+  anything in this course; the caption and speaker notes say plainly they
+  are illustrative, not a result to quote, so a team does not later cite a
+  NotebookLM-invented 0.47 precision figure as if it were this course's own
+  measurement. Verified with `scripts/audit-deck.js`: first pass at
+  `max-height:460px` overflowed by 10px, fixed at `430px`. Slide budget
+  rebalanced back to 180 minutes by trimming "Now, build" from 25 to 23
+  minutes (now trimmed twice, from an original 27, for two infographic
+  slides; if a third one is added later this slide cannot absorb much more
+  without cutting into the lab itself).
 
 ### Known pre-existing issues, found while auditing 2026-09-15
 
-Not introduced by this session's edits (re-confirmed after the infographic
-slide insertion shifted numbering; slide numbers below are current as of
-this session's final state, 30 slides total). Not yet fixed:
+Not introduced by this session's edits (re-confirmed after both
+infographic-slide insertions shifted numbering twice; slide numbers below
+are current as of this session's final state, 31 slides total). Not yet
+fixed:
 
-- **Slide overflow** on slide 3 (hybrid search), 5 (hybrid search/RRF check
-  question), 6 (reranking), 8 (citation and refusal), 11 (the idea, CAG
-  board, 351px), 14 (the experiment), 16 (the limits), 24 (cite-or-refuse
-  check), and 25 (likely bugs). Content is clipped with no scrollbar in at
-  least one state (baseline or revealed).
+- **Slide overflow** on slide 3 (hybrid search), 6 (reranking), 9 (citation
+  and refusal), 12 (the idea, CAG board, 351px), 15 (the experiment), 17
+  (the limits), and 26 (likely bugs). Content is clipped with no scrollbar
+  in at least one state (baseline or revealed). (Slide 5, the hybrid
+  search/RRF check question, has flickered in and out of this list between
+  audit runs on otherwise-unchanged content, worth a second look rather
+  than trusting either result alone.)
 - **Stray SVG edge endpoints** on slide 3 (41px off), slide 6 (138px off),
-  and slide 11 (four endpoints, 81 to 157px off): an edge in the board's
+  and slide 12 (four endpoints, 81 to 157px off): an edge in the board's
   diagram does not actually reach a node.
 
 A future pass on this module should fix these before calling the deck done,
-per `AGENTS.md` §1 step 7. Slide 11 specifically is the original,
+per `AGENTS.md` §1 step 7. Slide 12 specifically is the original,
 unmodified "the idea" board (the redraw attempt above was reverted); its
 overflow and stray edges are old debt, not something introduced by
 reverting to it.

@@ -205,6 +205,17 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
   <template data-notes><p>Six minutes. Open the reranker node and name the actual cost tradeoff: a cross-encoder scores a query-passage pair jointly, which is why it cannot run over a million-document corpus directly, it has to be handed a small, already-plausible shortlist first. Open the reveal and state the Big-O plainly, this is the kind of thing a graduate student should be able to say back, not just nod along to. That shortlist is exactly what hybrid search plus RRF produced on the last two slides. <code>demos/module-03/grounded_rag.py</code> reranks with one more Gemini call rather than a dedicated cross-encoder model, say so if asked why there is no separate reranker library, and note plainly that this substitutes a general LLM call for the purpose-trained learning-to-rank model the reveal describes, a real simplification made for the demo, not a claim that they are the same thing.</p></template>
 </section>
 
+<!-- ==================================================================== 06b -->
+<section class="slide" data-label="Infographic: the full retrieval pipeline, at a glance" data-section="Lecture" data-minutes="2">
+  <div class="lu-eyebrow">A visual summary of the last three slides, for your own reference</div>
+  <h2 class="lu-h2">Hybrid search, RRF, and reranking, as one pipeline</h2>
+  <figure class="lu-figure" style="margin-top:var(--lu-s3);align-items:center">
+    <img src="../assets/img/m03-hybrid-search-rrf-reranking-infographic.png" alt="Diagram of a three-stage retrieval pipeline. Stage 1, parallel dual-signal retrieval: BM25 sparse search using inverse document frequency producing an unbounded lexical ranked list, alongside dense vector search using cosine similarity producing a bounded semantic ranked list. Stage 2, reciprocal rank fusion merges both ranked lists using the formula RRF score of d equals the sum over i of 1 over k plus rank of d, with a worked example, producing one fused candidate set. Stage 3, cross-encoder reranking narrows the fused candidates down to a top-3 shortlist as grounded context for generation. A table compares simple BM25, dense-only, hybrid RRF, and hybrid plus reranker on precision at 5, latency, and cost per query." style="display:block;width:auto;height:auto;max-width:100%;max-height:430px;border-radius:var(--lu-r3)">
+    <figcaption>A visual aid for today's reading, not measured from this course's own demo or any cited paper: the precision/latency/cost numbers on it are illustrative, not a result to quote. <a href="../assets/img/m03-hybrid-search-rrf-reranking-infographic.png" target="_blank" rel="noopener">Open full-size</a>.</figcaption>
+  </figure>
+  <template data-notes><p>Two minutes, a breather, not new content. Everything on this image was already taught on the last three slides; walk it left to right once, matching each stage to the slide it came from, then move on. If a team asks about the specific precision/latency/cost numbers in the bottom table, say plainly they are illustrative, not measured, this course's own numbers for CAG vs RAG are the ones on the research-dive results slide, checked against the paper; nothing here has been checked against anything and should not be quoted as if it had.</p></template>
+</section>
+
 <!-- ==================================================================== 07 -->
 <section class="slide" data-label="Chunking in practice: size, overlap, and boundaries" data-section="Lecture" data-minutes="4">
   <div class="lu-eyebrow">The decision that happens before any of this runs</div>
@@ -683,7 +694,7 @@ vector_hits = vector_index.search(query, top_k=20)</code></pre>
 </section>
 
 <!-- ==================================================================== 26 -->
-<section class="slide" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="25">
+<section class="slide" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="23">
   <div class="lu-eyebrow">Open work · rest of the block</div>
   <h2 class="lu-h1" style="max-width:30ch">Hybrid search, then rerank, then citation and refusal. In that order.</h2>
   <div class="lu-split lu-split--wide-left">
