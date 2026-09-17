@@ -100,8 +100,8 @@ set for every module, on top of the mechanical authoring contract in
 
 | # | Title | Lecture notes | Paper | Graphics | Code |
 |---|---|---|---|---|---|
-| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Not started | Not started |
-| 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Helping Customers in Distress, arXiv:2605.16268), see detail | Not started | Not started |
+| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Pending: Gorilla infographic not yet requested, see detail | Not started |
+| 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Helping Customers in Distress, arXiv:2605.16268), see detail | Pending: Helping Customers in Distress infographic not yet requested, see detail | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
 | 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | 3 of 4 papers done, see below | Done, see below |
@@ -210,6 +210,27 @@ and 2, not a rebuild.
   reconciling to Opening 2 / Hook 20 / Lecture 40 / Research dive 12 /
   Kickoff 20 / Lab kickoff 70 / Wrap 16 = 180.
 
+### Graphics track: pending
+
+- **Not started.** No infographic exists yet for the Gorilla research
+  dive. The five new slides ship with `.lu-table`/`.lu-defs`/`.lu-callout`
+  CSS primitives only (`AGENTS.md` §7), same as this module's existing
+  slides, no `.lu-figure__ph` placeholder and no NotebookLM prompt sent.
+- **Source document ready:** `research/module-01/lecture-notes.md` is the
+  document a NotebookLM concept-infographic prompt would be built from,
+  per the module build order's own division of labor (an agent hands the
+  instructor a prompt keyed to `lecture-notes.md`, the instructor runs
+  it). Good candidate content for an infographic: the accuracy/
+  hallucination comparison across GPT-4, GPT-3.5, and Gorilla (the table
+  on the "results" slide), which would read faster as a real chart than
+  the current plain `<table>`.
+- **Next step, not yet taken:** send the instructor a NotebookLM prompt
+  sourced from `research/module-01/lecture-notes.md`, then fact-check
+  whatever comes back against this same lecture-notes document (and, for
+  any figure not already verified there, against the arXiv HTML text
+  directly) before it ships as a slide, same discipline as every prior
+  module's graphics track.
+
 ## Module 2, Agentic Dialogue Management, detail
 
 Same predates-the-build-order situation as Module 1 (no `lecture-notes.md`,
@@ -294,6 +315,26 @@ same pass as Module 1, 2026-09-16.
   unique (unchanged, no new check questions added), 31 slides,
   `data-minutes` reconciling to Opening 2 / Lecture 38 / Research dive
   12 / Hands-on lab 100 / Wrap 28 = 180.
+
+### Graphics track: pending
+
+- **Not started.** No infographic exists yet for the Helping Customers
+  in Distress research dive. The five new slides ship with
+  `.lu-table`/`.lu-defs`/`.lu-callout` CSS primitives only (`AGENTS.md`
+  §7), no placeholder and no NotebookLM prompt sent.
+- **Source document ready:** `research/module-02/lecture-notes.md` is
+  the document a NotebookLM concept-infographic prompt would be built
+  from. Good candidate content: the five-model accuracy-gain comparison
+  (Table 1 in the paper, the "results" slide's own table here) or the
+  triage/handoff/guardrail three-agent architecture, both would read
+  faster as a real chart or diagram than the current plain table and
+  definition list.
+- **Next step, not yet taken:** send the instructor a NotebookLM prompt
+  sourced from `research/module-02/lecture-notes.md`, then fact-check
+  whatever comes back against this same lecture-notes document (and, for
+  anything not already verified there, against the arXiv HTML text
+  directly) before it ships as a slide, same discipline as every prior
+  module's graphics track.
 
 ## Module 3, Grounded Generation, detail
 
