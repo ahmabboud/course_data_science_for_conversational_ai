@@ -376,7 +376,7 @@ state = {
   <div class="slide__body lu-center" style="gap:var(--lu-s5)">
     <div class="lu-eyebrow">20 minutes</div>
     <h2 class="lu-display-xl" style="max-width:20ch">Your project begins</h2>
-    <p class="lu-lead" style="max-width:40ch">One team, one domain, one repository, for the rest of the course.</p>
+    <p class="lu-lead" style="max-width:40ch">One team, one paper, one novel extension, defended in Module 6.</p>
   </div>
   <template data-notes><p>Ten seconds.</p></template>
 </section>
@@ -400,60 +400,54 @@ state = {
 </section>
 
 <!-- ==================================================================== 13 -->
-<section class="slide" data-label="Form your team, pick your domain" data-section="Kickoff" data-minutes="8">
-  <div class="lu-eyebrow">Decide now, live with it for six modules</div>
-  <h2 class="lu-h1" style="max-width:32ch">Two to three people, one domain, chosen for data you can actually get</h2>
+<section class="slide" data-label="Form your team, pick your topic and paper" data-section="Kickoff" data-minutes="8">
+  <div class="lu-eyebrow">Decide now, live with it through Module 6</div>
+  <h2 class="lu-h1" style="max-width:32ch">Two to three people, one topic, one paper with a repo you can actually run</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
     <div class="lu-stack">
       <ol class="lu-list lu-list--num">
         <li>Form a team of two to three.</li>
-        <li>Pick a domain you can source or synthesize real data for. No personal or client data, ever, see your repo's data policy.</li>
-        <li>Write one sentence: who asks this agent what, and why they'd come back a second time.</li>
+        <li>Pick one topic: extraction, dialogue, grounding, memory, or evaluation. Each maps to one of this course's five modules.</li>
+        <li>Pick one paper inside that topic, from the curated menu or proposed by your team, as long as it fits the compute and cost cap below.</li>
       </ol>
       <div class="lu-callout">
-        <span class="lu-callout__label">A domain that has failed before</span>
-        <p class="lu-sub">One nobody in the team can generate realistic example utterances for, from memory, right now. If you cannot write three example requests in the next two minutes, pick a different domain.</p>
+        <span class="lu-callout__label">The compute and cost cap</span>
+        <p class="lu-sub">Must run on a personal computer, or no more than $20 of API spend, total. A smoke test in place of full-scale validation is fine, as long as your team can explain what full-scale validation would actually require.</p>
       </div>
     </div>
     <div class="lu-card">
-      <span class="lu-card__label">If you want a starting point</span>
+      <span class="lu-card__label">Two things that are not a problem</span>
       <ul class="lu-list lu-list--tight">
-        <li>Restaurant or appointment booking</li>
-        <li>Internal IT or HR helpdesk</li>
-        <li>Course or library assistant</li>
-        <li>Small business order intake</li>
+        <li>Another team picking the same paper. Not restricted, not penalized.</li>
+        <li>Picking a paper you already saw in a module's own research dive (tau-bench, Mem0, and others taught this term are all fair game).</li>
       </ul>
-      <p class="lu-caption">Illustrative, not a menu. Your own idea is fine if it passes the two-minute test on the left.</p>
+      <p class="lu-caption">What matters is the extension you add, not how you found the baseline.</p>
     </div>
   </div>
-  <template data-notes><p>Nine minutes. Circulate while teams argue over domains, the two-minute test kills most bad choices fast. Push back on anything requiring data nobody in the room actually has access to.</p></template>
+  <template data-notes><p>Nine minutes. Circulate while teams settle on a topic and paper. The two things on the right come up every year, say them out loud before someone asks.</p></template>
 </section>
 
 <!-- ==================================================================== 14 -->
-<section class="slide" data-label="The rubric, and how modules build to it" data-section="Kickoff" data-minutes="9">
-  <div class="lu-eyebrow">100 points, earned six times</div>
-  <h2 class="lu-h1">Every later module is worth points you can see today</h2>
+<section class="slide" data-label="The rubric, and what's due before you defend" data-section="Kickoff" data-minutes="9">
+  <div class="lu-eyebrow">100 points, split 50/50</div>
+  <h2 class="lu-h1">Reproduce the baseline, then earn the other half with your own idea</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
     <table class="lu-table">
-      <thead><tr><th>Criterion</th><th>Pts</th><th>Built in</th></tr></thead>
+      <thead><tr><th>Criterion</th><th>Pts</th><th>Half</th></tr></thead>
       <tbody>
-        <tr><td>Problem framing and scope</td><td>10</td><td>Today</td></tr>
-        <tr><td>Understanding: extraction</td><td>15</td><td>Today</td></tr>
-        <tr><td>Dialogue management</td><td>20</td><td>Module 2</td></tr>
-        <tr><td>Grounded generation</td><td>15</td><td>Module 3</td></tr>
-        <tr><td>Memory</td><td>15</td><td>Module 4</td></tr>
-        <tr><td>Evaluation rigor</td><td>15</td><td>Module 5</td></tr>
-        <tr><td>Ethics, privacy, safety</td><td>5</td><td>Throughout</td></tr>
-        <tr><td>Communication</td><td>5</td><td>Module 6 defense</td></tr>
+        <tr><td>Code and reproduction quality</td><td>25</td><td>Execution</td></tr>
+        <tr><td>Understanding of the current research</td><td>25</td><td>Execution</td></tr>
+        <tr><td>Motivation and value of the extension</td><td>25</td><td>Novelty</td></tr>
+        <tr><td>Result quality</td><td>25</td><td>Novelty</td></tr>
       </tbody>
     </table>
     <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">The defense is not a new deliverable</span>
-      <p class="lu-sub">Module 6 demonstrates whatever this repository holds by then. There is no separate final project, what you commit today is graded when Issue 1 merges, not held for later.</p>
-      <p class="lu-sub" style="margin-top:var(--lu-s2)">One more thing: the Module 6 defense asks each of you specifically about a part of the system a teammate built, using your own repository's branch and pull request history. Read that as a reason to actually understand each other's modules, not just your own.</p>
+      <span class="lu-callout__label">One idea pitch, approved early</span>
+      <p class="lu-sub">Before real work starts, submit a one-paragraph pitch of your extension. Approval exists to catch one thing: an idea that already exists as someone else's published follow-up paper.</p>
+      <p class="lu-sub" style="margin-top:var(--lu-s2)">At the Module 6 defense, any of the three of you can be asked about any part, the paper, the extension, or the code. Shared ownership is the point, not "who built what."</p>
     </div>
   </div>
-  <template data-notes><p>Ten minutes. Read the individual-questioning line aloud, it is the one part of the rubric that most changes how a team should work together starting today.</p></template>
+  <template data-notes><p>Ten minutes. Read the idea-pitch and shared-ownership lines aloud, they are the two parts of the rubric that most change how a team should work together starting today.</p></template>
 </section>
 
 <!-- ==================================================================== 15 -->
