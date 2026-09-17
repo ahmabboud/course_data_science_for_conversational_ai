@@ -154,7 +154,7 @@
 </section>
 
 <!-- ==================================================================== 06 -->
-<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="5">
+<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="6">
   <div class="lu-eyebrow">What changed, and why it is not a downgrade</div>
   <h2 class="lu-h1" style="max-width:36ch">One call replaces a trained classifier and a trained tagger</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -170,8 +170,18 @@
       <p class="lu-sub">Adding a new intent is now editing a schema, not collecting labeled data and retraining two models.</p>
     </div>
   </div>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-callout">
+      <span class="lu-callout__label">The cost this actually removes</span>
+      <p class="lu-sub">A production intent classifier typically needed dozens to hundreds of labeled utterances per intent before it was reliable, and every new intent meant repeating that collection-and-retraining cycle for both models. A schema and its field descriptions replace that entire data-collection step; the cost that remains is prompt and schema design, not labeling.</p>
+    </div>
+    <div class="lu-callout">
+      <span class="lu-callout__label">The metric that changes underneath this too</span>
+      <p class="lu-sub">Classical NLU is graded per component: intent accuracy and slot F1, so one wrong slot in an otherwise-correct parse still counts as mostly right. A schema-validated extraction call is graded on the whole object at once, exact match on every field: one wrong field fails the entire turn. This is a stricter bar, not a softer one, and it is the reason validation and a defined fallback (next slides) are not optional extras.</p>
+    </div>
+  </div>
   <template data-notes>
-    <p>Five minutes. Keep this at the level of the trade: two trained, retrained, occasionally-disagreeing models become one schema. The mechanics are the next slide.</p>
+    <p>Five minutes. Keep this at the level of the trade: two trained, retrained, occasionally-disagreeing models become one schema, at the cost of a stricter, all-or-nothing grading bar. The mechanics are the next slide.</p>
   </template>
 </section>
 
@@ -233,7 +243,7 @@ SCHEMA = {
 </section>
 
 <!-- ==================================================================== 07 -->
-<section class="slide" data-label="Walkthrough: the correction becomes JSON" data-section="Lecture" data-minutes="10">
+<section class="slide" data-label="Walkthrough: the correction becomes JSON" data-section="Lecture" data-minutes="9">
   <div class="lu-eyebrow">Diagnostic walkthrough</div>
   <h2 class="lu-h2">The hook's own correction, turned into an updated object in four steps</h2>
   <div class="lu-walk" data-label="Booking state walkthrough">
@@ -306,7 +316,7 @@ state = {
 </section>
 
 <!-- ==================================================================== 09 -->
-<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="5">
+<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="6">
   <div class="lu-eyebrow">What you are actually calling</div>
   <h2 class="lu-h1" style="max-width:32ch">One provider, one shape of call, for the whole course</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
@@ -330,13 +340,17 @@ state = {
       <p class="lu-caption">Gemini enforces the schema at decode time. It is not "asked nicely" to format correctly, the constraint is structural.</p>
     </div>
   </div>
+  <div class="lu-callout" style="margin-top:var(--lu-s4)">
+    <span class="lu-callout__label">Why Gemini, and not OpenAI or Anthropic</span>
+    <p class="lu-sub">This is a course choice, not a technical superiority claim: OpenAI's function calling and Anthropic's tool use enforce structured output the same structural way, at decode time, not by asking nicely either. Gemini's free tier is the most generous of the three for a classroom running the same demos across thirty machines with no card on file, that is the actual reason, say so plainly if asked. Everything this module teaches about the schema-as-contract carries over unchanged to either alternative.</p>
+  </div>
   <template data-notes>
-    <p>Five minutes. Keep this practical and short, there is one provider, not a comparison to walk through. The one thing worth naming: schema enforcement is structural, so the fallback exists for cases the schema cannot rule out (a wrong value in a valid shape), not for malformed JSON, which the API already prevents. The previous slide covered why that enforcement is structural in the first place.</p>
+    <p>Five minutes. Keep this practical and short, there is one provider for this course, not a comparison to walk through, but be honest that the choice is logistical (free tier, one key for a whole class), not "Gemini is the only one that does this." The one thing worth naming: schema enforcement is structural, so the fallback exists for cases the schema cannot rule out (a wrong value in a valid shape), not for malformed JSON, which the API already prevents. The previous slide covered why that enforcement is structural in the first place.</p>
   </template>
 </section>
 
 <!-- ==================================================================== 10 -->
-<section class="slide" data-label="Designing for evaluation from day one" data-section="Lecture" data-minutes="8">
+<section class="slide" data-label="Designing for evaluation from day one" data-section="Lecture" data-minutes="7">
   <div class="lu-eyebrow">A decision made now, paid for in Module 5</div>
   <h2 class="lu-h1" style="max-width:34ch">Log the three example utterances today. Module 5 needs exactly them.</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">

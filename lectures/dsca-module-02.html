@@ -70,7 +70,7 @@
 </section>
 
 <!-- ==================================================================== 03 -->
-<section class="slide" data-label="The raw agent loop, with nothing hidden" data-section="Lecture" data-minutes="7">
+<section class="slide" data-label="The raw agent loop, with nothing hidden" data-section="Lecture" data-minutes="8">
   <div class="lu-eyebrow">What you are actually calling, underneath any framework</div>
   <h2 class="lu-h1" style="max-width:34ch">One array, one call, one appended result. That is the whole loop.</h2>
   <div class="lu-board" style="margin-top:var(--lu-s4)">
@@ -86,8 +86,12 @@
     <button type="button" class="lu-node lu-node--instance" style="left:92%;top:50%" data-term="Tool result" data-kind="Raw loop"><template>Your code actually runs that function and appends the result as a new message with role <code>tool</code>. The model sees its own tool call's result on the next turn, because that result is now just one more message in the array.</template>Result</button>
   </div>
   <p class="lu-caption" style="margin-top:var(--lu-s4)">Then the loop just repeats: append the result, call the model again with the whole array, see what it does next. There is no separate "state," the array is the state.</p>
+  <div class="lu-callout" style="margin-top:var(--lu-s4)">
+    <span class="lu-callout__label">The cost this convenience is quietly running up</span>
+    <p class="lu-sub">Every call sends the entire array, not just the newest message. Turn 20 of a conversation resends everything from turn 1 through 19, so total tokens billed across an n-turn conversation grow like <b>O(n<sup>2</sup>)</b>, not O(n), even though only one new message was actually added each turn. A short lab conversation never notices; Module 4's whole compaction problem exists because this does not stay free forever.</p>
+  </div>
   <template data-notes>
-    <p>Seven minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different. If there is time, run <code>demos/module-02/raw_loop.py</code> live, it prints this exact array after every step.</p>
+    <p>Seven minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different. Land the quadratic-cost callout too, it is the direct setup for why Module 4 needs compaction at all, not a new topic invented there out of nowhere. If there is time, run <code>demos/module-02/raw_loop.py</code> live, it prints this exact array after every step.</p>
   </template>
 </section>
 
@@ -136,7 +140,7 @@
 </section>
 
 <!-- ==================================================================== 06 -->
-<section class="slide slide--tint" data-label="Check: what LangGraph actually adds" data-section="Lecture" data-minutes="4">
+<section class="slide slide--tint" data-label="Check: what LangGraph actually adds" data-section="Lecture" data-minutes="3">
   <div class="lu-eyebrow">Check question</div>
   <div class="lu-split lu-split--wide-left">
     <div class="lu-mcq" data-qid="m2-q1" data-answer="c"
@@ -191,7 +195,7 @@
 </section>
 
 <!-- ==================================================================== 08 -->
-<section class="slide slide--tint" data-label="Walkthrough: one tool call through MCP" data-section="Lecture" data-minutes="5">
+<section class="slide slide--tint" data-label="Walkthrough: one tool call through MCP" data-section="Lecture" data-minutes="4">
   <div class="lu-eyebrow">What "discover, then call" looks like turn by turn</div>
   <h2 class="lu-h2">The agent node never hardcodes what a tool takes</h2>
   <div class="lu-walk" data-label="MCP call walkthrough">
@@ -228,7 +232,7 @@
 </section>
 
 <!-- ==================================================================== 09 -->
-<section class="slide" data-label="Chain-of-thought for tool selection" data-section="Lecture" data-minutes="7">
+<section class="slide" data-label="Chain-of-thought for tool selection" data-section="Lecture" data-minutes="8">
   <div class="lu-eyebrow">How the agent node actually decides</div>
   <h2 class="lu-h2">Watching the model reason its way to the right tool</h2>
   <div class="lu-walk" data-label="Tool selection walkthrough">
@@ -264,11 +268,15 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
       </div>
     </div>
   </div>
-  <template data-notes><p>Seven minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today.</p></template>
+  <div class="lu-callout" style="margin-top:var(--lu-s4)">
+    <span class="lu-callout__label">Why not skip straight to the tool call</span>
+    <p class="lu-sub">The alternative is asking the model to emit a tool call directly, no reasoning field at all, which is cheaper (one shorter generation, not a reasoning trace plus a call) and works fine when only one tool could possibly apply. It gets measurably less reliable exactly where this walkthrough's example lives: several similar tools available and the right one depends on a distinction the request only implies (a status check versus a change). Forcing the intermediate "what is this request actually asking for" step before the tool choice is what chain-of-thought prompting buys here, at the cost of a longer, more expensive call every time, not just when it is needed.</p>
+  </div>
+  <template data-notes><p>Seven minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today. If a team pushes back that this doubles their token cost for every tool call, that trade is exactly the point of the callout: pay it where tools are genuinely ambiguous, skip it where a request obviously has only one possible tool.</p></template>
 </section>
 
 <!-- ==================================================================== 10 -->
-<section class="slide" data-label="The one multi-agent pattern this course teaches: routing and escalation" data-section="Lecture" data-minutes="6">
+<section class="slide" data-label="The one multi-agent pattern this course teaches: routing and escalation" data-section="Lecture" data-minutes="7">
   <div class="lu-eyebrow">On purpose, only this one</div>
   <h2 class="lu-h1" style="max-width:36ch">One router, two places it can send a turn</h2>
   <div class="lu-board" style="margin-top:var(--lu-s4)">
@@ -283,11 +291,15 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
     <button type="button" class="lu-node lu-node--instance" style="left:72%;top:25%" data-term="Specialist path" data-kind="LangGraph"><template>A node scoped to one job, in your domain (say, order-status lookups). It only ever sees the state the router decided to hand it.</template>Specialist path</button>
     <button type="button" class="lu-node" style="left:72%;top:78%;border-color:var(--lu-red-700);background:var(--lu-red-050)" data-term="Human escalation" data-kind="LangGraph"><template>The turn is flagged for a person instead of answered automatically, because it is outside what any specialist path should decide alone, a refund dispute, say. This is the "clean failure," not a bug.</template>Human escalation</button>
   </div>
-  <template data-notes><p>Six minutes. Name why this is the ONE multi-agent pattern taught: routing to a specialist or a human is a narrow, well-understood shape. General multi-agent orchestration is out of scope for this course on purpose, say that directly if asked.</p></template>
+  <div class="lu-callout" style="margin-top:var(--lu-s4)">
+    <span class="lu-callout__label">Why not general multi-agent orchestration</span>
+    <p class="lu-sub">The real alternative is letting several specialist agents coordinate directly, debating a plan, delegating sub-tasks to each other, revising one another's output, this course's own assigned reading (Anthropic, "Building Effective Agents") names this pattern and its cost plainly: more agents talking to each other means more places for one to act on another's mistaken assumption, harder-to-audit decision chains, and failure modes that only show up as emergent disagreement, not a single traceable bad call. A router with two fixed destinations keeps every handoff a named, loggable decision. That reliability is worth more than the flexibility multi-agent coordination buys, for a single production agent with a bounded job.</p>
+  </div>
+  <template data-notes><p>Six minutes. Name why this is the ONE multi-agent pattern taught: routing to a specialist or a human is a narrow, well-understood shape with one traceable decision per turn. General multi-agent orchestration is out of scope for this course on purpose, and the callout above gives the real reason, not just "it is out of scope": coordination overhead and emergent failure modes, straight from this module's own assigned reading, not a rule invented for this course alone.</p></template>
 </section>
 
 <!-- ==================================================================== 11 -->
-<section class="slide slide--tint" data-label="Walkthrough: a turn that gets escalated" data-section="Lecture" data-minutes="4">
+<section class="slide slide--tint" data-label="Walkthrough: a turn that gets escalated" data-section="Lecture" data-minutes="3">
   <div class="lu-eyebrow">Watching the router make the boring, correct choice</div>
   <h2 class="lu-h2">The router decides, it never answers</h2>
   <div class="lu-walk" data-label="Escalation walkthrough">
