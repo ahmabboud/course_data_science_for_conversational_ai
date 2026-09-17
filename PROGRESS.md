@@ -639,6 +639,35 @@ one process deviation noted in the paper track below.
   is needed, an `eval_scorecard.json` gitignore entry, and a cross-reference
   from the deck's own "What you build today" slide (18) speaker notes back
   to this demo, matching every other module's two-way link convention.
+- **Self-study notebook companion added, 2026-09-16:**
+  `demos/module-05/eval_harness.ipynb`, same status and precedent as
+  Module 4's `memory_demo.ipynb`, imports `eval_harness.py`'s own functions
+  rather than copying them. Chosen for this module specifically because its
+  four probes produce things worth inspecting inline (a full trajectory, a
+  pass^1 vs pass^3 table, the bias probe's two replies side by side, the
+  scorecard), not just a pass/fail line, closer to how evaluation work is
+  actually read than Module 2 or 3's single-script demos. Adds one cell
+  beyond a plain narrated walkthrough of the script: pulling out one
+  attempt the judge actually failed and printing its real tool result and
+  reply, so a "silent fault" is something a student reads, not a summary
+  boolean.
+  - **Executed and saved with a stubbed dry run, not a live model**, same
+    technique already used to verify `eval_harness.py` itself before a live
+    key was available: `mem0` and `google.genai` replaced with small
+    stand-ins that parse the prompt text this file builds and return
+    schema-conformant answers derived from it, exercising every cell's real
+    control flow. Reproduced the intended teaching story exactly:
+    `order-shipped` shows `pass_1: true, pass_3: false`, `order-processing`
+    shows a clean `pass_1: true, pass_3: true`, and the PII probe passes.
+    The one number this stub cannot speak to honestly is the bias probe's
+    `delta_detected` (came back `False` here, since the stub judge only
+    matches status words, not persona-sensitive phrasing); the notebook's
+    own first cell says this explicitly and asks the instructor to rerun
+    it once with a real `GOOGLE_API_KEY` before treating that specific
+    result as real, same division of labor as every other module's Code
+    track.
+  - `demos/requirements.txt` and `demos/module-05/README.md` updated to
+    reference the notebook, matching Module 4's README section.
 
 ## Conventions for adding a new module or course
 

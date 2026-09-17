@@ -7,6 +7,19 @@ demo (a retail order-status lookup, the same domain flavor as tau-bench's
 own retail split), not a reimplementation of any team's real agent: the
 four probes underneath are what a team wires up against their own.
 
+There is also `eval_harness.ipynb`, a self-study companion, not a
+replacement. It imports `eval_harness.py`'s own functions rather than
+copying them, so the two can never quietly drift apart. Run the script
+live in the room, its printed stages are the most direct version of the
+argument. Hand students the notebook afterward: markdown narration
+between each part, plus a cell that pulls out one failing attempt's actual
+tool result and reply so a "silent fault" is something they read, not just
+a summary boolean, and a cell that puts the bias probe's two replies side
+by side. Once you have run it once yourself with saved output (see the
+notebook's own first cell), a student can read the actual output without
+needing a key or a live connection, same convention as
+`module-04/memory_demo.ipynb`.
+
 ## One-time setup
 
 Do this once, not per module (it is the same setup `../README.md` describes
