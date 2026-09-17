@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Helping Customers in Distress: An LLM-powered Agent that Converses, Probes, and Routes</title>
+<meta name="description" content="Interactive one-page summary for Module 2's research dive. Click any node or stat for detail.">
+<style>
+  :root{
+    --bg:#f7f8fa; --panel:#ffffff; --ink:#181c22; --ink-soft:#5a6270;
+    --line:#e2e6ec; --accent:#3d5aa8; --accent-soft:#e3e9f8; --accent-ink:#28407f;
+    --good:#1f6d4a; --good-soft:#e0f0e7; --bad:#a4302c; --bad-soft:#fbe6e4;
+    --node:#eef1f6; --node-active:#fff; --shadow:0 1px 2px rgba(20,24,30,.05), 0 8px 20px rgba(20,24,30,.06);
+    --radius:14px; --font:"Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#12151a; --panel:#1a1e25; --ink:#eef1f6; --ink-soft:#a9b1bf; --line:#333a45;
+    --accent:#8aa3e8; --accent-soft:#202b45; --accent-ink:#a9bdf2;
+    --good:#5cc494; --good-soft:#123024; --bad:#e77a76; --bad-soft:#341715;
+    --node:#232830; --node-active:#2b313b; --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 20px rgba(0,0,0,.35); }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.5;}
+  .wrap{max-width:940px;margin:0 auto;padding:28px 20px 60px;}
+  header.top{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:22px;display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 6px;}
+  h1{font-size:clamp(22px,3.4vw,32px);margin:0 0 8px;letter-spacing:-.01em;max-width:22ch;}
+  .byline{margin:0;color:var(--ink-soft);font-size:14.5px;max-width:62ch;}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--node);border:1px solid var(--line);color:var(--ink);}
+  .chip.accent{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent;}
+  a{color:var(--accent-ink);}
+  a.linklike{color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;}
+
+  .hero{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:28px;}
+  @media (max-width:640px){ .hero{grid-template-columns:1fr;} }
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;}
+  .hero .claim{font-size:17px;margin:0 0 10px;}
+  .bignum{display:flex;align-items:baseline;gap:10px;margin:10px 0;flex-wrap:wrap;}
+  .bignum .to{font-size:30px;font-weight:800;color:var(--good);}
+  .bignum .label{font-size:13px;color:var(--ink-soft);}
+  .figure-card img{width:100%;border-radius:10px;border:1px solid var(--line);display:block;}
+  .figure-card{display:flex;flex-direction:column;gap:8px;}
+  .figure-card .fig-caption{font-size:12.5px;color:var(--ink-soft);margin:0;}
+
+  h2.section-title{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:0 0 12px;font-weight:700;}
+  section{margin-bottom:30px;}
+  .hint{font-size:13px;color:var(--ink-soft);margin:-4px 0 14px;}
+
+  .pipeline{display:flex;gap:10px;flex-wrap:wrap;}
+  .node{flex:1 1 150px;text-align:left;background:var(--node);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font:inherit;color:var(--ink);transition:background .15s, border-color .15s;}
+  .node:hover{border-color:var(--accent);}
+  .node[aria-expanded="true"]{background:var(--node-active);border-color:var(--accent);box-shadow:var(--shadow);}
+  .node .n-step{font-size:11px;font-weight:700;color:var(--accent-ink);letter-spacing:.05em;text-transform:uppercase;}
+  .node .n-title{font-size:14.5px;font-weight:700;margin-top:3px;}
+  .detail{grid-column:1/-1;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-top:12px;font-size:14.5px;color:var(--ink);display:none;}
+  .detail.show{display:block;}
+  .detail p{margin:0 0 8px;}
+  .detail p:last-child{margin-bottom:0;}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+  .stat{background:var(--node);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;text-align:left;font:inherit;color:var(--ink);}
+  .stat[aria-expanded="true"]{border-color:var(--accent);background:var(--node-active);}
+  .stat .s-num{font-size:22px;font-weight:800;}
+  .stat .s-label{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .stat-detail{display:none;background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13.5px;grid-column:1/-1;}
+  .stat-detail.show{display:block;}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+  td.num{font-variant-numeric:tabular-nums;}
+  tr.hi td{font-weight:700;color:var(--good);}
+
+  details.limits{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px 16px;}
+  details.limits summary{cursor:pointer;padding:12px 0;font-weight:700;list-style:none;}
+  details.limits summary::-webkit-details-marker{display:none;}
+  details.limits summary::before{content:"+ ";color:var(--accent-ink);}
+  details.limits[open] summary::before{content:"\2212 ";}
+  details.limits ul{margin:0 0 14px;padding-left:20px;}
+  details.limits li{margin-bottom:8px;}
+
+  footer{border-top:1px solid var(--line);padding-top:16px;font-size:12.5px;color:var(--ink-soft);}
+  footer p{margin:0 0 6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="kicker">Module 2 research dive &middot; Dialogue</p>
+      <h1>Helping Customers in Distress</h1>
+      <p class="byline">Atreya, Wanger, Batra, Hankache, Iglesias Jr, Sinclair, Pelosio, McMillan, Cowan &amp; Khraishi, 2026. An LLM-powered Agent that Converses, Probes, and Routes. <a class="linklike" href="https://arxiv.org/abs/2605.16268" target="_blank" rel="noopener">arXiv:2605.16268</a></p>
+    </div>
+    <div class="meta">
+      <span class="chip accent">CC BY 4.0</span>
+      <span class="chip">~3,000 simulated cases</span>
+      <span class="chip">Deployed at a bank</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="card">
+      <p class="claim">A production router-and-escalation system for real fraud, scam, and dispute triage, banking-scale.</p>
+      <div class="bignum">
+        <span class="to">+30.6%</span>
+        <span class="label">best classification&#8209;accuracy gain over the legacy IVR system (GPT&#8209;5, synthetic testing)</span>
+      </div>
+      <p class="s-label" style="margin:0">Handoff (escalation) precision and recall both exceed 90%. Click "Results" below for the full table.</p>
+    </div>
+    <div class="card figure-card">
+      <img src="images/triage-workflow-original-figure.jpg" alt="The paper's own architecture diagram: prompt inputs (role, guidelines, don'ts, workflows) feed a prompt manager and template into the Triage Agent, which runs guardrails and handoff checks, coordinates with synthetic customer or real customer conversation via a Conversation Orchestrator, reaches an outcome, classifies the case, and routes it to the correct team." loading="lazy">
+      <p class="fig-caption">The paper's own Figure 1, at reduced size. <a class="linklike" href="https://arxiv.org/html/2605.16268v1/figures/workflow_triage4.png" target="_blank" rel="noopener">Open full resolution</a> on arXiv.</p>
+    </div>
+  </div>
+
+  <section>
+    <h2 class="section-title">How it works</h2>
+    <p class="hint">Click a piece of the architecture to expand it. Only one stays open at a time.</p>
+    <div class="pipeline" id="pipeline"></div>
+    <div class="detail" id="pipeline-detail"></div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Results</h2>
+    <p class="hint">Click a stat for what it means and where it comes from.</p>
+    <div class="stats" id="stats"></div>
+    <div class="stat-detail" id="stats-detail"></div>
+    <div class="card" style="margin-top:16px;overflow-x:auto;">
+      <table>
+        <thead><tr><th>Model</th><th>Synthetic accuracy gain over legacy</th><th>95% CI</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Sonnet 3</td><td class="num">+20.0%</td><td class="num">[16.0, 23.8]</td></tr>
+          <tr><td>GPT-4.1-mini</td><td class="num">+21.3%</td><td class="num">[17.5, 25.9]</td></tr>
+          <tr><td>Gemini-1.5-Pro</td><td class="num">+28.4%</td><td class="num">[24.8, 31.4]</td></tr>
+          <tr><td>GPT-4.1</td><td class="num">+27.7%</td><td class="num">[26.5, 33.2]</td></tr>
+          <tr class="hi"><td>GPT-5</td><td class="num">+30.6%</td><td class="num">[27.1, 33.9]</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <details class="limits">
+      <summary>What this paper does not claim</summary>
+      <ul>
+        <li>Every reported gain is relative to one specific legacy baseline (this bank's own IVR and manual triage), not a zero-automation or universal baseline.</li>
+        <li>The large-scale evaluation uses synthetic "digital twin" customers, not live customer traffic. The more conservative, human-validated figure (subject-matter experts testing the live agent) is a +16.0% accuracy gain, meaningfully lower than the synthetic-testing numbers, and the paper reports that gap openly rather than smoothing over it.</li>
+        <li>Human/automated-judge agreement is strong on objective criteria (79 to 92%) but drops to around 60% on subjective ones like empathy and frustration, an explicitly named, unresolved weakness.</li>
+        <li>Deployed in one regulated domain (UK banking fraud, scam, and dispute triage). The paper makes no claim about transfer to a materially different domain.</li>
+      </ul>
+    </details>
+  </section>
+
+  <footer>
+    <p>Fact-checked against the paper's full text (arXiv HTML rendering, fetched in full, a short paper, no truncation). Every number on this page traces to <a class="linklike" href="https://arxiv.org/abs/2605.16268" target="_blank" rel="noopener">arXiv:2605.16268</a>'s Table 1 and its own stated results. See <code>research/module-02/lecture-notes.md</code> for the full source notes.</p>
+    <p>Cite as: Atreya, A., Wanger, S. S., Batra, D., Hankache, R., Iglesias Jr, C., Sinclair, P., Pelosio, G., McMillan, M., Cowan, G. A., &amp; Khraishi, R. (2026). Helping Customers in Distress: An LLM-powered Agent that Converses, Probes, and Routes. arXiv:2605.16268.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var pipelineData = [
+    {step:"1", title:"Triage Agent", body:"<p>Handles <b>multi-turn conversations</b> to clarify the customer's issue, then classifies the case as Fraud, Scam, Dispute, or Inconclusive.</p><p>Built with prompted third-party LLMs (Claude, Gemini, GPT), deliberately <b>not fine-tuned</b>, for policy compliance, flexibility, and reduced data risk. A prompt manager orchestrates sub-prompts for Role, Instructions, Workflow, and Don'ts, encoding the bank's own policy directly into the conversation.</p>"},
+    {step:"2", title:"Handoff (escalation) agent", body:"<p>A <b>separate</b> agent decides when to end the automated chat and route the customer to a human channel: when the customer asks to end the conversation, or a vulnerability indicator appears.</p><p>Measured on its own, with its own precision and recall, not folded into the triage classification call. That separation is the same discipline as this module's own \"the router decides, it never answers\" lesson, just with its own dedicated agent and metric.</p>"},
+    {step:"3", title:"Guardrail agents", body:"<p>Layered input and output filtering: AWS Bedrock's foundational content filtering, plus custom controls blocking unauthorized requests, probing for internal process details, and non-English messages.</p><p>Stress-tested with an automated pipeline (thousands of adversarial and benign prompts) and an internal red-teaming exercise simulating chat-history injection, code manipulation, and attempts to extract internal reasoning.</p>"},
+    {step:"4", title:"Digital twins", body:"<p>Synthetic customer agents built from real historical telephony transcripts, paired with transaction records, implemented with the OpenAI Agent SDK.</p><p>Used to simulate roughly <b>3,000 realistic, labelled, multi-turn cases</b> at scale, since large-scale live experiments on real distressed fraud victims are not something you can ethically run.</p>"},
+    {step:"5", title:"Human + automated evaluation", body:"<p>Subject-matter experts rate live conversations across three testing rounds on ten metrics (satisfaction, empathy, compliance, factuality, and more).</p><p>An automated pipeline using GPT-4.1 as an LLM-as-judge scores conversations at scale. Human/automated agreement: 79 to 92% on objective criteria, only around 60% on subjective ones like empathy, an honestly reported limitation, not glossed over.</p>"}
+  ];
+  var statsData = [
+    {num:"+30.6%", label:"Best synthetic accuracy gain (GPT-5)", body:"Relative classification-accuracy improvement over the legacy IVR/manual-triage baseline, on ~3,000 synthetic transcript-based cases. Every model tested beat the baseline, from +20.0% to +30.6%."},
+    {num:"+16.0%", label:"SME-tested accuracy gain (more conservative)", body:"The human-validated figure, from subject-matter experts testing the live agent directly, not the larger synthetic-testing sample. Meaningfully lower than the synthetic numbers, and reported as such."},
+    {num:">90% / >90%", label:"Handoff precision and recall", body:"The escalation agent reliably triggers when it should (recall) and does not over-trigger on cases that do not need a human (precision), across key handoff scenarios."},
+    {num:"96 to 98%", label:"Guardrail accuracy", body:"Input guardrails detect prompt injection and hate speech at over 98% accuracy; output guardrails identify hallucinated content at over 95% accuracy (GPT-4.1 variants)."}
+  ];
+
+  function buildPipeline(){
+    var wrap = document.getElementById('pipeline');
+    var detail = document.getElementById('pipeline-detail');
+    pipelineData.forEach(function(d){
+      var btn = document.createElement('button');
+      btn.className = 'node';
+      btn.type = 'button';
+      btn.setAttribute('aria-expanded','false');
+      btn.innerHTML = '<div class="n-step">Piece ' + d.step + '</div><div class="n-title">' + d.title + '</div>';
+      btn.addEventListener('click', function(){
+        var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        wrap.querySelectorAll('.node').forEach(function(b){ b.setAttribute('aria-expanded','false'); });
+        if (isOpen){ detail.classList.remove('show'); detail.innerHTML=''; }
+        else{
+          btn.setAttribute('aria-expanded','true');
+          detail.innerHTML = '<p style="font-weight:700;margin-bottom:6px;">' + d.title + '</p>' + d.body;
+          detail.classList.add('show');
+        }
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function buildStats(){
+    var wrap = document.getElementById('stats');
+    var detail = document.getElementById('stats-detail');
+    statsData.forEach(function(d){
+      var btn = document.createElement('button');
+      btn.className = 'stat';
+      btn.type = 'button';
+      btn.setAttribute('aria-expanded','false');
+      btn.innerHTML = '<div class="s-num">' + d.num + '</div><div class="s-label">' + d.label + '</div>';
+      btn.addEventListener('click', function(){
+        var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        wrap.querySelectorAll('.stat').forEach(function(b){ b.setAttribute('aria-expanded','false'); });
+        if (isOpen){ detail.classList.remove('show'); detail.innerHTML=''; }
+        else{
+          btn.setAttribute('aria-expanded','true');
+          detail.innerHTML = '<p style="margin:0">' + d.body + '</p>';
+          detail.classList.add('show');
+        }
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  buildPipeline();
+  buildStats();
+})();
+</script>
+</body>
+</html>

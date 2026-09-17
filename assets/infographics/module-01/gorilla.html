@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gorilla: Large Language Model Connected with Massive APIs</title>
+<meta name="description" content="Interactive one-page summary of the Gorilla paper for Module 1's research dive. Click any node or stat for detail.">
+<style>
+  :root{
+    --bg:#faf9f7; --panel:#ffffff; --ink:#1e1b16; --ink-soft:#5b564d;
+    --line:#e6e1d6; --accent:#8a3b12; --accent-soft:#f3e3d6; --accent-ink:#6b2c0b;
+    --good:#1f6d4a; --good-soft:#e0f0e7; --bad:#a4302c; --bad-soft:#fbe6e4;
+    --node:#f6f2ea; --node-active:#fff; --shadow:0 1px 2px rgba(30,27,22,.05), 0 8px 20px rgba(30,27,22,.06);
+    --radius:14px; --font:"Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#17140f; --panel:#211d17; --ink:#f1ece2; --ink-soft:#bdb4a5; --line:#3a342a;
+    --accent:#e58a4c; --accent-soft:#3a2617; --accent-ink:#f0ac78;
+    --good:#5cc494; --good-soft:#123024; --bad:#e77a76; --bad-soft:#341715;
+    --node:#28241d; --node-active:#332c22; --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 20px rgba(0,0,0,.35); }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.5;}
+  .wrap{max-width:920px;margin:0 auto;padding:28px 20px 60px;}
+  header.top{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:22px;display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 6px;}
+  h1{font-size:clamp(26px,4vw,36px);margin:0 0 8px;letter-spacing:-.01em;}
+  .byline{margin:0;color:var(--ink-soft);font-size:14.5px;max-width:60ch;}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--node);border:1px solid var(--line);color:var(--ink);}
+  .chip.accent{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent;}
+  a{color:var(--accent-ink);}
+  a.linklike{color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;}
+
+  .hero{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:28px;}
+  @media (max-width:640px){ .hero{grid-template-columns:1fr;} }
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;}
+  .hero .claim{font-size:17px;margin:0 0 10px;}
+  .bignum{display:flex;align-items:baseline;gap:10px;margin:10px 0;}
+  .bignum .from{font-size:26px;font-weight:800;color:var(--bad);}
+  .bignum .arrow{color:var(--ink-soft);font-size:20px;}
+  .bignum .to{font-size:26px;font-weight:800;color:var(--good);}
+  .bignum .label{font-size:13px;color:var(--ink-soft);}
+  .figure-card img{width:100%;border-radius:10px;border:1px solid var(--line);display:block;}
+  .figure-card{display:flex;flex-direction:column;gap:8px;}
+  .figure-card .fig-caption{font-size:12.5px;color:var(--ink-soft);margin:0;}
+
+  h2.section-title{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:0 0 12px;font-weight:700;}
+  section{margin-bottom:30px;}
+  .hint{font-size:13px;color:var(--ink-soft);margin:-4px 0 14px;}
+
+  /* Interactive pipeline */
+  .pipeline{display:flex;gap:10px;flex-wrap:wrap;}
+  .node{flex:1 1 150px;text-align:left;background:var(--node);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font:inherit;color:var(--ink);transition:background .15s, border-color .15s;}
+  .node:hover{border-color:var(--accent);}
+  .node[aria-expanded="true"]{background:var(--node-active);border-color:var(--accent);box-shadow:var(--shadow);}
+  .node .n-step{font-size:11px;font-weight:700;color:var(--accent-ink);letter-spacing:.05em;text-transform:uppercase;}
+  .node .n-title{font-size:14.5px;font-weight:700;margin-top:3px;}
+  .detail{grid-column:1/-1;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-top:12px;font-size:14.5px;color:var(--ink);display:none;}
+  .detail.show{display:block;}
+  .detail p{margin:0 0 8px;}
+  .detail p:last-child{margin-bottom:0;}
+
+  /* Stat cards */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+  .stat{background:var(--node);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;text-align:left;font:inherit;color:var(--ink);}
+  .stat[aria-expanded="true"]{border-color:var(--accent);background:var(--node-active);}
+  .stat .s-num{font-size:22px;font-weight:800;}
+  .stat .s-label{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .stat-detail{display:none;background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13.5px;grid-column:1/-1;}
+  .stat-detail.show{display:block;}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);}
+  td.num{font-variant-numeric:tabular-nums;}
+  tr.hi td{font-weight:700;color:var(--good);}
+
+  details.limits{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px 16px;}
+  details.limits summary{cursor:pointer;padding:12px 0;font-weight:700;list-style:none;}
+  details.limits summary::-webkit-details-marker{display:none;}
+  details.limits summary::before{content:"+ ";color:var(--accent-ink);}
+  details.limits[open] summary::before{content:"\2212 ";}
+  details.limits ul{margin:0 0 14px;padding-left:20px;}
+  details.limits li{margin-bottom:8px;}
+
+  footer{border-top:1px solid var(--line);padding-top:16px;font-size:12.5px;color:var(--ink-soft);}
+  footer p{margin:0 0 6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="kicker">Module 1 research dive &middot; Extraction</p>
+      <h1>Gorilla</h1>
+      <p class="byline">Patil, Zhang, Wang &amp; Gonzalez, UC Berkeley, 2023. Large Language Model Connected with Massive APIs. <a class="linklike" href="https://arxiv.org/abs/2305.15334" target="_blank" rel="noopener">arXiv:2305.15334</a></p>
+    </div>
+    <div class="meta">
+      <span class="chip accent">CC BY 4.0</span>
+      <span class="chip">1,645 real APIs</span>
+      <span class="chip">AST-verified</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="card">
+      <p class="claim">Even GPT-4 mostly invents API calls that do not exist. A model fine-tuned to consult real documentation barely does.</p>
+      <div class="bignum">
+        <span class="from">78.65%</span>
+        <span class="arrow">&rarr;</span>
+        <span class="to">5.40%</span>
+      </div>
+      <p class="s-label" style="margin:0">Hallucination rate on TensorHub, zero-shot: GPT-4 vs. Gorilla. Click "Results" below for the full table.</p>
+    </div>
+    <div class="card figure-card">
+      <img src="images/gorilla-pipeline-original-figure.jpg" alt="The paper's own pipeline diagram: dataset curation from Torch Hub, TensorFlow Hub and HuggingFace into APIBench, self-instruct generating instruction-API pairs, training Gorilla, then zero-shot or retrieval-aware inference." loading="lazy">
+      <p class="fig-caption">The paper's own Figure 3, at reduced size. <a class="linklike" href="https://arxiv.org/html/2305.15334v1/llmapi.png" target="_blank" rel="noopener">Open full resolution</a> on arXiv.</p>
+    </div>
+  </div>
+
+  <section>
+    <h2 class="section-title">How it works</h2>
+    <p class="hint">Click a step to expand it. Only one stays open at a time.</p>
+    <div class="pipeline" id="pipeline"></div>
+    <div class="detail" id="pipeline-detail"></div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Results, zero-shot</h2>
+    <p class="hint">Click a stat for what it means and where it comes from.</p>
+    <div class="stats" id="stats"></div>
+    <div class="stat-detail" id="stats-detail"></div>
+    <div class="card" style="margin-top:16px;overflow-x:auto;">
+      <table>
+        <thead><tr><th>Model (zero-shot)</th><th>TorchHub acc.</th><th>HuggingFace acc.</th><th>TensorHub acc.</th><th>TensorHub hallu.</th></tr></thead>
+        <tbody>
+          <tr><td>LLaMA-7B</td><td class="num">0%</td><td class="num">0%</td><td class="num">0%</td><td class="num">100%</td></tr>
+          <tr><td>Claude</td><td class="num">18.81%</td><td class="num">6.19%</td><td class="num">9.19%</td><td class="num">88.46%</td></tr>
+          <tr><td>GPT-3.5</td><td class="num">48.38%</td><td class="num">16.81%</td><td class="num">41.75%</td><td class="num">47.88%</td></tr>
+          <tr><td>GPT-4</td><td class="num">38.70%</td><td class="num">19.80%</td><td class="num">18.20%</td><td class="num">78.65%</td></tr>
+          <tr class="hi"><td>Gorilla</td><td class="num">59.13%</td><td class="num">71.68%</td><td class="num">83.79%</td><td class="num">5.40%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <details class="limits">
+      <summary>What this paper does not claim</summary>
+      <ul>
+        <li>Scoped to one API call per request, not the multi-step tool chains a real agent often needs.</li>
+        <li>APIBench is entirely ML-model APIs (HuggingFace, TorchHub, TensorHub), not general-purpose REST APIs.</li>
+        <li>An honest, unresolved finding stated in the paper itself: GPT-3.5 hallucinates less than GPT-4 in their own tests, and the authors say plainly they do not fully know why (they guess RLHF plays a role).</li>
+        <li>Gorilla is a fine-tuned model. This course uses prompted function calling instead; the transferable lesson is the retrieval-aware idea, not the fine-tuning recipe itself.</li>
+      </ul>
+    </details>
+  </section>
+
+  <footer>
+    <p>Fact-checked against the paper's full text (arXiv HTML rendering, fetched in full, no truncation). Every number on this page traces to <a class="linklike" href="https://arxiv.org/abs/2305.15334" target="_blank" rel="noopener">arXiv:2305.15334</a>'s Table 1, Table 2, and its own stated results. See <code>research/module-01/lecture-notes.md</code> for the full source notes.</p>
+    <p>Cite as: Patil, S. G., Zhang, T., Wang, X., &amp; Gonzalez, J. E. (2023). Gorilla: Large Language Model Connected with Massive APIs. arXiv:2305.15334.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var pipelineData = [
+    {step:"1", title:"Curate APIBench", body:"<p><b>1,645 real API calls</b> collected from three hubs: every call in Torch Hub (94) and TensorFlow Hub v2 after filtering (626 of 801), plus the top 20 most-downloaded HuggingFace models per domain (925, out of 203,681 total on the platform).</p><p>Each API's real documentation is kept: name, arguments, environment requirements, example code, performance, and description.</p>"},
+    {step:"2", title:"Generate instructions", body:"<p>GPT-4 is used with the self-instruct method to write realistic user requests for each API, deliberately without naming the API or hinting at it.</p><p>10 instruction-API pairs per API call, <b>11,000+ pairs total</b>, released as an open dataset.</p>"},
+    {step:"3", title:"Train Gorilla", body:"<p>A LLaMA-7B model is fine-tuned on these pairs, converted into a single-turn user-agent chat format.</p><p>The key idea: <b>retriever-aware training</b>. Some training examples append the real API documentation to the prompt, teaching the model to read and follow supplied documentation, not only recall memorized API shapes.</p>"},
+    {step:"4", title:"Infer: zero-shot or retrieved", body:"<p>At inference, Gorilla can run with no retriever (zero-shot) or with a retriever (BM25, GPT-Index, or an oracle) that fetches the current API documentation and appends it to the prompt.</p><p>This is what lets Gorilla adapt to a changed API (a version bump, a registry move) without retraining: it reads the current docs at call time.</p>"},
+    {step:"5", title:"Verify with AST matching", body:"<p>Because many correct APIs can exist for one task, the paper checks <b>functional correctness</b> by parsing the generated call into an abstract syntax tree and testing whether it matches a real API's own AST in APIBench.</p><p>A <b>hallucination</b> is defined precisely: a generated call with no matching API anywhere in the dataset, an entirely invented tool, distinct from picking a real but wrong API (scored separately, as an error).</p>"}
+  ];
+  var statsData = [
+    {num:"+20.43 pts", label:"Gorilla's accuracy over GPT-4", body:"Overall AST-matched accuracy across all three hubs, zero-shot. Gorilla also beats GPT-3.5 (ChatGPT) by 10.75 points, and base LLaMA-7B by as much as 83 points."},
+    {num:"78.65% &rarr; 5.40%", label:"TensorHub hallucination, GPT-4 vs Gorilla", body:"The sharpest single comparison in the paper: same task, same benchmark. GPT-4 invents a nonexistent API on 78.65% of zero-shot attempts; Gorilla, on 5.40%."},
+    {num:"+12.37 / +23.46 pts", label:"Retriever-aware training gain (Torch Hub / HuggingFace)", body:"When a ground-truth (oracle) retriever is available both during fine-tuning and at evaluation, accuracy improves this much over fine-tuning without a retriever at all."},
+    {num:"11,000+", label:"Instruction-API pairs released", body:"The full APIBench dataset (1,645 APIs × ~10 synthetic instructions each), released openly alongside the model and code."}
+  ];
+
+  function buildPipeline(){
+    var wrap = document.getElementById('pipeline');
+    var detail = document.getElementById('pipeline-detail');
+    pipelineData.forEach(function(d, i){
+      var btn = document.createElement('button');
+      btn.className = 'node';
+      btn.type = 'button';
+      btn.setAttribute('aria-expanded','false');
+      btn.innerHTML = '<div class="n-step">Step ' + d.step + '</div><div class="n-title">' + d.title + '</div>';
+      btn.addEventListener('click', function(){
+        var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        wrap.querySelectorAll('.node').forEach(function(b){ b.setAttribute('aria-expanded','false'); });
+        if (isOpen){ detail.classList.remove('show'); detail.innerHTML=''; }
+        else{
+          btn.setAttribute('aria-expanded','true');
+          detail.innerHTML = '<p style="font-weight:700;margin-bottom:6px;">Step ' + d.step + ' &middot; ' + d.title + '</p>' + d.body;
+          detail.classList.add('show');
+        }
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function buildStats(){
+    var wrap = document.getElementById('stats');
+    var detail = document.getElementById('stats-detail');
+    statsData.forEach(function(d){
+      var btn = document.createElement('button');
+      btn.className = 'stat';
+      btn.type = 'button';
+      btn.setAttribute('aria-expanded','false');
+      btn.innerHTML = '<div class="s-num">' + d.num + '</div><div class="s-label">' + d.label + '</div>';
+      btn.addEventListener('click', function(){
+        var isOpen = btn.getAttribute('aria-expanded') === 'true';
+        wrap.querySelectorAll('.stat').forEach(function(b){ b.setAttribute('aria-expanded','false'); });
+        if (isOpen){ detail.classList.remove('show'); detail.innerHTML=''; }
+        else{
+          btn.setAttribute('aria-expanded','true');
+          detail.innerHTML = '<p style="margin:0">' + d.body + '</p>';
+          detail.classList.add('show');
+        }
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  buildPipeline();
+  buildStats();
+})();
+</script>
+</body>
+</html>

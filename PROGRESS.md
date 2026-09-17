@@ -100,8 +100,8 @@ set for every module, on top of the mechanical authoring contract in
 
 | # | Title | Lecture notes | Paper | Graphics | Code |
 |---|---|---|---|---|---|
-| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Pending: Gorilla infographic not yet requested, see detail | Not started |
-| 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Helping Customers in Distress, arXiv:2605.16268), see detail | Pending: Helping Customers in Distress infographic not yet requested, see detail | Not started |
+| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Done, agent-built interactive infographic, see detail | Not started |
+| 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Helping Customers in Distress, arXiv:2605.16268), see detail | Done, agent-built interactive infographic, see detail | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
 | 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | 3 of 4 papers done, see below | Done, see below |
@@ -210,26 +210,37 @@ and 2, not a rebuild.
   reconciling to Opening 2 / Hook 20 / Lecture 40 / Research dive 12 /
   Kickoff 20 / Lab kickoff 70 / Wrap 16 = 180.
 
-### Graphics track: pending
+### Graphics track: done
 
-- **Not started.** No infographic exists yet for the Gorilla research
-  dive. The five new slides ship with `.lu-table`/`.lu-defs`/`.lu-callout`
-  CSS primitives only (`AGENTS.md` §7), same as this module's existing
-  slides, no `.lu-figure__ph` placeholder and no NotebookLM prompt sent.
-- **Source document ready:** `research/module-01/lecture-notes.md` is the
-  document a NotebookLM concept-infographic prompt would be built from,
-  per the module build order's own division of labor (an agent hands the
-  instructor a prompt keyed to `lecture-notes.md`, the instructor runs
-  it). Good candidate content for an infographic: the accuracy/
-  hallucination comparison across GPT-4, GPT-3.5, and Gorilla (the table
-  on the "results" slide), which would read faster as a real chart than
-  the current plain `<table>`.
-- **Next step, not yet taken:** send the instructor a NotebookLM prompt
-  sourced from `research/module-01/lecture-notes.md`, then fact-check
-  whatever comes back against this same lecture-notes document (and, for
-  any figure not already verified there, against the arXiv HTML text
-  directly) before it ships as a slide, same discipline as every prior
-  module's graphics track.
+- **Shipped 2026-09-17:** `assets/infographics/module-01/gorilla.html`, an
+  agent-built (not NotebookLM, not Clearpaper template), self-contained,
+  interactive infographic, built at the instructor's own direction after
+  they asked whether an agent could extract the paper's real figures and
+  build the page itself, with the explicit steer to skip the shared
+  design system and favor a click-to-reveal, low-noise interactive layout
+  instead. Structure: a hero stat (the 78.65% to 5.40% TensorHub
+  hallucination drop), the paper's own Figure 3 pipeline diagram (real
+  image, not redrawn, see below), five click-to-expand pipeline-stage
+  panels, four click-to-expand results stat cards, a static results
+  table, and a collapsible "what this paper does not claim" section.
+  Every number fact-checked against `research/module-01/lecture-notes.md`
+  and, directly, against the arXiv HTML text
+  (`arxiv.org/html/2305.15334v1`). Full provenance in
+  `assets/infographics/module-01/README.md`.
+- **Figure extraction method:** the paper's own Figure 3
+  (`arxiv.org/html/2305.15334v1/llmapi.png`, CC BY 4.0) was loaded in the
+  built-in browser, redrawn to a canvas, and re-exported at a small size
+  (200x125px, roughly 5KB) so the resulting base64 data was short enough
+  to transcribe reliably; saved to
+  `assets/infographics/module-01/images/gorilla-pipeline-original-figure.jpg`
+  and verified both by file type/dimensions and by visually viewing the
+  decoded image, to catch any transcription error before it shipped. The
+  page links out to the full-resolution original on arXiv.
+- **Linked in exactly two places**, per `AGENTS.md` §7b: the "The
+  problem: LLMs hallucinate API calls" slide's speaker notes in
+  `lectures/dsca-module-01.html`, and the "Before Module 2" reading
+  callout, both pointing to `../assets/infographics/module-01/gorilla.html`.
+  Not embedded inline anywhere in the deck.
 
 ## Module 2, Agentic Dialogue Management, detail
 
@@ -316,25 +327,39 @@ same pass as Module 1, 2026-09-16.
   `data-minutes` reconciling to Opening 2 / Lecture 38 / Research dive
   12 / Hands-on lab 100 / Wrap 28 = 180.
 
-### Graphics track: pending
+### Graphics track: done
 
-- **Not started.** No infographic exists yet for the Helping Customers
-  in Distress research dive. The five new slides ship with
-  `.lu-table`/`.lu-defs`/`.lu-callout` CSS primitives only (`AGENTS.md`
-  §7), no placeholder and no NotebookLM prompt sent.
-- **Source document ready:** `research/module-02/lecture-notes.md` is
-  the document a NotebookLM concept-infographic prompt would be built
-  from. Good candidate content: the five-model accuracy-gain comparison
-  (Table 1 in the paper, the "results" slide's own table here) or the
-  triage/handoff/guardrail three-agent architecture, both would read
-  faster as a real chart or diagram than the current plain table and
-  definition list.
-- **Next step, not yet taken:** send the instructor a NotebookLM prompt
-  sourced from `research/module-02/lecture-notes.md`, then fact-check
-  whatever comes back against this same lecture-notes document (and, for
-  anything not already verified there, against the arXiv HTML text
-  directly) before it ships as a slide, same discipline as every prior
-  module's graphics track.
+- **Shipped 2026-09-17:**
+  `assets/infographics/module-02/helping-customers-in-distress.html`, an
+  agent-built (not NotebookLM, not Clearpaper template), self-contained,
+  interactive infographic, same instruction and same reasoning as Module
+  1's (see that module's Graphics track entry above). Structure: a hero
+  stat (the +30.6% best synthetic accuracy gain), the paper's own Figure
+  1 triage-and-handoff architecture diagram (real image, not redrawn, see
+  below), five click-to-expand architecture-role panels (Triage Agent,
+  Handoff agent, Guardrail agents, Digital twins, Human plus automated
+  evaluation), four click-to-expand results stat cards, a static results
+  table across five LLMs with confidence intervals, and a collapsible
+  limits section that names the gap between the synthetic-testing figure
+  (+30.6%) and the SME-tested figure (+16.0%) directly rather than
+  smoothing over it. Every number fact-checked against
+  `research/module-02/lecture-notes.md` and, directly, against the arXiv
+  HTML text (`arxiv.org/html/2605.16268v1`). Full provenance in
+  `assets/infographics/module-02/README.md`.
+- **Figure extraction method:** the paper's own Figure 1
+  (`arxiv.org/html/2605.16268v1/figures/workflow_triage4.png`, CC BY 4.0)
+  was loaded in the built-in browser, redrawn to a canvas, and
+  re-exported at a small size (220x141px, roughly 4KB), then saved to
+  `assets/infographics/module-02/images/triage-workflow-original-figure.jpg`
+  and verified both by file type/dimensions and by visually viewing the
+  decoded image. The page links out to the full-resolution original on
+  arXiv.
+- **Linked in exactly two places**, per `AGENTS.md` §7b: the "The
+  problem: triage is slow, manual, and easy to misroute" slide's speaker
+  notes in `lectures/dsca-module-02.html`, and the "Before Module 3"
+  reading list, both pointing to
+  `../assets/infographics/module-02/helping-customers-in-distress.html`.
+  Not embedded inline anywhere in the deck.
 
 ## Module 3, Grounded Generation, detail
 
