@@ -27,6 +27,14 @@ This runs three questions through the full pipeline, printing the state
 after every stage (BM25 hits, vector hits, the fused ranking, the reranked
 top 3, the coverage check, then the final answer or refusal):
 
+For the free Gemini tier, each question uses one structured assessment call
+that returns its reranking scores, coverage decision, and cited answer
+together. The three stages remain visible in the output, but combining their
+small-model calls keeps a full run to three generation requests rather than
+eight, below the five-requests-per-minute limit. If another demo has just
+used the same free-tier key, the script prints Gemini's requested wait and
+retries the affected assessment once instead of displaying an SDK traceback.
+
 1. **"What is the warranty period for electronics?"** An exact-term
    question. Watch BM25 alone already surface the right document
    (`faq.md#warranty`); this is the case keyword search is naturally good
@@ -49,12 +57,13 @@ top 3, the coverage check, then the final answer or refusal):
   argument made concrete: run either retrieval mode alone in a Python
   shell (`from grounded_rag import bm25_search, vector_search`) and show a
   case where it misses, before showing the fused result catching it.
-- **Step 4** is the reranking pass. This demo reranks with one more Gemini
-  call instead of a dedicated cross-encoder model, see the top of
-  `grounded_rag.py` for why: it keeps the whole file on the same
-  `google-genai` client every other demo in this course already needs,
-  rather than adding a model-serving dependency for one pass. Say this
-  plainly if asked why there is no `sentence-transformers` import.
+- **Steps 4 to 6** are produced by one structured Gemini assessment per
+  question: it scores the short candidate list, decides coverage, and
+  drafts a cited answer only when coverage is true. Combining these calls
+  keeps the full three-question demonstration within the free-tier request
+  limit. A production system may split them again for independent tracing
+  and evaluation. The reranking concept is unchanged: a careful model pass
+  scores only the fused shortlist, never the entire corpus.
 - **Step 5 and step 6** on the third question are the refusal path. If a
   team asks "what if the coverage check is wrong," that is a real,
   legitimate question: this is exactly the kind of call worth testing

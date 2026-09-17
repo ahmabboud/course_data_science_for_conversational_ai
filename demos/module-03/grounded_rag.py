@@ -31,6 +31,8 @@ careful pass over a small shortlist, is the same either way.
 
 import json
 import os
+import re
+import time
 from pathlib import Path
 
 import numpy as np
@@ -42,7 +44,10 @@ DEMO_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(DEMO_ROOT / ".env")
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
-GENERATION_MODEL = "gemini-3.8-flash"
+# Keep Module 3 independent from the shared model used by other demos. The
+# default is a currently supported Flash model; override it in demos/.env
+# only if a later model change requires it.
+GENERATION_MODEL = os.getenv("M03_GENERATION_MODEL", "gemini-3.6-flash")
 EMBEDDING_MODEL = "gemini-embedding-001"
 
 # The fake knowledge base. Six short entries, each with a stable source_id,
@@ -88,7 +93,7 @@ FAQ = [
     },
 ]
 
-RERANK_SCHEMA = {
+ASSESSMENT_SCHEMA = {
     "type": "object",
     "properties": {
         "scores": {
@@ -101,31 +106,37 @@ RERANK_SCHEMA = {
                 },
                 "required": ["source_id", "score"],
             },
-        }
-    },
-    "required": ["scores"],
-}
-
-COVERAGE_SCHEMA = {
-    "type": "object",
-    "properties": {
+        },
         "covered": {"type": "boolean"},
         "reason": {"type": "string"},
-    },
-    "required": ["covered", "reason"],
-}
-
-ANSWER_SCHEMA = {
-    "type": "object",
-    "properties": {
         "answer": {"type": "string"},
         "cited_sources": {"type": "array", "items": {"type": "string"}},
     },
-    "required": ["answer", "cited_sources"],
+    "required": ["scores", "covered", "reason", "answer", "cited_sources"],
 }
 
 
 _by_id = {doc["source_id"]: doc for doc in FAQ}
+
+
+def create_assessment_with_retry(**kwargs):
+    """Retry one Gemini free-tier rate limit using the delay supplied by the
+    API. The normal three-request run fits the quota; this only covers a
+    recent earlier demo or another process sharing the same API key."""
+    for attempt in range(2):
+        try:
+            return client.interactions.create(**kwargs)
+        except Exception as exc:
+            message = str(exc)
+            if attempt or "429" not in message and "quota" not in message.lower():
+                raise
+            retry_after = re.search(r"retry in ([0-9.]+)s", message, re.IGNORECASE)
+            wait_seconds = min(60, int(float(retry_after.group(1))) + 1) if retry_after else 60
+            print(
+                f"Gemini's free-tier request limit is temporarily full; "
+                f"retrying this assessment in {wait_seconds} seconds."
+            )
+            time.sleep(wait_seconds)
 
 
 def _lookup(source_ids: list[str]) -> list[dict]:
@@ -194,71 +205,33 @@ def reciprocal_rank_fusion(ranked_lists: list[list[str]], k: int = 60) -> list[s
     return sorted(scores, key=lambda source_id: scores[source_id], reverse=True)
 
 
-def rerank(query: str, candidate_ids: list[str], top_k: int = 3) -> list[str]:
-    """Second, more careful pass: scores each fused candidate against the
-    query with one Gemini call, then keeps only the top few. Only ever runs
-    on the small fused shortlist above, never the whole corpus."""
+def assess_candidates(query: str, candidate_ids: list[str]) -> dict:
+    """Use one structured Gemini call to score candidates, judge coverage,
+    and draft a cited answer. The pipeline still exposes reranking, coverage,
+    and answer as separate stages below, but combines their small-model calls
+    so the complete three-question demo fits a five-request free-tier limit.
+
+    A production system may split these decisions for separate tracing and
+    evaluation. This compact teaching demo trades that isolation for a
+    predictable request budget while retaining each decision's visible output.
+    """
     candidates = _lookup(candidate_ids)
     listing = "\n".join(f"{doc['source_id']}: {doc['text']}" for doc in candidates)
-    interaction = client.interactions.create(
+    interaction = create_assessment_with_retry(
         model=GENERATION_MODEL,
         input=(
             f"Question: {query}\n\nCandidate passages:\n{listing}\n\n"
-            "Score how well each passage actually answers the question, "
-            "0 (not at all) to 10 (fully answers it)."
+            "First score how well each passage answers the question, 0 (not "
+            "at all) to 10 (fully answers it). Then decide whether the best "
+            "passages actually cover the question rather than merely mention "
+            "a related topic. Explain briefly. If covered, draft an answer "
+            "using only these passages and cite the source_id values used. If "
+            "not covered, return an empty answer and an empty cited_sources list."
         ),
         response_format={
             "type": "text",
             "mime_type": "application/json",
-            "schema": RERANK_SCHEMA,
-        },
-    )
-    scored = json.loads(interaction.output_text)["scores"]
-    ranked = sorted(scored, key=lambda s: s["score"], reverse=True)
-    return [s["source_id"] for s in ranked[:top_k]]
-
-
-def coverage_check(query: str, passage_ids: list[str]) -> dict:
-    """Asks whether the reranked passages actually address the question, as
-    opposed to merely being topically related. This is the decision the
-    lecture's citation-and-refusal board calls the coverage check, and it
-    runs before the model commits to any final answer."""
-    passages = _lookup(passage_ids)
-    listing = "\n".join(f"{doc['source_id']}: {doc['text']}" for doc in passages)
-    interaction = client.interactions.create(
-        model=GENERATION_MODEL,
-        input=(
-            f"Question: {query}\n\nPassages:\n{listing}\n\n"
-            "Do these passages actually answer the question, specifically, "
-            "not just mention a related topic? Explain your reasoning "
-            "briefly."
-        ),
-        response_format={
-            "type": "text",
-            "mime_type": "application/json",
-            "schema": COVERAGE_SCHEMA,
-        },
-    )
-    return json.loads(interaction.output_text)
-
-
-def answer_with_citation(query: str, passage_ids: list[str]) -> dict:
-    """Generates the final answer, required to name which source_id(s) it
-    actually drew from, the same schema-as-contract discipline as every
-    other structured call in this course."""
-    passages = _lookup(passage_ids)
-    listing = "\n".join(f"{doc['source_id']}: {doc['text']}" for doc in passages)
-    interaction = client.interactions.create(
-        model=GENERATION_MODEL,
-        input=(
-            f"Question: {query}\n\nPassages:\n{listing}\n\n"
-            "Answer using only these passages, and list which source_id(s) "
-            "you actually used."
-        ),
-        response_format={
-            "type": "text",
-            "mime_type": "application/json",
-            "schema": ANSWER_SCHEMA,
+            "schema": ASSESSMENT_SCHEMA,
         },
     )
     return json.loads(interaction.output_text)
@@ -293,14 +266,19 @@ def run(query: str) -> dict:
     fused = reciprocal_rank_fusion([bm25_hits, vector_hits])
     show("step 3: fused by reciprocal rank fusion", fused)
 
-    reranked = rerank(query, fused)
+    assessment = assess_candidates(query, fused)
+    scored = sorted(assessment["scores"], key=lambda score: score["score"], reverse=True)
+    reranked = [score["source_id"] for score in scored[:3]]
     show("step 4: reranked, top 3", reranked)
 
-    coverage = coverage_check(query, reranked)
+    coverage = {"covered": assessment["covered"], "reason": assessment["reason"]}
     show("step 5: coverage check", coverage)
 
     if coverage["covered"]:
-        result = answer_with_citation(query, reranked)
+        result = {
+            "answer": assessment["answer"],
+            "cited_sources": assessment["cited_sources"],
+        }
     else:
         result = refuse(coverage["reason"])
     show("step 6: final result", result)
