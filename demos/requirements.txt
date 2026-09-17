@@ -25,6 +25,10 @@
 # Qdrant's embedded, on-disk mode, no separate server or install needed.
 # nbformat and nbconvert execute and save Module 4's self-study notebook
 # with its checked output, using the same shared demo environment.
+#
+# Module 5's evaluation harness needs no new package: it reuses
+# google-genai (its toy agent and judge calls) and mem0ai (its PII probe,
+# importing module-04/memory_demo.py's own functions directly).
 google-genai>=2.3.0
 python-dotenv>=1.0
 ipykernel>=6.29

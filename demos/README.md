@@ -14,8 +14,8 @@ default to a notebook out of habit.
 
 **For exact, copy-pasteable run steps, see each module's own README**
 (`module-01/README.md`, `module-02/README.md`, `module-03/README.md`,
-`module-04/README.md`): this page covers the one-time setup shared by all
-of them, not how to run any one demo.
+`module-04/README.md`, `module-05/README.md`): this page covers the
+one-time setup shared by all of them, not how to run any one demo.
 
 ## Folder convention
 
@@ -42,6 +42,7 @@ When you add a new module's demo, create its `module-NN/` folder, write its
 | `module-02/` (`raw_loop.py`, `graph.py` via `langgraph dev`) | `lectures/dsca-module-02.html` | 3 ("The raw agent loop, with nothing hidden"), 5 ("LangGraph: nodes, edges, and state as one object") | The same order-status agent built twice: a plain Python loop printing the messages array after every step, then a LangGraph graph (agent / tool / escalate nodes) traced live in Studio. |
 | `module-03/grounded_rag.py` | `lectures/dsca-module-03.html` | 3 (hybrid search), 4 (reciprocal rank fusion), 6 (reranking), 8 (citation and refusal), 18, 19, 21, 22 (the matching hands-on lab walkthroughs) | A small fake FAQ knowledge base run through the full pipeline: BM25 plus vector search merged by reciprocal rank fusion, a reranking pass, then either a cited answer or a refusal, depending on a coverage check. |
 | `module-04/memory_demo.py`, `module-04/memory_demo.ipynb` | `lectures/dsca-module-04.html` | 5 (Mem0's extract-and-update mechanism) in the Lecture section, 14, 15, 16, 17, 20 (the matching hands-on lab walkthroughs) | The real `mem0ai` package, configured with Gemini for both generation and embeddings and a local on-disk Qdrant store: Mem0's additive extractor records a changed fact, then the demo applies its real `update()` and `delete()` methods to preserve one current value. A real process restart recalls that value, a long message list gets compacted, and `delete_all` is verified, not just called. The script is the live demo; the notebook is a self-study companion that imports the script's own functions and proves persistence with a genuine subprocess. |
+| `module-05/eval_harness.py` | `lectures/dsca-module-05.html` | 18 through 25 (the Hands-on lab's four build walkthroughs) | A small, deliberately flaky toy order-status agent, evaluated four ways: a scripted regression set with full trajectory capture and a pass^k run (a single seeded run shows `pass_1: true, pass_3: false` for one scenario), a structured Gemini judge grading each trajectory against a known-correct expected outcome rather than the final reply alone, a bias probe (identical seed, only a persona cue differs), and a PII-leakage probe that imports and reuses `module-04/memory_demo.py`'s own `close_memory()`, `forget_user()`, and verified Gemini model-name pair rather than re-deriving them. |
 
 Add a row here whenever a later module gets its own instructor demo. The
 lecture file's own speaker notes should say when to switch to the demo

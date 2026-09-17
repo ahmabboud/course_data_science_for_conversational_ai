@@ -93,7 +93,7 @@ set for every module, on top of the mechanical authoring contract in
 | 2 | Agentic Dialogue Management | Not started | Not started | Not started | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Not started |
-| 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | Not started | Not started |
+| 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | Not started | Done, see below |
 
 Module 6 has no lecture deck (live defense session), so it carries no row
 here; see `README.md`.
@@ -496,11 +496,42 @@ one process deviation noted in the paper track below.
   Module 5 card to `index.html`, the way Module 4 got one (task done for
   Module 4, not yet repeated here).
 
-### Code track: not started
+### Code track: done
 
-- `demos/module-05/` does not exist yet. Following the course's own
-  precedent (each module's demo has followed its deck build), this is the
-  natural next step, though it has not been explicitly requested.
+- **Built:** `demos/module-05/eval_harness.py`, evaluating a small,
+  deliberately flaky toy order-status agent (built for this demo, not a
+  reimplementation of any team's real one). Implements all four of the
+  lecture's lab pieces: a scripted regression set with full trajectory
+  capture and a pass^k run (`PASS_K = 3`, `FLAKE_RATE = 0.4` on the one
+  tool call, seeded for reproducibility), a structured Gemini judge
+  grading each trajectory against a known-correct expected outcome rather
+  than the final reply alone, a bias probe (identical seed, only a
+  persona cue differs), and a PII-leakage probe.
+- **Reuses Module 4's memory functions rather than reimplementing them:**
+  imports `close_memory`, `forget_user`, `retry_transient`, and Module 4's
+  own verified `MEM0_GENERATION_MODEL`/`MEM0_EMBEDDING_MODEL` pair directly
+  from `module-04/memory_demo.py`. Only `new_memory()` is redefined, with
+  its own `mem0_store/` and collection name, so the two modules' demos
+  share code, never on-disk state.
+- **Verified 2026-09-16** with a full dry run: `mem0` and `google.genai`
+  stubbed out (a fake in-memory store; a fake judge that compares the
+  prompt's stated expected outcome against the fake agent's reply) and run
+  as a real subprocess via `PYTHONPATH`, the same technique used to verify
+  Module 4's script and notebook. Confirmed end to end: `order-shipped`
+  correctly shows `pass_1: true, pass_3: false` at this seed (2 of 3
+  attempts hit the stale-cache path), `order-processing` shows
+  `pass_1: true, pass_3: true` (a clean control), the bias probe and PII
+  probe both run and report their booleans, and the scorecard writes valid
+  JSON. This checks structure and control flow, not a real model's
+  judgement quality; the instructor still owns confirming that with a live
+  key, same division of labor as every other module's Code track.
+- **Written:** `demos/module-05/README.md` (run steps, what each part
+  shows, why the toy agent is deliberately flaky). Added a
+  `demos/README.md` table row, an `M05_GENERATION_MODEL` entry in
+  `demos/.env.example`, a `requirements.txt` comment noting no new package
+  is needed, an `eval_scorecard.json` gitignore entry, and a cross-reference
+  from the deck's own "What you build today" slide (18) speaker notes back
+  to this demo, matching every other module's two-way link convention.
 
 ## Conventions for adding a new module or course
 
