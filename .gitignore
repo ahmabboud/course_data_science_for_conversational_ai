@@ -6,3 +6,4 @@ uploads/
 __pycache__/
 .ipynb_checkpoints/
 .langgraph_api/
+mem0_store/

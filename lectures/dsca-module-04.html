@@ -154,7 +154,7 @@
       <p class="lu-sub">On real benchmarks (LOCOMO, GPT-4o-mini scale), Mem0 answers from roughly 1,764 tokens of retrieved memory versus 26,031 tokens for replaying the full transcript, about 15 times less context per query, at a median search latency of about 0.15 seconds.</p>
     </div>
   </div>
-  <template data-notes><p>Seven minutes. Step through all four operations, then open the reveal and say the complexity point plainly: comparing every new fact against every stored fact does not stay cheap forever, this is the same lesson as vector search at scale, applied to a different data structure. The token and latency numbers are real, from the Mem0 paper (arXiv:2504.19413), not illustrative round numbers, say so if asked.</p></template>
+  <template data-notes><p>Seven minutes. Step through all four operations, then open the reveal and say the complexity point plainly: comparing every new fact against every stored fact does not stay cheap forever, this is the same lesson as vector search at scale, applied to a different data structure. The token and latency numbers are real, from the Mem0 paper (arXiv:2504.19413), not illustrative round numbers, say so if asked. <code>demos/module-04/memory_demo.py</code> runs this exact ADD-then-UPDATE sequence against the real mem0ai package, useful to pull up live if a team doubts the similarity comparison actually catches a paraphrase.</p></template>
 </section>
 
 <!-- ==================================================================== 06 -->
@@ -346,7 +346,7 @@ memory.get_all(user_id=<span class="tok-str">"user-482"</span>)
       </div>
     </div>
   </div>
-  <template data-notes><p>Ten minutes. Step 4 is the whole lab in miniature, make every team actually kill and restart the process, not just trust that it would work. Expected blocker: a team keys memory.add by session id out of habit from Module 2's state graph, which silently defeats the entire point; watch for it and correct it early.</p></template>
+  <template data-notes><p>Ten minutes. Step 4 is the whole lab in miniature, make every team actually kill and restart the process, not just trust that it would work. Expected blocker: a team keys memory.add by session id out of habit from Module 2's state graph, which silently defeats the entire point; watch for it and correct it early. <code>demos/module-04/memory_demo.py</code> runs this exact add-then-restart sequence against the real library, with a second Memory instance standing in for the restart, useful to project if a team wants to see the pattern before writing their own.</p></template>
 </section>
 
 <!-- ==================================================================== 15 -->
@@ -377,7 +377,7 @@ candidates = memory_chunks + document_chunks
       </div>
     </div>
   </div>
-  <template data-notes><p>Ten minutes. The design point worth saying out loud: nothing from Module 3's citation-and-refusal logic needs to change, memory is just a second source_id namespace feeding the same fused candidate list. A team that tries to build a separate, parallel "memory answer path" is doing more work than the architecture needs.</p></template>
+  <template data-notes><p>Ten minutes. The design point worth saying out loud: nothing from Module 3's citation-and-refusal logic needs to change, memory is just a second source_id namespace feeding the same fused candidate list. A team that tries to build a separate, parallel "memory answer path" is doing more work than the architecture needs. <code>demos/module-04/memory_demo.py</code>'s part 2 prints this exact search-then-cite shape end to end.</p></template>
 </section>
 
 <!-- ==================================================================== 16 -->
@@ -398,7 +398,7 @@ candidates = memory_chunks + document_chunks
       <p class="lu-sub">This is the literal deliverable for Issue 4. A team that has only tested recall inside one long conversation has not actually tested the thing being graded, catching that now is far cheaper than at the checkpoint discussion.</p>
     </div>
   </div>
-  <template data-notes><p>Seven minutes. Circulate and make every team actually restart their process in front of you, not describe what would happen if they did. The second check (deduplication) is the one teams most often skip, and it is the one that silently means their memory bank is quietly filling with duplicate, contradictory facts.</p></template>
+  <template data-notes><p>Seven minutes. Circulate and make every team actually restart their process in front of you, not describe what would happen if they did. The second check (deduplication) is the one teams most often skip, and it is the one that silently means their memory bank is quietly filling with duplicate, contradictory facts. <code>demos/module-04/memory_demo.py</code> demonstrates all three checks in one run if a team wants to see the passing case before debugging their own.</p></template>
 </section>
 
 <!-- ==================================================================== 17 -->
@@ -432,7 +432,7 @@ messages = [summary] + messages[<span class="tok-num">10</span>:]</code></pre>
       </div>
     </div>
   </div>
-  <template data-notes><p>Nine minutes. The distinction in step 3 is the one teams blur most: a rolling summary and a persistent memory bank solve different problems on different timescales, and a team that builds only one of them has not actually finished either half of Issue 4. Point back at the lecture's three-technique table if this is not landing.</p></template>
+  <template data-notes><p>Nine minutes. The distinction in step 3 is the one teams blur most: a rolling summary and a persistent memory bank solve different problems on different timescales, and a team that builds only one of them has not actually finished either half of Issue 4. Point back at the lecture's three-technique table if this is not landing. <code>demos/module-04/memory_demo.py</code>'s part 3 shows the budget-and-splice logic on a fake 25-turn conversation, tested without spending a live model call.</p></template>
 </section>
 
 <!-- ==================================================================== 18 -->
@@ -487,7 +487,7 @@ messages = [summary] + messages[<span class="tok-num">10</span>:]</code></pre>
       <p class="lu-sub">Issue 4 only requires working recall and compaction. This is for teams whose basic path already works and want to make today's privacy discussion concrete in their own system.</p>
     </div>
   </div>
-  <template data-notes><p>Six minutes, only for teams who reach it. The verification step matters as much as the delete call itself: a team that only checks "no error was thrown" has not actually confirmed the user was forgotten.</p></template>
+  <template data-notes><p>Six minutes, only for teams who reach it. The verification step matters as much as the delete call itself: a team that only checks "no error was thrown" has not actually confirmed the user was forgotten. <code>demos/module-04/memory_demo.py</code>'s part 4 is exactly this: delete_all, then check both search and get_all come back empty.</p></template>
 </section>
 
 <!-- ==================================================================== 21 -->

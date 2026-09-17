@@ -16,6 +16,13 @@
 # needs a real vector database or a cross-encoder model, see
 # module-03/README.md for why reranking uses one more Gemini call instead
 # of a dedicated reranker model.
+#
+# mem0ai is module-04's demo. Pinned to 2.0.18 or newer, the current
+# release as of this writing, because the filters-based user_id contract
+# on search/get_all documented in module-04/README.md is the one this
+# course's code relies on; do not lower this floor without re-checking
+# that contract still holds. Its own dependency on qdrant-client brings in
+# Qdrant's embedded, on-disk mode, no separate server or install needed.
 google-genai>=2.3.0
 python-dotenv>=1.0
 ipykernel>=6.29
@@ -23,3 +30,4 @@ langgraph>=1.2
 langgraph-cli[inmem]>=0.4
 rank_bm25>=0.2
 numpy>=1.26
+mem0ai>=2.0.18
