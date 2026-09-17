@@ -154,7 +154,7 @@
       <p class="lu-sub">On real benchmarks (LOCOMO, GPT-4o-mini scale), Mem0 answers from roughly 1,764 tokens of retrieved memory versus 26,031 tokens for replaying the full transcript, about 15 times less context per query, at a median search latency of about 0.15 seconds.</p>
     </div>
   </div>
-  <template data-notes><p>Seven minutes. Step through all four operations, then open the reveal and say the complexity point plainly: comparing every new fact against every stored fact does not stay cheap forever, this is the same lesson as vector search at scale, applied to a different data structure. The token and latency numbers are real, from the Mem0 paper (arXiv:2504.19413), not illustrative round numbers, say so if asked. <code>demos/module-04/memory_demo.py</code> runs this exact ADD-then-UPDATE sequence against the real mem0ai package, useful to pull up live if a team doubts the similarity comparison actually catches a paraphrase.</p></template>
+  <template data-notes><p>Seven minutes. Step through all four operations, then open the reveal and say the complexity point plainly: comparing every new fact against every stored fact does not stay cheap forever, this is the same lesson as vector search at scale, applied to a different data structure. The token and latency numbers are real, from the Mem0 paper (arXiv:2504.19413), not illustrative round numbers, say so if asked. <code>demos/module-04/memory_demo.py</code> runs this exact ADD-then-UPDATE sequence against the real mem0ai package, useful to pull up live if a team doubts the similarity comparison actually catches a paraphrase. The infographic at <code>assets/infographics/module-04/mem0.html</code> is a visual companion to this whole walkthrough, open it live if the room responds better to a diagram than to code.</p></template>
 </section>
 
 <!-- ==================================================================== 06 -->
@@ -177,7 +177,7 @@
     <span class="lu-callout__label">The same "lives in Paris" example, as a graph</span>
     <p class="lu-sub">edge(user, lives_in, Beirut), valid_at: 2025-01, invalid_at: 2025-09. edge(user, lives_in, Paris), valid_at: 2025-09, invalid_at: null. Both edges stay in the graph; a query about last January still gets the right answer, a query about today gets the other one.</p>
   </div>
-  <template data-notes><p>Seven minutes. The core contrast with Mem0: Mem0 keeps one current fact per claim and overwrites it, Zep keeps every version and lets time itself disambiguate which one a query needs. This is exactly why Zep suits questions like "where did the user live before Paris," which a flat extract-and-update store has already discarded the means to answer. On real benchmarks (LongMemEval), Zep improves accuracy by up to 18.5% and cuts response latency by about 90% versus replaying full history, real numbers from the Zep paper (arXiv:2501.13956).</p></template>
+  <template data-notes><p>Seven minutes. The core contrast with Mem0: Mem0 keeps one current fact per claim and overwrites it, Zep keeps every version and lets time itself disambiguate which one a query needs. This is exactly why Zep suits questions like "where did the user live before Paris," which a flat extract-and-update store has already discarded the means to answer. On real benchmarks (LongMemEval), Zep improves accuracy by up to 18.5% and cuts response latency by about 90% versus replaying full history, real numbers from the Zep paper (arXiv:2501.13956). The infographic at <code>assets/infographics/module-04/zep-graphiti.html</code> is a visual companion to this walkthrough.</p></template>
 </section>
 
 <!-- ==================================================================== 07 -->
@@ -220,7 +220,7 @@
       <p class="lu-sub">On LOCOMO, reading back the full transcript scores 54.2 (GPT4Score); segment-then-compress scores 71.6, a +17.4 point gain, using a compression rate of about 75% (LLMLingua-2). Removing the compression step alone costs 9.46 of those points back, the paper's own ablation, not a rounded estimate.</p>
     </div>
   </div>
-  <template data-notes><p>Seven minutes. The throughline: none of the three options is "no cost." Truncation loses whatever falls off the edge, summarisation loses whatever a summary was not built to preserve, segment-then-compress spends a whole extra model call (LLMLingua-2) per segment to avoid both. Name the syllabus's own bar plainly: a long conversation must be compacted, not silently truncated or overflowed, that is graded, not optional.</p></template>
+  <template data-notes><p>Seven minutes. The throughline: none of the three options is "no cost." Truncation loses whatever falls off the edge, summarisation loses whatever a summary was not built to preserve, segment-then-compress spends a whole extra model call (LLMLingua-2) per segment to avoid both. Name the syllabus's own bar plainly: a long conversation must be compacted, not silently truncated or overflowed, that is graded, not optional. The infographic at <code>assets/infographics/module-04/secom.html</code> is a visual companion to SeCom's own numbers here.</p></template>
 </section>
 
 <!-- ==================================================================== 09 -->
@@ -257,7 +257,7 @@
     <span class="lu-callout__label">Read critically, not as a leaderboard</span>
     <p class="lu-sub">SeCom's own numbers are strong on LOCOMO, but SeCom was built to answer "how should I chunk and denoise one long conversation," not "how do I track a fact that changes over months across many sessions," the problem Mem0 and Zep are actually built for. A benchmark win on one axis does not make a technique the right choice on a different axis.</p>
   </div>
-  <template data-notes><p>Seven minutes. This slide is today's version of Module 3's CAG-versus-RAG comparison: three real, verified results sitting side by side, with an explicit warning against treating "highest score" as "best tool," since each paper was solving a differently scoped problem. This also discharges this module's assigned reading (the SeCom paper) as a genuine comparison rather than a name-drop.</p></template>
+  <template data-notes><p>Seven minutes. This slide is today's version of Module 3's CAG-versus-RAG comparison: three real, verified results sitting side by side, with an explicit warning against treating "highest score" as "best tool," since each paper was solving a differently scoped problem. This also discharges this module's assigned reading (the SeCom paper) as a genuine comparison rather than a name-drop. The infographic at <code>assets/infographics/module-04/memory-techniques-comparison.html</code> puts all three side by side visually, the same comparison this table makes in words.</p></template>
 </section>
 
 <!-- ==================================================================== 11 -->
@@ -546,6 +546,7 @@ messages = [summary] + messages[<span class="tok-num">10</span>:]</code></pre>
         <ul class="lu-list">
           <li><a href="https://arxiv.org/abs/2502.05589" target="_blank" rel="noopener">"On Memory Construction and Retrieval for Personalized Conversational Agents"</a> (SeCom, today's third technique).</li>
           <li>Mem0 and Zep's own documentation, whichever your team did not wire in today.</li>
+          <li>Visual companions to today's three techniques, each fact-checked against its paper: <a href="../assets/infographics/module-04/mem0.html" target="_blank" rel="noopener">Mem0</a>, <a href="../assets/infographics/module-04/zep-graphiti.html" target="_blank" rel="noopener">Zep/Graphiti</a>, <a href="../assets/infographics/module-04/secom.html" target="_blank" rel="noopener">SeCom</a>, and a <a href="../assets/infographics/module-04/memory-techniques-comparison.html" target="_blank" rel="noopener">side-by-side comparison</a>.</li>
         </ul>
       </div>
       <div class="lu-callout">
