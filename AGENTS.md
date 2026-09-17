@@ -213,6 +213,19 @@ Do not restate the slide. If a note only repeats what is visible, delete it and 
 
 ---
 
+## 7b. Standalone interactive infographics (a fourth route, not drawn on a slide)
+
+A richer, animated, or comparison-style infographic (a Claude-made "Standalone" HTML page, or anything similar) does not get embedded in a slide. It gets saved as its own page and linked to. This is a different route from the three above, which draw something inside a slide's fixed canvas; a standalone infographic is a whole page a slide points at.
+
+1. **Fact-check it against the actual source before it goes anywhere near the repo.** Every claimed number gets traced to the specific table or column it actually comes from in the paper (not just "the paper says X somewhere"), the same discipline as any other cited number in this course. Fix what is wrong before saving it in, do not link in an unverified infographic and fix it later.
+2. **Save it to `assets/infographics/<module-NN>/<slug>.html`**, one folder per module, one file per infographic, a short, plain, hyphenated slug (`mem0.html`, not `Mem0 Infographic - Standalone.html`). Add a `README.md` in that folder naming what each file is and exactly what was fact-checked and fixed (or that nothing needed fixing), the same way `demos/<module-NN>/README.md` documents a demo.
+3. **Link it in two places, not one:**
+   - The relevant slide's own `<template data-notes>`, so the instructor knows to pull it up live (`The infographic at <code>assets/infographics/module-NN/<slug>.html</code> is a visual companion to this walkthrough.`).
+   - A visible `<a>` in that module's reading or further-materials slide (its "Before Module N+1" slide, or equivalent), so a student in self-study mode can reach it too, not only the instructor. Do not embed the infographic itself on that slide, just link to it, `target="_blank" rel="noopener"`.
+4. **Never embed it inline in a slide's body.** It is a full page, not a component; forcing it into the fixed 1600x900 canvas defeats the point of something built to stand on its own.
+
+---
+
 ## 8. Accessibility, concretely
 
 The target is WCAG 2.2 AA. The system meets most of it structurally; these are the parts you can break:
