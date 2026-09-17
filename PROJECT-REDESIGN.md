@@ -171,7 +171,11 @@ Q&A, not just the sub-score that maps to the part they personally wrote.
 1. Fill the research-dive gap in Modules 1 and 2 (currently neither has
    one; both predate that convention).
 2. Curate the actual paper-and-repo menu, five topics, papers that
-   already have a working repo and fit the compute/cost cap.
+   already have a working repo and fit the compute/cost cap. Done,
+   2026-09-17: `research/PROJECT-PAPER-MENU.md`, thirteen papers across
+   the five topics, each with a verified repository link and a concrete
+   compute/cost note, plus one flagged exception (Dialogue's own taught
+   paper has no public repo). Linked from Module 1's kickoff slide.
 3. Rewrite Module 1's old "Project kickoff" segment to present the five
    topics, the menu, the selection rules, and the idea-pitch step, so
    teams can start choosing on day one.

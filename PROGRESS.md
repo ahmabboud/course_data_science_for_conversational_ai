@@ -16,6 +16,32 @@ the current target. Treat any conflict between this file and
 `PROJECT-REDESIGN.md` as this file being the one that has not caught up
 yet, and update it, rather than assuming the redesign doc is wrong.
 
+## Project redesign, the seven-item build list
+
+`PROJECT-REDESIGN.md`'s own "Still to build" section lists seven items.
+Tracked here so a session does not have to cross-reference two files to
+see what is left:
+
+1. Fill the research-dive gap in Modules 1 and 2. **Done**, see Module 1
+   and Module 2's own "Paper track and research dive" sections below.
+2. Curate the paper-and-repo menu. **Done**, 2026-09-17,
+   `research/PROJECT-PAPER-MENU.md`, thirteen papers across the five
+   topics, each with a verified repo link and a compute/cost note.
+3. Rewrite Module 1's kickoff to present the five topics, the menu, and
+   the idea-pitch step. **Done**, see Module 1's own detail section below
+   (the 2026-09-17 restructure), now also linking the menu file directly
+   from the kickoff slide's visible text and speaker notes.
+4. Rewrite the syllabus's Continuous Project, Assessment, and rubric
+   sections. **Done**, per this file's earlier commit history (task #74).
+5. Rebuild `dsca-team-template`'s issue templates for idea-pitch,
+   baseline, extension, and report/slides. **Not started.**
+6. Rebuild Module 6: segment minutes, scoring sheet, defense-day
+   materials. **Not started.**
+7. Update `PROGRESS.md` and `index.html`/`README.md` so a new session sees
+   the current model. **In progress**: this file now reflects items 1
+   through 4; `index.html` and `README.md` have not yet been checked
+   against the redesign.
+
 This tracker exists because of four standing quality bars the instructor
 set for every module, on top of the mechanical authoring contract in
 `AGENTS.md`:
