@@ -89,14 +89,108 @@ set for every module, on top of the mechanical authoring contract in
 
 | # | Title | Lecture notes | Paper | Graphics | Code |
 |---|---|---|---|---|---|
-| 1 | Foundations and Modern Understanding | Not started | Not started | Not started | Not started |
-| 2 | Agentic Dialogue Management | Not started | Not started | Not started | Not started |
+| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first | Not started (no research dive in syllabus, see detail) | Not started | Not started |
+| 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first | Not started (no research dive in syllabus, see detail) | Not started | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
 | 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | Not started | Done, see below |
 
 Module 6 has no lecture deck (live defense session), so it carries no row
 here; see `README.md`.
+
+## Module 1, Foundations and Modern Understanding, detail
+
+Both decks predate the module build order above (they were the first two
+built, slide-by-slide against the syllabus row directly, no
+`lecture-notes.md` and no research/paper track ever existed for them, same
+situation as Module 3's own "predates this rule" note). This section
+records a depth-bar audit run on 2026-09-16, once all five other modules
+existed and the instructor confirmed it was time to look back at Modules 1
+and 2, not a rebuild.
+
+### Depth-bar audit, 2026-09-16
+
+- **Method:** every core-concept slide checked against `AGENTS.md` §12's
+  six-row bar (formalism where the field has one, a black-box call opened
+  at least once, cost stated not implied, a named alternative and why not,
+  the metric the field actually uses, a critical read of a cited paper),
+  applied only to slides the bar actually governs (not dividers, check
+  questions, or lab briefs).
+- **Row 6 (cited paper, read critically) does not apply to this module.**
+  Confirmed by reading the syllabus docx directly: Session 1's reading line
+  is "AI Engineering, structured output and function calling" plus an AI
+  Agents in LangGraph course, and it has no Research dive segment at all.
+  There is no paper for this module to cite, so this row is noted as
+  structurally absent, not force-filled with an unrelated citation.
+- **Two genuine gaps found and fixed** (rows 3 and 4, cost and named
+  alternative):
+  - Slide "Why classifiers and taggers are replaced": added the labeled-data
+    cost classical intent classifiers actually paid, and the metric
+    contrast (intent accuracy / slot F1 versus schema-validated exact-match
+    for structured output), where the slide previously only said "editing a
+    schema, not collecting labeled data" with no number or named metric
+    behind it.
+  - Slide "The LLM API landscape": added the real named alternative (OpenAI
+    function calling, Anthropic tool use both do the same structural,
+    decode-time enforcement) and the actual, honest reason this course
+    standardizes on Gemini (free-tier generosity for a classroom, not a
+    technical-superiority claim), where previously only one provider was
+    shown with no acknowledgment that alternatives exist.
+- **Minutes:** both new callouts absorbed by trimming two other Lecture-
+  section slides ("Walkthrough: the correction becomes JSON,"
+  "Designing for evaluation from day one"), keeping the Lecture section's
+  existing total (52 minutes) exactly unchanged. Total deck minutes still
+  180, slide count unchanged at 28.
+- **Known pre-existing drift, not touched:** this deck's Lecture/Wrap split
+  is 52/16, not the syllabus's own 50/20. This predates the current
+  session's edits (confirmed the untouched `data-minutes` values summed
+  identically before and after this audit's additions) and is out of scope
+  for a depth-bar pass specifically; flagged here for a future session that
+  wants to reconcile it, not fixed unilaterally.
+- **Verified:** tag-balanced, zero em/en dashes, MCQ qids `m1-q1`/`m1-q2`
+  unique, 28 slides. Committed together with Module 2's fixes, commit
+  `ba77cce`.
+
+## Module 2, Agentic Dialogue Management, detail
+
+Same predates-the-build-order situation as Module 1 (no `lecture-notes.md`,
+no paper track, slide-by-slide against the syllabus row). Audited in the
+same pass as Module 1, 2026-09-16.
+
+### Depth-bar audit, 2026-09-16
+
+- **Row 6 (cited paper, read critically) does not apply to this module
+  either.** Confirmed via the syllabus docx: Session 2 reads "AI Agents in
+  LangGraph, persistence and human-in-the-loop" and "Anthropic, Building
+  Effective Agents, the routing pattern," an engineering blog post, not an
+  academic paper, and there is no Research dive segment in this module's
+  row. Noted as structurally absent, not forced.
+- **Three genuine gaps found and fixed** (rows 3 and 4):
+  - Slide "The raw agent loop, with nothing hidden": added the O(n^2)
+    total-token-cost consequence of resending the whole messages array on
+    every call across an n-turn conversation, derived directly from a fact
+    already stated on the slide (every call resends the full array), not a
+    new external statistic. Deliberately foreshadows Module 4's
+    compaction lecture.
+  - Slide "Chain-of-thought for tool selection": added the named,
+    cheaper alternative (skip straight to a tool call, no reasoning field)
+    and the real accuracy/cost tradeoff against it, where the slide
+    previously presented chain-of-thought as the only option.
+  - Slide "The one multi-agent pattern this course teaches: routing and
+    escalation": replaced a course-scoping justification ("out of scope
+    for this course") with the actual technical reason general multi-agent
+    orchestration is avoided (coordination overhead, emergent failure
+    modes), sourced from this module's own assigned reading (Anthropic,
+    "Building Effective Agents") rather than scope alone.
+- **Minutes:** absorbed by trimming three other Lecture-section slides
+  ("Check: what LangGraph actually adds," "Walkthrough: one tool call
+  through MCP," "Walkthrough: a turn that gets escalated"), keeping the
+  Lecture section at exactly the syllabus's own 50 minutes (this deck's
+  section totals already matched the syllabus before this audit, unlike
+  Module 1). Total deck minutes still 180, slide count unchanged at 26.
+- **Verified:** tag-balanced, zero em/en dashes, MCQ qids `m2-q1`/`m2-q2`
+  unique, 26 slides. Committed together with Module 1's fixes, commit
+  `ba77cce`.
 
 ## Module 3, Grounded Generation, detail
 
