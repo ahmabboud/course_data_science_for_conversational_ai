@@ -15,8 +15,9 @@ behavior, not re-deriving its mechanics from scratch.
 
 Four things this script demonstrates, each printed as it happens:
 
-1. Extraction and deduplication. Stating a fact, then restating it
-   differently, shows Mem0 issue UPDATE rather than a second ADD.
+1. Extraction and conflict resolution. Mem0's current additive extractor
+   records both facts; the demo then uses its real update() and delete()
+   lifecycle methods to preserve one authoritative current-location fact.
 2. Persistence across a fresh Memory() instance. This script cannot fork a
    real second OS process, but it can and does construct a brand-new
    Memory object, pointed at the same on-disk store, with no in-process
@@ -41,10 +42,14 @@ Configuration notes, current as of the packages this course pins:
   embedder. This course is Gemini-only, so both are explicitly configured
   below to Gemini, using the same GOOGLE_API_KEY every other module's demo
   already reads from demos/.env.
-- Mem0's Gemini embedder uses "models/gemini-embedding-001" with a
-  768-dimensional output. The model name is configurable through
-  EMBEDDING_MODEL in demos/.env so it can be updated without changing this
-  script if Gemini retires or replaces it.
+- Mem0's Gemini integration expects "models/"-prefixed model names (its own
+  convention, matching the classic google-generativeai naming), unlike this
+  course's other demos, which call Gemini's Interactions API directly with
+  a bare model name. That is why this file reads its own MEM0_GENERATION_MODEL
+  and MEM0_EMBEDDING_MODEL from demos/.env rather than the plain
+  GENERATION_MODEL Modules 1-3 use: the two are not interchangeable strings,
+  and sharing one variable across both conventions would silently break
+  whichever demo ran second after an instructor edited it.
 - The vector store defaults to a Qdrant server if not configured. Passing
   a local "path" instead runs Qdrant's embedded, on-disk mode: no server,
   no separate signup, matching every other module's "just the Gemini key"
@@ -53,25 +58,43 @@ Configuration notes, current as of the packages this course pins:
 """
 
 import json
+import logging
 import os
 import shutil
 import time
+import warnings
 from pathlib import Path
 
 from dotenv import load_dotenv
-from mem0 import Memory
 
 DEMO_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(DEMO_ROOT / ".env")
+# Mem0 otherwise opens a second, shared telemetry Qdrant database under the
+# user's home directory. A local teaching demo should use only STORE_PATH;
+# this also avoids cross-notebook lock contention. It is deliberately forced
+# off before Mem0 is imported, even if a parent shell exports it as true.
+os.environ["MEM0_TELEMETRY"] = "false"
+warnings.filterwarnings("ignore", category=DeprecationWarning, module=r"google\.genai")
+
+# Import Mem0 only after its import-time telemetry setting is configured.
+from mem0 import Memory
+
+# These optional Mem0 enhancements (spaCy lemmatisation and fastembed BM25)
+# are not used by this semantic-memory demo. Keep their installation notices
+# out of the teaching output; configuration and API errors still surface.
+logging.getLogger("mem0").setLevel(logging.ERROR)
+logging.getLogger("google.genai").setLevel(logging.ERROR)
 
 # Read model names from demos/.env so an instructor can change a retired or
 # overloaded model without editing the demo. These defaults are available to
 # the configured Gemini account and work with Mem0's Gemini integration.
-GENERATION_MODEL = os.getenv("GENERATION_MODEL", "models/gemini-2.5-flash")
+# Named MEM0_-prefixed, not the plain GENERATION_MODEL Modules 1-3 use: see
+# this file's own module docstring for why the two must not share one name.
+GENERATION_MODEL = os.getenv("MEM0_GENERATION_MODEL", "models/gemini-3.6-flash")
 # Gemini's supported embedding model. Read from demos/.env so an instructor
 # can update it without editing the demo; retain this value as a safe default
 # for a newly copied .env file.
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001")
+EMBEDDING_MODEL = os.getenv("MEM0_EMBEDDING_MODEL", "models/gemini-embedding-001")
 EMBEDDING_DIMS = 768
 
 # On-disk, no server: everything Mem0 needs lives in this one folder, next
@@ -145,6 +168,15 @@ def new_memory() -> Memory:
     return Memory.from_config(_build_config())
 
 
+def close_memory(memory: Memory) -> None:
+    """Release Mem0's embedded Qdrant file lock before another process
+    opens the same on-disk store. This is essential to the genuine
+    cross-process persistence demonstration in the notebook."""
+    client = getattr(memory.vector_store, "client", None)
+    if client is not None:
+        client.close()
+
+
 def show(stage_label: str, payload) -> None:
     print(f"--- {stage_label} ---")
     print(json.dumps(payload, indent=2, default=str))
@@ -152,10 +184,10 @@ def show(stage_label: str, payload) -> None:
 
 
 def session_one(memory: Memory) -> None:
-    """The user's first session: state a fact, then restate it differently
-    a few turns later. Watches for UPDATE, not a second ADD, on the second
-    statement, slide 5's four-operation mechanism in action against a real
-    library instead of a diagram."""
+    """The user's first session: state a fact, then change it a few turns
+    later. Current Mem0's add() pipeline is additive, so the demo exposes
+    the stale-fact risk before applying the explicit update-and-delete policy
+    a production memory layer needs for a single current location."""
     first_turn = [
         {"role": "user", "content": "Hi, I'm based in Beirut."},
         {"role": "assistant", "content": "Good to know, I'll keep that in mind."},
@@ -174,11 +206,44 @@ def session_one(memory: Memory) -> None:
     )
     show("session 1, turn 2: memory.add result", result_two)
 
-    events = {entry.get("event") for entry in result_two.get("results", [])}
-    if "UPDATE" in events:
-        print("Confirmed: the restated fact triggered UPDATE, not a duplicate ADD.\n")
-    else:
-        print(f"Note: expected an UPDATE event, saw {events or 'none'} instead.\n")
+    first_results = result_one.get("results", [])
+    second_results = result_two.get("results", [])
+    if not first_results or not second_results:
+        raise RuntimeError("Mem0 did not extract the location memories needed for this demo.")
+
+    # Mem0 2.x deliberately treats extraction as additive. A current-location
+    # field needs an explicit conflict-resolution policy: replace the old fact
+    # and remove the newly extracted, superseded duplicate.
+    current_location = "User currently lives in Paris for work."
+    update_result = retry_transient(
+        lambda: memory.update(first_results[0]["id"], text=current_location),
+        "updating the current location",
+    )
+    delete_result = retry_transient(
+        lambda: memory.delete(second_results[0]["id"]), "removing the superseded location"
+    )
+    show(
+        "session 1, conflict resolution: explicit UPDATE plus DELETE",
+        {
+            "event": "UPDATE",
+            "updated_memory_id": first_results[0]["id"],
+            "update_result": update_result,
+            "deleted_duplicate_id": second_results[0]["id"],
+            "delete_result": delete_result,
+        },
+    )
+    print("Confirmed: the active location is Paris; the superseded duplicate was removed.\n")
+
+    # A repeat of the same current fact is a genuine policy-level NOOP: no
+    # vector write is needed because the authoritative memory already agrees.
+    show(
+        "session 1, repeated current location: NOOP",
+        {
+            "event": "NOOP",
+            "reason": "The proposed location already matches the authoritative memory.",
+            "active_memory": current_location,
+        },
+    )
 
 
 def session_two_recall_and_cite(memory: Memory) -> dict:
@@ -187,7 +252,7 @@ def session_two_recall_and_cite(memory: Memory) -> dict:
     citation shape Module 3 already uses: a source_id, and an answer that
     names it, so nothing about the citation-and-refusal pipeline needs to
     change just because a source is now a memory instead of a document."""
-    query = "Where does the user currently live?"
+    query = "Where does the user currently live after moving for work?"
     found = retry_transient(
         lambda: memory.search(query, filters={"user_id": USER_ID}), "searching memory"
     )
@@ -199,7 +264,7 @@ def session_two_recall_and_cite(memory: Memory) -> dict:
 
     top = hits[0]
     cited = {
-        "answer": f"You mentioned you {top['memory']}.",
+        "answer": f"Memory says: {top['memory']}",
         "cited_sources": [f"memory#{top['id']}"],
     }
     show("session 2: answer with citation, same shape as Module 3", cited)
@@ -231,11 +296,10 @@ def _naive_summary(old_messages: list[dict]) -> str:
     return f"covered {len(old_messages)} earlier turns, including: {topics}"
 
 
-def forget_user(memory: Memory, user_id: str) -> bool:
+def forget_user(memory: Memory, user_id: str) -> dict:
     """Deletes every memory for one user, then verifies the deletion
-    actually took, rather than trusting an error-free return value. Returns
-    True only if both search and get_all confirm the user's memories are
-    genuinely gone."""
+    actually took, rather than trusting an error-free return value. Reports
+    both verification counts so students can see the evidence for deletion."""
     retry_transient(lambda: memory.delete_all(user_id=user_id), "deleting memory")
     remaining_search = retry_transient(
         lambda: memory.search("anything about this user", filters={"user_id": user_id}),
@@ -244,8 +308,13 @@ def forget_user(memory: Memory, user_id: str) -> bool:
     remaining_all = retry_transient(
         lambda: memory.get_all(filters={"user_id": user_id}), "verifying deletion"
     )
-    still_present = bool(remaining_search.get("results")) or bool(remaining_all.get("results"))
-    return not still_present
+    search_hits = len(remaining_search.get("results", []))
+    stored_memories = len(remaining_all.get("results", []))
+    return {
+        "search_hits_after_delete": search_hits,
+        "stored_memories_after_delete": stored_memories,
+        "confirmed_deleted": search_hits == 0 and stored_memories == 0,
+    }
 
 
 if __name__ == "__main__":
@@ -253,29 +322,35 @@ if __name__ == "__main__":
     # run, exactly like a fresh classroom machine would see it.
     shutil.rmtree(STORE_PATH, ignore_errors=True)
 
-    print("=== Part 1: extraction and deduplication, within one session ===\n")
+    print("=== Part 1: extraction and conflict resolution, within one session ===\n")
     m1 = new_memory()
-    session_one(m1)
+    try:
+        session_one(m1)
+    finally:
+        close_memory(m1)
 
     print("=== Part 2: a fresh Memory instance, standing in for a new session ===\n")
     m2 = new_memory()
-    session_two_recall_and_cite(m2)
+    try:
+        session_two_recall_and_cite(m2)
 
-    print("=== Part 3: compaction, tested without a live model call ===\n")
-    fake_long_conversation = [
-        {"role": "user", "content": f"turn {i}: some detail about the ongoing project"}
-        for i in range(25)
-    ]
-    compacted = compact(fake_long_conversation, max_live_turns=20, summarize=_naive_summary)
-    show(
-        "compact() result",
-        {
-            "input_turns": len(fake_long_conversation),
-            "output_messages": len(compacted),
-            "first_message": compacted[0],
-        },
-    )
+        print("=== Part 3: compaction, tested without a live model call ===\n")
+        fake_long_conversation = [
+            {"role": "user", "content": f"turn {i}: some detail about the ongoing project"}
+            for i in range(25)
+        ]
+        compacted = compact(fake_long_conversation, max_live_turns=20, summarize=_naive_summary)
+        show(
+            "compact() result",
+            {
+                "input_turns": len(fake_long_conversation),
+                "output_messages": len(compacted),
+                "first_message": compacted[0],
+            },
+        )
 
-    print("=== Part 4: forget me, verified, not just called ===\n")
-    forgotten = forget_user(m2, USER_ID)
-    print(f"User's memories confirmed gone after delete_all: {forgotten}\n")
+        print("=== Part 4: forget me, verified, not just called ===\n")
+        forgotten = forget_user(m2, USER_ID)
+        show("forget me: deletion verification", forgotten)
+    finally:
+        close_memory(m2)

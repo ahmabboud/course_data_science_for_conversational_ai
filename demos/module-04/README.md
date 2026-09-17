@@ -42,11 +42,13 @@ python module-04/memory_demo.py
 Each run starts from a clean store (the script deletes its own
 `module-04/mem0_store/` folder first), so output is the same every time:
 
-**Part 1, extraction and deduplication.** States "I'm based in Beirut,"
-then a few turns later, "I just moved from Beirut to Paris for work."
-Watch the second `memory.add()` result: its `event` should be `UPDATE`, not
-a second `ADD`. This is slide 5's four-operation mechanism (ADD, UPDATE,
-DELETE, NOOP) against a real call instead of a diagram.
+**Part 1, extraction and conflict resolution.** States "I'm based in
+Beirut," then a few turns later, "I just moved from Beirut to Paris for
+work." Current Mem0 2.x extraction is additive, so the second `memory.add()`
+returns `ADD`. The demo then calls Mem0's real `update()` to make Paris the
+authoritative location and `delete()` to remove the superseded duplicate.
+This exposes a production requirement a flat log hides: an application needs
+an explicit policy for mutable facts.
 
 **Part 2, a second session.** A brand-new `Memory` instance, built from
 scratch with no Python state shared with the first one, searches for
@@ -64,17 +66,17 @@ not a real Gemini call, so this part's logic can be tested without spending
 a request every run; a real deployment would call the same model the rest
 of the pipeline uses.
 
-**Part 4, forget me.** Calls `delete_all` for the demo user, then actually
-checks that both `search` and `get_all` come back empty afterward, rather
+**Part 4, forget me.** Calls `delete_all` for the demo user, then prints the
+remaining `search` hit count and `get_all` count. Both must be zero, rather
 than trusting an error-free return value. This is the concrete answer to
 "what happens when a user asks the agent to forget something," the Module
 4 wrap discussion prompt.
 
 ## What to point at, live
 
-- **Part 1** is the argument for extract-and-update over a flat message
-  log: the system does not just append a new fact, it recognizes the
-  second statement supersedes the first.
+- **Part 1** shows why extraction alone is not enough for mutable facts:
+  Mem0's current additive extractor records both statements, then the
+  application applies the explicit update-and-delete lifecycle policy.
 - **Part 2** is the whole point of persistent memory versus session
   memory: closing the codebase, or even the whole terminal, does not lose
   the fact.
@@ -95,13 +97,17 @@ require it inside a `filters={"user_id": ...}` dict instead, and raise a
 right throughout; if you extend it, check which family a new call belongs
 to before assuming the same calling convention carries over.
 
-## Embedding model
+## Model names: MEM0_-prefixed, not the shared GENERATION_MODEL
 
-The demo reads `EMBEDDING_MODEL` from `demos/.env`. Use
-`models/gemini-embedding-001`, which supports Gemini's `embedContent` API
-and produces the 768-dimensional vectors configured for the local Qdrant
-store. The script uses that value by default when the environment variable
-is absent.
+This demo reads `MEM0_GENERATION_MODEL` and `MEM0_EMBEDDING_MODEL` from
+`demos/.env`, not the plain `GENERATION_MODEL` Modules 1-3 use. Mem0's own
+Gemini integration expects "models/"-prefixed names (its own convention),
+while the other demos call Gemini's Interactions API directly with a bare
+name, the two strings are not interchangeable. Use
+`models/gemini-embedding-001` for the embedder, which supports Gemini's
+`embedContent` API and produces the 768-dimensional vectors configured for
+the local Qdrant store. The script uses these values by default when the
+environment variables are absent.
 
 ## Swap in your own facts
 
@@ -109,12 +115,13 @@ is absent.
 `memory_demo.py` are the whole scenario: replace the two conversational
 turns with your own team's domain (an order-status agent remembering a
 customer's shipping address, a tutoring agent remembering a student's
-current course), and the ADD/UPDATE/search/citation flow underneath is
+current course), and the ADD/update/delete/search/citation flow underneath is
 unchanged.
 
 ## Quick check with no live discussion needed
 
 The same command as above (`python module-04/memory_demo.py`) is also the
-quick check: if it runs end to end, part 1 reports an `UPDATE` event, part
-2 recalls Paris, part 3 shows exactly 20 output messages, and part 4 prints
-`True`, the setup is working.
+quick check: if it runs end to end, part 1 prints ADD, explicit UPDATE plus
+DELETE, and NOOP results; part 2 recalls Paris; part 3 shows exactly 20
+output messages; and part 4 reports zero search hits and zero stored
+memories, the setup is working.

@@ -41,7 +41,7 @@ When you add a new module's demo, create its `module-NN/` folder, write its
 | `module-01/hook_demo.ipynb` | `lectures/dsca-module-01.html` | 2 ("Before we watch this"), 3 ("The five stages, already in front of you") | A naive keyword bot losing its own booking mid-conversation, then a reference agent holding state correctly across the same correction. |
 | `module-02/` (`raw_loop.py`, `graph.py` via `langgraph dev`) | `lectures/dsca-module-02.html` | 3 ("The raw agent loop, with nothing hidden"), 5 ("LangGraph: nodes, edges, and state as one object") | The same order-status agent built twice: a plain Python loop printing the messages array after every step, then a LangGraph graph (agent / tool / escalate nodes) traced live in Studio. |
 | `module-03/grounded_rag.py` | `lectures/dsca-module-03.html` | 3 (hybrid search), 4 (reciprocal rank fusion), 6 (reranking), 8 (citation and refusal), 18, 19, 21, 22 (the matching hands-on lab walkthroughs) | A small fake FAQ knowledge base run through the full pipeline: BM25 plus vector search merged by reciprocal rank fusion, a reranking pass, then either a cited answer or a refusal, depending on a coverage check. |
-| `module-04/memory_demo.py`, `module-04/memory_demo.ipynb` | `lectures/dsca-module-04.html` | 5 (Mem0's extract-and-update mechanism) in the Lecture section, 14, 15, 16, 17, 20 (the matching hands-on lab walkthroughs) | The real `mem0ai` package, configured with Gemini for both generation and embeddings and a local on-disk Qdrant store: a restated fact triggers UPDATE not a duplicate ADD, a real process restart recalls it, a long message list gets compacted, and `delete_all` is verified, not just called. The script is the live demo (two terminal runs prove persistence); the notebook is a self-study companion that imports the script's own functions and proves the same persistence with a genuine subprocess rather than duplicating the logic. |
+| `module-04/memory_demo.py`, `module-04/memory_demo.ipynb` | `lectures/dsca-module-04.html` | 5 (Mem0's extract-and-update mechanism) in the Lecture section, 14, 15, 16, 17, 20 (the matching hands-on lab walkthroughs) | The real `mem0ai` package, configured with Gemini for both generation and embeddings and a local on-disk Qdrant store: Mem0's additive extractor records a changed fact, then the demo applies its real `update()` and `delete()` methods to preserve one current value. A real process restart recalls that value, a long message list gets compacted, and `delete_all` is verified, not just called. The script is the live demo; the notebook is a self-study companion that imports the script's own functions and proves persistence with a genuine subprocess. |
 
 Add a row here whenever a later module gets its own instructor demo. The
 lecture file's own speaker notes should say when to switch to the demo
@@ -73,6 +73,11 @@ only adds the steps specific to running that one demo.
 4. `cp .env.example .env`, then paste the key in as `GOOGLE_API_KEY`. This
    is the instructor's own key, separate from any team's key in their own
    project repository, and every module's demo reads it from `demos/.env`.
+   Leave `GENERATION_MODEL`, `MEM0_GENERATION_MODEL`, and
+   `MEM0_EMBEDDING_MODEL` at their defaults unless a model gets retired:
+   `GENERATION_MODEL` is Modules 1-3's own bare-name model string, and the
+   `MEM0_`-prefixed pair is Module 4's, in Mem0's own "models/"-prefixed
+   format, see `module-04/README.md` for why the two are not interchangeable.
 5. Confirm each module's demo runs end to end once, then save its output
    (a notebook's cell output, a terminal transcript, whatever the demo
    produces) as the safety net if the room's connection has a bad moment

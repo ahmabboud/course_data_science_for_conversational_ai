@@ -23,6 +23,8 @@
 # course's code relies on; do not lower this floor without re-checking
 # that contract still holds. Its own dependency on qdrant-client brings in
 # Qdrant's embedded, on-disk mode, no separate server or install needed.
+# nbformat and nbconvert execute and save Module 4's self-study notebook
+# with its checked output, using the same shared demo environment.
 google-genai>=2.3.0
 python-dotenv>=1.0
 ipykernel>=6.29
@@ -31,3 +33,5 @@ langgraph-cli[inmem]>=0.4
 rank_bm25>=0.2
 numpy>=1.26
 mem0ai>=2.0.20
+nbformat>=5.10
+nbconvert>=7.16
