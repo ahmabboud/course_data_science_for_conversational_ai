@@ -8,6 +8,21 @@ script, `memory_demo.py`, runs against the real `mem0ai` package, not a
 reimplementation: Mem0 is a named course tool per the syllabus, so the
 point is showing the real library's actual behavior.
 
+There is also `memory_demo.ipynb`, a self-study companion, not a
+replacement. It imports `memory_demo.py`'s own functions rather than
+copying them, so the two can never quietly drift apart. Run the script
+live in the room for the persistence proof, two real terminal
+invocations is the most convincing version of that argument. Hand
+students the notebook afterward: markdown narration between each part,
+and (once you have run it once yourself with saved output, see its own
+first cell) the actual output already there to read without needing a
+key or a live connection. Its one design wrinkle is worth knowing about
+before you open it: a notebook's single kernel cannot repeat the
+persistence proof by calling a function twice, that would only show a
+new object was built, not that a process died and a new one still
+remembered anything, so its Part 2 cell launches a real subprocess
+instead, see that cell for why.
+
 ## One-time setup
 
 Do this once, not per module (it is the same setup `../README.md` describes
@@ -72,13 +87,21 @@ than trusting an error-free return value. This is the concrete answer to
 
 ## The one API asymmetry worth calling out explicitly
 
-Current `mem0ai` (2.0.18 as of this writing) is not consistent about where
+Current `mem0ai` (2.0.20 as of this writing) is not consistent about where
 `user_id` goes: `memory.add()` and `memory.delete_all()` both take it as a
 plain keyword argument, but `memory.search()` and `memory.get_all()` both
 require it inside a `filters={"user_id": ...}` dict instead, and raise a
 `ValueError` if it is passed at the top level. `memory_demo.py` gets this
 right throughout; if you extend it, check which family a new call belongs
 to before assuming the same calling convention carries over.
+
+## Embedding model
+
+The demo reads `EMBEDDING_MODEL` from `demos/.env`. Use
+`models/gemini-embedding-001`, which supports Gemini's `embedContent` API
+and produces the 768-dimensional vectors configured for the local Qdrant
+store. The script uses that value by default when the environment variable
+is absent.
 
 ## Swap in your own facts
 

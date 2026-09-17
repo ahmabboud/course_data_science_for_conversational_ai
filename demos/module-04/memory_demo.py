@@ -41,11 +41,10 @@ Configuration notes, current as of the packages this course pins:
   embedder. This course is Gemini-only, so both are explicitly configured
   below to Gemini, using the same GOOGLE_API_KEY every other module's demo
   already reads from demos/.env.
-- Mem0's Gemini embedder wraps Google's older "models/text-embedding-004"
-  model (768 dimensions), not the "gemini-embedding-001" model this
-  course's own Module 3 demo calls directly. That is Mem0's own tested
-  integration, not a course choice; confirm this is still the documented
-  model before upgrading if you revisit this file later.
+- Mem0's Gemini embedder uses "models/gemini-embedding-001" with a
+  768-dimensional output. The model name is configurable through
+  EMBEDDING_MODEL in demos/.env so it can be updated without changing this
+  script if Gemini retires or replaces it.
 - The vector store defaults to a Qdrant server if not configured. Passing
   a local "path" instead runs Qdrant's embedded, on-disk mode: no server,
   no separate signup, matching every other module's "just the Gemini key"
@@ -56,6 +55,7 @@ Configuration notes, current as of the packages this course pins:
 import json
 import os
 import shutil
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -64,8 +64,14 @@ from mem0 import Memory
 DEMO_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(DEMO_ROOT / ".env")
 
-GENERATION_MODEL = "gemini-3.8-flash"
-EMBEDDING_MODEL = "models/text-embedding-004"
+# Read model names from demos/.env so an instructor can change a retired or
+# overloaded model without editing the demo. These defaults are available to
+# the configured Gemini account and work with Mem0's Gemini integration.
+GENERATION_MODEL = os.getenv("GENERATION_MODEL", "models/gemini-2.5-flash")
+# Gemini's supported embedding model. Read from demos/.env so an instructor
+# can update it without editing the demo; retain this value as a safe default
+# for a newly copied .env file.
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "models/gemini-embedding-001")
 EMBEDDING_DIMS = 768
 
 # On-disk, no server: everything Mem0 needs lives in this one folder, next
@@ -77,6 +83,28 @@ STORE_PATH = str(Path(__file__).resolve().parent / "mem0_store")
 # entire point of persistent memory (see the lecture's session-vs-
 # persistent-memory board).
 USER_ID = "demo-user-482"
+MAX_RETRIES = 3
+
+
+def retry_transient(operation, label: str):
+    """Run an API-backed Mem0 operation, retrying only temporary capacity
+    errors. Authentication, configuration, and data errors fail immediately
+    so a classroom does not spend time hiding a real setup problem."""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return operation()
+        except Exception as exc:
+            message = str(exc).upper()
+            retryable = "503" in message or "UNAVAILABLE" in message or "429" in message
+            if not retryable or attempt == MAX_RETRIES:
+                raise
+            wait_seconds = 2 ** (attempt - 1)
+            print(
+                f"Gemini is temporarily busy while {label}; "
+                f"retrying in {wait_seconds} second{'s' if wait_seconds != 1 else ''} "
+                f"({attempt}/{MAX_RETRIES - 1})."
+            )
+            time.sleep(wait_seconds)
 
 
 def _build_config() -> dict:
@@ -132,14 +160,18 @@ def session_one(memory: Memory) -> None:
         {"role": "user", "content": "Hi, I'm based in Beirut."},
         {"role": "assistant", "content": "Good to know, I'll keep that in mind."},
     ]
-    result_one = memory.add(first_turn, user_id=USER_ID)
+    result_one = retry_transient(
+        lambda: memory.add(first_turn, user_id=USER_ID), "saving the first memory"
+    )
     show("session 1, turn 1: memory.add result", result_one)
 
     second_turn = [
         {"role": "user", "content": "Small update: I just moved from Beirut to Paris for work."},
         {"role": "assistant", "content": "Got it, updating that for you."},
     ]
-    result_two = memory.add(second_turn, user_id=USER_ID)
+    result_two = retry_transient(
+        lambda: memory.add(second_turn, user_id=USER_ID), "updating the memory"
+    )
     show("session 1, turn 2: memory.add result", result_two)
 
     events = {entry.get("event") for entry in result_two.get("results", [])}
@@ -156,7 +188,9 @@ def session_two_recall_and_cite(memory: Memory) -> dict:
     names it, so nothing about the citation-and-refusal pipeline needs to
     change just because a source is now a memory instead of a document."""
     query = "Where does the user currently live?"
-    found = memory.search(query, filters={"user_id": USER_ID})
+    found = retry_transient(
+        lambda: memory.search(query, filters={"user_id": USER_ID}), "searching memory"
+    )
     show("session 2: memory.search result", found)
 
     hits = found.get("results", [])
@@ -180,7 +214,9 @@ def compact(messages: list[dict], max_live_turns: int, summarize) -> list[dict]:
     (the budget check, the splice) can be tested without a real LLM call."""
     if len(messages) <= max_live_turns:
         return messages
-    overflow = len(messages) - max_live_turns
+    # The summary itself occupies one live message, so retain one fewer raw
+    # messages than the budget. This keeps the result at max_live_turns.
+    overflow = len(messages) - max_live_turns + 1
     old, kept = messages[:overflow], messages[overflow:]
     summary_text = summarize(old)
     return [{"role": "system", "content": f"Earlier conversation, summarised: {summary_text}"}] + kept
@@ -200,9 +236,14 @@ def forget_user(memory: Memory, user_id: str) -> bool:
     actually took, rather than trusting an error-free return value. Returns
     True only if both search and get_all confirm the user's memories are
     genuinely gone."""
-    memory.delete_all(user_id=user_id)
-    remaining_search = memory.search("anything about this user", filters={"user_id": user_id})
-    remaining_all = memory.get_all(filters={"user_id": user_id})
+    retry_transient(lambda: memory.delete_all(user_id=user_id), "deleting memory")
+    remaining_search = retry_transient(
+        lambda: memory.search("anything about this user", filters={"user_id": user_id}),
+        "verifying deletion with a search",
+    )
+    remaining_all = retry_transient(
+        lambda: memory.get_all(filters={"user_id": user_id}), "verifying deletion"
+    )
     still_present = bool(remaining_search.get("results")) or bool(remaining_all.get("results"))
     return not still_present
 
