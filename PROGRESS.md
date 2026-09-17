@@ -5,6 +5,17 @@ says what is done, what is in flight, and what a new session should pick up
 next. Update it in the same turn as any work it describes, do not let it
 drift behind the actual state of the repository.
 
+**Read `PROJECT-REDESIGN.md` next, before this file's own contents below.**
+Decided 2026-09-17: the continuous-agent project (one team, one domain, one
+agent grown across five required GitHub issues) is being fully replaced by
+a paper-extension project (each team picks one topic and one paper, and
+produces a novel extension of it). Most of what this file describes below
+(the per-module "Issue N" deliverables, the old capstone rubric, the old
+Module 6 cross-module Q&A mechanic) reflects the design being replaced, not
+the current target. Treat any conflict between this file and
+`PROJECT-REDESIGN.md` as this file being the one that has not caught up
+yet, and update it, rather than assuming the redesign doc is wrong.
+
 This tracker exists because of four standing quality bars the instructor
 set for every module, on top of the mechanical authoring contract in
 `AGENTS.md`:
