@@ -47,6 +47,12 @@ with material the whole cohort gets taught, at lecture depth, either way:
 - **Multiple teams may extend the same paper.** Not a problem, not
   restricted. Two teams can converge on the same baseline and even
   similar extension ideas; that is fine.
+- **A paper already taught in a lecture's own research dive is a valid
+  choice**, as long as it fits the team's chosen topic (tau-bench or
+  tau2-bench for Evaluation, SeCom or Mem0 or Zep/Graphiti for Memory,
+  the CAG paper for Grounding, and so on). Teaching it in class does not
+  disqualify it from being extended; it may make the pitch easier to
+  approve quickly, since the instructor already knows the baseline well.
 - **Compute and cost cap:** must run on a personal computer, or with no
   more than $20 of API spend total. This is a hard, concrete ceiling, not
   a vibe, so a self-proposed paper can be checked against it in one
