@@ -92,7 +92,7 @@ set for every module, on top of the mechanical authoring contract in
 | 1 | Foundations and Modern Understanding | Not started | Not started | Not started | Not started |
 | 2 | Agentic Dialogue Management | Not started | Not started | Not started | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
-| 4 | Memory | Done, see below | Done, see below | In progress | Not started |
+| 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
 | 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | Not started | Done, see below |
 
 Module 6 has no lecture deck (live defense session), so it carries no row
@@ -369,16 +369,28 @@ turned into slides yet).
   separate, honestly-captioned slides but the cross-paper mashup itself is
   the problem, not any one number in it.
 
-### Code track — not started
+### Code track: done (superseded an earlier tooling decision)
 
-- **Tooling decision (confirmed with the instructor, 2026-09-15):** build
-  both memory patterns from scratch, plain Python plus the shared
-  `google-genai` client every other module's demo uses, no new heavy
-  dependency, no Mem0/Zep SDK installed, no vector or graph database stood
-  up. Same precedent as Module 3's `grounded_rag.py`. The lecture cites the
-  real production systems accurately; the runnable demo builds the
-  mechanism directly so students see what is inside it.
-- Demo not yet written. Planned build order is in `lecture-notes.md` §3.
+- **Original tooling decision (2026-09-15, superseded):** build both
+  memory patterns from scratch, no Mem0/Zep SDK installed, same precedent
+  as Module 3's `grounded_rag.py`. Reversed once building started: Mem0 is
+  a named course tool per the syllabus itself, so `demos/module-04/
+  memory_demo.py` runs the real `mem0ai` package directly, not a
+  reimplementation, matching `module-04/README.md`'s own stated reasoning.
+- **Built:** `memory_demo.py` (extraction and conflict resolution, a
+  second `Memory` instance standing in for a process restart, compaction,
+  and a verified `forget_user()`), plus `memory_demo.ipynb`, a self-study
+  companion that imports the script's own functions.
+- **Fixed 2026-09-16 (was open as its own pending item):** the lecture
+  deck had not caught up to a real correction the instructor made directly
+  in `memory_demo.py`: current `mem0ai`'s `add()` is additive only, not
+  the paper's own described similarity-triggered auto-UPDATE/DELETE/NOOP.
+  Five places in `lectures/dsca-module-04.html` (slides 5, 7, 14, 16, 18)
+  taught the old, automatic model, including MCQ `m4-q2`, whose correct
+  answer was flatly wrong under the real, verified behavior. Corrected all
+  five, added an explicit "paper versus the library you actually run"
+  callout on slide 5, and rewrote `m4-q2` to test the corrected
+  understanding. Commit `2c89df6`.
 
 ## Module 5, Evaluation and Responsible Deployment, detail
 
@@ -490,11 +502,12 @@ one process deviation noted in the paper track below.
   30-minute Discussion-and-wrap line, same precedent as every prior module).
   Commits `f2c215f` (initial build) and `108d17b` (two-anchor-paper
   rebalance, see paper track above).
+- **Done since:** `index.html`'s Module 5 card, previously a disabled
+  "Not yet built" placeholder, now links to the built deck (commit
+  `4a854d4`).
 - **Not yet done:** live rendering/click-through verification in an actual
   browser (this sandbox cannot serve localhost to its own browser pane,
-  same standing gap as Modules 3 and 4). Also not yet done: adding a
-  Module 5 card to `index.html`, the way Module 4 got one (task done for
-  Module 4, not yet repeated here).
+  same standing gap as Modules 3 and 4).
 
 ### Code track: done
 
