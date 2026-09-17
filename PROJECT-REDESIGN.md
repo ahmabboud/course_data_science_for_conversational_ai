@@ -184,7 +184,15 @@ Q&A, not just the sub-score that maps to the part they personally wrote.
 5. Rebuild `dsca-team-template`'s issue templates: the old module-1
    through module-5 templates describe the removed continuous-agent
    deliverables and need replacing with idea-pitch, baseline-reproduction,
-   extension, and report/slides templates.
+   extension, and report/slides templates. Done, 2026-09-17, commit
+   `b76e968` in `dsca-team-template`: the old `agent/` five-capability
+   stub package and its five issue templates are removed, replaced by
+   `baseline/`, `extension/`, `report/REPORT.md`, `slides/README.md`, and
+   four matching issue templates. `README.md`, `CONTRIBUTING.md`,
+   `.env.example`, `requirements.txt`, and `scripts/verify_setup.py` were
+   also rewritten so they no longer assume every team uses the same
+   stack (Gemini plus Mem0 or Zep plus ChromaDB), since that now depends
+   on which paper each team picked.
 6. Rebuild Module 6 itself: segment minutes, the instructor scoring sheet
    for the rubric above, and the defense-day materials.
 7. Update `PROGRESS.md` and `index.html`/`README.md` so a new session (or

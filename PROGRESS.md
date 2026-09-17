@@ -34,12 +34,21 @@ see what is left:
 4. Rewrite the syllabus's Continuous Project, Assessment, and rubric
    sections. **Done**, per this file's earlier commit history (task #74).
 5. Rebuild `dsca-team-template`'s issue templates for idea-pitch,
-   baseline, extension, and report/slides. **Not started.**
+   baseline, extension, and report/slides. **Done**, 2026-09-17, commit
+   `b76e968` in the separate `dsca-team-template` repository: the old
+   `agent/` five-capability stub package and its five module issue
+   templates are gone, replaced by `baseline/`, `extension/`,
+   `report/REPORT.md`, `slides/README.md`, and four issue templates
+   (idea-pitch, baseline-reproduction, extension, report-and-slides).
+   `README.md`, `CONTRIBUTING.md`, `.env.example`, `requirements.txt`,
+   and `scripts/verify_setup.py` were also rewritten so they no longer
+   assume every team runs the same stack. See `PROJECT-REDESIGN.md`'s own
+   item 5 for the full detail.
 6. Rebuild Module 6: segment minutes, scoring sheet, defense-day
    materials. **Not started.**
 7. Update `PROGRESS.md` and `index.html`/`README.md` so a new session sees
    the current model. **In progress**: this file now reflects items 1
-   through 4; `index.html` and `README.md` have not yet been checked
+   through 5; `index.html` and `README.md` have not yet been checked
    against the redesign.
 
 This tracker exists because of four standing quality bars the instructor
