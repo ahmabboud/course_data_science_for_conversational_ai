@@ -100,8 +100,8 @@ set for every module, on top of the mechanical authoring contract in
 
 | # | Title | Lecture notes | Paper | Graphics | Code |
 |---|---|---|---|---|---|
-| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first | Not started (no research dive in syllabus, see detail) | Not started | Not started |
-| 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first | Not started (no research dive in syllabus, see detail) | Not started | Not started |
+| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Not started | Not started |
+| 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Helping Customers in Distress, arXiv:2605.16268), see detail | Not started | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
 | 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | 3 of 4 papers done, see below | Done, see below |
@@ -162,6 +162,54 @@ and 2, not a rebuild.
   unique, 28 slides. Committed together with Module 2's fixes, commit
   `ba77cce`.
 
+### Paper track and research dive, added 2026-09-17
+
+- **Why now, contradicting the 2026-09-16 audit's own note above:** that
+  audit correctly found the syllabus itself names no research dive or
+  paper for this module. The paper-extension project redesign
+  (`PROJECT-REDESIGN.md`) changed the requirement: Extraction is now one
+  of the five project topics, and every topic needs a real research-dive
+  paper both for teaching parity with Modules 3-5 and as the entry point
+  into that topic's paper menu (task tracked as "fill research-section
+  gaps in Modules 1 and 2"). This is a deliberate addition, not a fix to
+  a prior mistake.
+- **Paper:** Patil, Zhang, Wang & Gonzalez (2023), "Gorilla: Large
+  Language Model Connected with Massive APIs," UC Berkeley, arXiv:2305.15334,
+  CC BY 4.0. Chosen (over ToolLLM) and confirmed with the instructor
+  directly: canonical, has a real public repo and dataset (APIBench),
+  and its central finding, that grounding a call in real documentation
+  beats memorization, is the same lesson this module's own
+  schema-enforcement slides already teach with one example, just
+  measured at the scale of 1,645 real APIs.
+- **Not downloaded as a local PDF**, same standing sandbox limitation as
+  every module since Module 5 (no outbound fetch to arXiv's PDF
+  endpoint). Verified against the arXiv HTML rendering
+  (`arxiv.org/html/2305.15334v1`), fetched and read in full, no
+  truncation (a much shorter paper than tau-bench or tau2-bench).
+- **Lecture notes:** `research/module-01/lecture-notes.md`, scoped to the
+  research dive only, not a retroactive full-module rewrite (see the
+  file's own scope note). Covers the hallucination problem, APIBench's
+  construction, AST sub-tree matching as the verification method,
+  retriever-aware fine-tuning, the full results (accuracy and
+  hallucination-rate tables), and the paper's own stated limits,
+  including its honest unresolved finding that GPT-3.5 hallucinates less
+  than GPT-4 in their tests.
+- **Deck:** five new slides in `lectures/dsca-module-01.html`, a new
+  "Research dive" section (12 minutes) placed after the Lecture section
+  and before the Kickoff section: a divider, the problem (APIBench,
+  GPT-4's 78.65% TensorHub hallucination rate), the method
+  (retriever-aware fine-tuning), the results (Gorilla beats GPT-4 by
+  20.43 points overall, cuts TensorHub hallucination from 78.65% to
+  5.40%), and the limits. Minutes rebalanced from Lecture's prior 52 to
+  40 (nine slides trimmed by 1-3 minutes each, teaching content
+  untouched, only pacing) to fund the new section; total deck minutes
+  still 180, slide count now 33. Linked from the "Before Module 2" reading
+  callout as this module's own research-dive reading.
+- **Verified:** tag-balanced, zero em/en dashes, MCQ qids `m1-q1`/`m1-q2`
+  unique (unchanged, no new check questions added), 33 slides, `data-minutes`
+  reconciling to Opening 2 / Hook 20 / Lecture 40 / Research dive 12 /
+  Kickoff 20 / Lab kickoff 70 / Wrap 16 = 180.
+
 ## Module 2, Agentic Dialogue Management, detail
 
 Same predates-the-build-order situation as Module 1 (no `lecture-notes.md`,
@@ -202,6 +250,50 @@ same pass as Module 1, 2026-09-16.
 - **Verified:** tag-balanced, zero em/en dashes, MCQ qids `m2-q1`/`m2-q2`
   unique, 26 slides. Committed together with Module 1's fixes, commit
   `ba77cce`.
+
+### Paper track and research dive, added 2026-09-17
+
+- **Why now:** same reasoning as Module 1's own paper track above.
+  Dialogue is one of the five paper-extension project topics, and this
+  module's own scope (routing and escalation, deliberately the one
+  multi-agent pattern taught) needed a real research-dive paper to match.
+- **Paper:** Atreya, Wanger, Batra, Hankache, Iglesias Jr, Sinclair,
+  Pelosio, McMillan, Cowan & Khraishi (2026), "Helping Customers in
+  Distress: An LLM-powered Agent that Converses, Probes, and Routes,"
+  arXiv:2605.16268, CC BY 4.0, `cs.HC`. Chosen (over MultiWOZ) and
+  confirmed with the instructor directly: a recent, directly on-topic
+  production deployment of this module's own router-plus-escalation
+  pattern, at a bank, on fraud/scam/dispute triage, with real measured
+  accuracy, handoff precision/recall, and guardrail numbers.
+- **Fetched in full**, no truncation, a short paper: the arXiv HTML
+  rendering (`arxiv.org/html/2605.16268v1`) returned every section,
+  unlike the longer Module 5 papers. Not downloaded as a local PDF, same
+  standing sandbox limitation.
+- **Lecture notes:** `research/module-02/lecture-notes.md`, scoped to the
+  research dive only, same convention as Module 1's new notes. Covers
+  the triage problem, the three-agent architecture (triage, handoff,
+  guardrails), the digital-twin-plus-SME evaluation method, the full
+  results (accuracy gains across five LLMs, handoff precision/recall,
+  guardrail accuracy), and the paper's own stated limits, including the
+  gap between its synthetic-testing and SME-tested accuracy figures.
+- **Deck:** five new slides in `lectures/dsca-module-02.html`, a new
+  "Research dive" section (12 minutes) placed after the Lecture section
+  and before the Hands-on lab section: a divider, the problem (millions
+  of fraud/scam/dispute reports, manual triage), the architecture
+  (triage agent, handoff agent, guardrail agents as three separate
+  jobs), the evaluation (digital twins plus SME and LLM-judge review,
+  with the objective-versus-subjective agreement gap named explicitly),
+  and the results (up to +30.6% accuracy gain, >90% handoff precision
+  and recall, 96-98% guardrail accuracy). Minutes rebalanced from
+  Lecture's prior 50 to 38 (nine slides trimmed by 1-3 minutes each,
+  teaching content untouched, only pacing) to fund the new section;
+  total deck minutes still 180, slide count now 31. Linked from the
+  "Before Module 3" reading callout as this module's own research-dive
+  reading.
+- **Verified:** tag-balanced, zero em/en dashes, MCQ qids `m2-q1`/`m2-q2`
+  unique (unchanged, no new check questions added), 31 slides,
+  `data-minutes` reconciling to Opening 2 / Lecture 38 / Research dive
+  12 / Hands-on lab 100 / Wrap 28 = 180.
 
 ## Module 3, Grounded Generation, detail
 

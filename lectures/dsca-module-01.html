@@ -124,7 +124,7 @@
 </section>
 
 <!-- ==================================================================== 05 -->
-<section class="slide" data-label="The five-stage arc, in detail" data-section="Lecture" data-minutes="9">
+<section class="slide" data-label="The five-stage arc, in detail" data-section="Lecture" data-minutes="6">
   <div class="lu-eyebrow">The reference architecture</div>
   <h2 class="lu-h1" style="max-width:34ch">Every conversational agent does five things. This course builds each one once.</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -149,12 +149,12 @@
     </div>
   </div>
   <template data-notes>
-    <p>Nine minutes. This slide is the spine of the whole course, refer back to it every module. Do not let "understand" turn into a grammar lesson, keep it at the level of the contract: structured in, structured out, defined failure.</p>
+    <p>Six minutes. This slide is the spine of the whole course, refer back to it every module. Do not let "understand" turn into a grammar lesson, keep it at the level of the contract: structured in, structured out, defined failure.</p>
   </template>
 </section>
 
 <!-- ==================================================================== 06 -->
-<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="6">
+<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">What changed, and why it is not a downgrade</div>
   <h2 class="lu-h1" style="max-width:36ch">One call replaces a trained classifier and a trained tagger</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -211,7 +211,7 @@ SCHEMA = {
 </section>
 
 <!-- ==================================================================== 06c -->
-<section class="slide" data-label="How the enforcement actually works" data-section="Lecture" data-minutes="6">
+<section class="slide" data-label="How the enforcement actually works" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">Not a request, a constraint</div>
   <h2 class="lu-h1" style="max-width:34ch">The schema is compiled into the decoding process itself</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -238,12 +238,12 @@ SCHEMA = {
     </div>
   </div>
   <template data-notes>
-    <p>Six minutes. This slide answers the question the last one only asserted: how does the schema actually get enforced? Land the distinction hard: shape is guaranteed, correctness is not, and that gap is exactly why the fallback design in the lab kickoff matters, a schema-valid wrong answer never trips validation.</p>
+    <p>Five minutes. This slide answers the question the last one only asserted: how does the schema actually get enforced? Land the distinction hard: shape is guaranteed, correctness is not, and that gap is exactly why the fallback design in the lab kickoff matters, a schema-valid wrong answer never trips validation.</p>
   </template>
 </section>
 
 <!-- ==================================================================== 07 -->
-<section class="slide" data-label="Walkthrough: the correction becomes JSON" data-section="Lecture" data-minutes="9">
+<section class="slide" data-label="Walkthrough: the correction becomes JSON" data-section="Lecture" data-minutes="6">
   <div class="lu-eyebrow">Diagnostic walkthrough</div>
   <h2 class="lu-h2">The hook's own correction, turned into an updated object in four steps</h2>
   <div class="lu-walk" data-label="Booking state walkthrough">
@@ -292,12 +292,12 @@ state = {
     </div>
   </div>
   <template data-notes>
-    <p>Ten minutes. Step through once yourself before class. The point of step 3 is that nothing was re-derived, the untouched fields are literally the same values passed back in. Step 4 is the direct setup for the lab kickoff's fallback discussion, do not resolve it here, just name it.</p>
+    <p>Six minutes. Step through once yourself before class. The point of step 3 is that nothing was re-derived, the untouched fields are literally the same values passed back in. Step 4 is the direct setup for the lab kickoff's fallback discussion, do not resolve it here, just name it.</p>
   </template>
 </section>
 
 <!-- ==================================================================== 08 -->
-<section class="slide slide--tint" data-label="Check: what carries the state" data-section="Lecture" data-minutes="4">
+<section class="slide slide--tint" data-label="Check: what carries the state" data-section="Lecture" data-minutes="3">
   <div class="lu-eyebrow">Check question</div>
   <div class="lu-mcq" data-qid="m1-q1" data-answer="b"
        data-label="What made party_size survive the correction turn"
@@ -316,7 +316,7 @@ state = {
 </section>
 
 <!-- ==================================================================== 09 -->
-<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="6">
+<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">What you are actually calling</div>
   <h2 class="lu-h1" style="max-width:32ch">One provider, one shape of call, for the whole course</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
@@ -350,7 +350,7 @@ state = {
 </section>
 
 <!-- ==================================================================== 10 -->
-<section class="slide" data-label="Designing for evaluation from day one" data-section="Lecture" data-minutes="7">
+<section class="slide" data-label="Designing for evaluation from day one" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">A decision made now, paid for in Module 5</div>
   <h2 class="lu-h1" style="max-width:34ch">Log the three example utterances today. Module 5 needs exactly them.</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -367,8 +367,97 @@ state = {
     </div>
   </div>
   <template data-notes>
-    <p>Eight minutes. This is the module's one explicit forward-reference to Module 5, keep it to the practical instruction: save the fixtures now. Do not teach the harness itself, that is Module 5's job.</p>
+    <p>Five minutes. This is the module's one explicit forward-reference to Module 5, keep it to the practical instruction: save the fixtures now. Do not teach the harness itself, that is Module 5's job.</p>
   </template>
+</section>
+
+<!-- ==================================================================== 10a -->
+<section class="slide slide--night" data-chrome="none" data-label="Research dive · Gorilla" data-section="Research dive" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">12 minutes · one paper, read closely</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">Gorilla: teaching a model to call real APIs without hallucinating</h2>
+    <p class="lu-lead" style="max-width:44ch">The paper this course's own function-calling bet is built on. Same problem you just saw solved with a schema, at the scale of thousands of APIs.</p>
+  </div>
+  <template data-notes><p>Ten seconds.</p></template>
+</section>
+
+<!-- ==================================================================== 10b -->
+<section class="slide" data-label="The problem: LLMs hallucinate API calls" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Patil, Zhang, Wang &amp; Gonzalez, UC Berkeley, 2023</div>
+  <h2 class="lu-h1" style="max-width:34ch">Even GPT-4 invents APIs, or picks the wrong one, most of the time</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <p class="lu-p">Structured output guarantees shape, not truth (the gap from the enforcement slide, earlier). Gorilla asks the sharper version of the same question at web scale: given a natural-language request and thousands of possible APIs, can the model name a real one, with the right arguments, instead of inventing one that sounds plausible?</p>
+      <ul class="lu-list">
+        <li>APIBench: 1,645 real APIs scraped from HuggingFace, TorchHub, and TensorHub, each with real documentation.</li>
+        <li>Zero-shot GPT-4 on TensorHub: 78.65% of its API calls are hallucinated, invoking a tool that does not exist.</li>
+      </ul>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">A hallucination, defined precisely</span>
+      <p class="lu-sub">Not "the wrong API," a fabricated one: no matching entry anywhere in the dataset. The paper checks this by parsing the generated call into an AST and testing whether it is a sub-tree of any real API in APIBench.</p>
+    </div>
+  </div>
+  <template data-notes><p>Three minutes. The 78.65% number is the one to land hard, it is GPT-4, zero-shot, on a real benchmark, not a strawman. Tie it back explicitly: this is the same "shape is guaranteed, truth is not" gap from the enforcement slide, just measured at scale.</p></template>
+</section>
+
+<!-- ==================================================================== 10c -->
+<section class="slide" data-label="Gorilla: retrieval-aware fine-tuning" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">The fix: teach the model to look it up, not memorize it</div>
+  <h2 class="lu-h1" style="max-width:34ch">Fine-tune on real APIs, and train the model to read documentation at inference time</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <dl class="lu-defs">
+        <dt>Data</dt><dd>Every API's documentation, converted into an instruction-API pair (11,000+ pairs), using self-instruct prompting for realistic user requests.</dd>
+        <dt>Retriever-aware training</dt><dd>The training prompt sometimes appends the actual API documentation, teaching the model to read and follow it, not just recall it from training.</dd>
+        <dt>Verification</dt><dd>AST sub-tree matching against APIBench, the same functional-correctness check named on the last slide.</dd>
+      </dl>
+    </div>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Why this matters for this module specifically</span>
+      <p class="lu-sub">Gorilla is a fine-tuned model, this course uses prompted function calling instead, but the underlying lesson transfers directly: a model that can consult real documentation at call time hallucinates far less than one asked to recall it from memory.</p>
+    </div>
+  </div>
+  <template data-notes><p>Three minutes. Do not get pulled into fine-tuning mechanics, the takeaway for this course is the retrieval-aware idea, not the training recipe. Flag explicitly that this course does not fine-tune, it is still worth teaching because the documentation-grounding principle applies to prompted calls too.</p></template>
+</section>
+
+<!-- ==================================================================== 10d -->
+<section class="slide" data-label="The results: beating GPT-4, cutting hallucination" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Table 1, zero-shot setting</div>
+  <h2 class="lu-h1">Gorilla beats GPT-4 on accuracy, and hallucinates far less</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <table class="lu-table">
+      <thead><tr><th>Model (zero-shot)</th><th>TorchHub acc.</th><th>TensorHub hallu.</th></tr></thead>
+      <tbody>
+        <tr><td>GPT-4</td><td>38.70%</td><td>78.65%</td></tr>
+        <tr><td>GPT-3.5</td><td>48.38%</td><td>47.88%</td></tr>
+        <tr><td>Gorilla</td><td>59.13%</td><td>5.40%</td></tr>
+      </tbody>
+    </table>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">The headline numbers</span>
+      <p class="lu-sub">Gorilla's overall accuracy beats GPT-4 by 20.43 points and ChatGPT by 10.75 points across all three API hubs. Its retrieval-aware training also lets it adapt to a changed API (a model registry move, a version bump) without retraining, something a purely memorized model cannot do.</p>
+    </div>
+  </div>
+  <template data-notes><p>Three minutes. TensorHub's hallucination column is the sharpest visual: 78.65% down to 5.40%, same task, same model family being compared against. If asked why GPT-3.5 hallucinates less than GPT-4 here, the paper's own honest answer is in the next slide's limits: they found this surprising too.</p></template>
+</section>
+
+<!-- ==================================================================== 10e -->
+<section class="slide" data-label="The limits" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">What the paper does not claim</div>
+  <h2 class="lu-h2">One API call at a time, one ML-shaped domain, and an honest surprise</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <ul class="lu-list lu-list--check">
+      <li>Scoped to a single API call per request, not the multi-step tool chains a real agent often needs.</li>
+      <li>APIBench is entirely ML-model APIs (HuggingFace, TorchHub, TensorHub), chosen for structure, not general-purpose REST APIs.</li>
+      <li>The paper's own honest finding: GPT-3.5 hallucinates less than GPT-4 in their tests, and they say plainly they do not fully know why, guessing it is RLHF-related.</li>
+    </ul>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Why this is still this module's paper</span>
+      <p class="lu-sub">The core claim, structured grounding beats memorization for tool use, is exactly this module's own thesis about schemas and structured output, just demonstrated at a scale no single lecture example can show.</p>
+    </div>
+  </div>
+  <template data-notes><p>Two minutes. Land the connection back to the module's own thesis before moving to the project kickoff, this paper is the receipts for the claim the whole lecture has been making about schemas and structured output.</p></template>
 </section>
 
 <!-- ==================================================================== 11 -->
@@ -679,7 +768,7 @@ affected_system  <span class="tok-com"># which internal tool broke</span></code>
       </ul>
       <div class="lu-callout">
         <span class="lu-callout__label">Before Module 2</span>
-        <p class="lu-sub"><a href="https://www.oreilly.com/library/view/ai-engineering/9781098166298/" target="_blank" rel="noopener">AI Engineering</a>, structured output and function calling. <a href="https://www.deeplearning.ai/courses/ai-agents-in-langgraph" target="_blank" rel="noopener">AI Agents in LangGraph</a>, build an agent from scratch. Finish and merge Issue 1.</p>
+        <p class="lu-sub"><a href="https://www.oreilly.com/library/view/ai-engineering/9781098166298/" target="_blank" rel="noopener">AI Engineering</a>, structured output and function calling. <a href="https://www.deeplearning.ai/courses/ai-agents-in-langgraph" target="_blank" rel="noopener">AI Agents in LangGraph</a>, build an agent from scratch. <a href="https://arxiv.org/abs/2305.15334" target="_blank" rel="noopener">Gorilla: Large Language Model Connected with Massive APIs</a>, this module's research dive, worth a full read if Extraction is a topic your team is considering. Finish and merge Issue 1.</p>
       </div>
     </div>
     <div class="lu-card">

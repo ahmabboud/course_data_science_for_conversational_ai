@@ -70,7 +70,7 @@
 </section>
 
 <!-- ==================================================================== 03 -->
-<section class="slide" data-label="The raw agent loop, with nothing hidden" data-section="Lecture" data-minutes="8">
+<section class="slide" data-label="The raw agent loop, with nothing hidden" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">What you are actually calling, underneath any framework</div>
   <h2 class="lu-h1" style="max-width:34ch">One array, one call, one appended result. That is the whole loop.</h2>
   <div class="lu-board" style="margin-top:var(--lu-s4)">
@@ -91,7 +91,7 @@
     <p class="lu-sub">Every call sends the entire array, not just the newest message. Turn 20 of a conversation resends everything from turn 1 through 19, so total tokens billed across an n-turn conversation grow like <b>O(n<sup>2</sup>)</b>, not O(n), even though only one new message was actually added each turn. A short lab conversation never notices; Module 4's whole compaction problem exists because this does not stay free forever.</p>
   </div>
   <template data-notes>
-    <p>Seven minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different. Land the quadratic-cost callout too, it is the direct setup for why Module 4 needs compaction at all, not a new topic invented there out of nowhere. If there is time, run <code>demos/module-02/raw_loop.py</code> live, it prints this exact array after every step.</p>
+    <p>Four minutes. Click all three nodes open before moving on, the point is that nothing here is magic: it is one list, one call, one append, repeated. Name it plainly: this is what LangGraph will manage for you starting next slide, not replace with something conceptually different. Land the quadratic-cost callout too, it is the direct setup for why Module 4 needs compaction at all, not a new topic invented there out of nowhere. If there is time, run <code>demos/module-02/raw_loop.py</code> live, it prints this exact array after every step.</p>
   </template>
 </section>
 
@@ -114,7 +114,7 @@
 </section>
 
 <!-- ==================================================================== 05 -->
-<section class="slide" data-label="LangGraph: nodes, edges, and state as one object" data-section="Lecture" data-minutes="7">
+<section class="slide" data-label="LangGraph: nodes, edges, and state as one object" data-section="Lecture" data-minutes="6">
   <div class="lu-eyebrow">The same loop, given structure</div>
   <h2 class="lu-h1" style="max-width:34ch">A graph with an explicit state object, instead of one growing array</h2>
   <div class="lu-board" style="margin-top:var(--lu-s4)">
@@ -140,7 +140,7 @@
 </section>
 
 <!-- ==================================================================== 06 -->
-<section class="slide slide--tint" data-label="Check: what LangGraph actually adds" data-section="Lecture" data-minutes="3">
+<section class="slide slide--tint" data-label="Check: what LangGraph actually adds" data-section="Lecture" data-minutes="2">
   <div class="lu-eyebrow">Check question</div>
   <div class="lu-split lu-split--wide-left">
     <div class="lu-mcq" data-qid="m2-q1" data-answer="c"
@@ -165,7 +165,7 @@
 </section>
 
 <!-- ==================================================================== 07 -->
-<section class="slide" data-label="MCP: one standard for wiring tools" data-section="Lecture" data-minutes="6">
+<section class="slide" data-label="MCP: one standard for wiring tools" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">The part that is not LangGraph-specific</div>
   <h2 class="lu-h1" style="max-width:32ch">One protocol for "what tools exist and how do I call them"</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
@@ -195,7 +195,7 @@
 </section>
 
 <!-- ==================================================================== 08 -->
-<section class="slide slide--tint" data-label="Walkthrough: one tool call through MCP" data-section="Lecture" data-minutes="4">
+<section class="slide slide--tint" data-label="Walkthrough: one tool call through MCP" data-section="Lecture" data-minutes="3">
   <div class="lu-eyebrow">What "discover, then call" looks like turn by turn</div>
   <h2 class="lu-h2">The agent node never hardcodes what a tool takes</h2>
   <div class="lu-walk" data-label="MCP call walkthrough">
@@ -232,7 +232,7 @@
 </section>
 
 <!-- ==================================================================== 09 -->
-<section class="slide" data-label="Chain-of-thought for tool selection" data-section="Lecture" data-minutes="8">
+<section class="slide" data-label="Chain-of-thought for tool selection" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">How the agent node actually decides</div>
   <h2 class="lu-h2">Watching the model reason its way to the right tool</h2>
   <div class="lu-walk" data-label="Tool selection walkthrough">
@@ -272,11 +272,11 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
     <span class="lu-callout__label">Why not skip straight to the tool call</span>
     <p class="lu-sub">The alternative is asking the model to emit a tool call directly, no reasoning field at all, which is cheaper (one shorter generation, not a reasoning trace plus a call) and works fine when only one tool could possibly apply. It gets measurably less reliable exactly where this walkthrough's example lives: several similar tools available and the right one depends on a distinction the request only implies (a status check versus a change). Forcing the intermediate "what is this request actually asking for" step before the tool choice is what chain-of-thought prompting buys here, at the cost of a longer, more expensive call every time, not just when it is needed.</p>
   </div>
-  <template data-notes><p>Seven minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today. If a team pushes back that this doubles their token cost for every tool call, that trade is exactly the point of the callout: pay it where tools are genuinely ambiguous, skip it where a request obviously has only one possible tool.</p></template>
+  <template data-notes><p>Four minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today. If a team pushes back that this doubles their token cost for every tool call, that trade is exactly the point of the callout: pay it where tools are genuinely ambiguous, skip it where a request obviously has only one possible tool.</p></template>
 </section>
 
 <!-- ==================================================================== 10 -->
-<section class="slide" data-label="The one multi-agent pattern this course teaches: routing and escalation" data-section="Lecture" data-minutes="7">
+<section class="slide" data-label="The one multi-agent pattern this course teaches: routing and escalation" data-section="Lecture" data-minutes="6">
   <div class="lu-eyebrow">On purpose, only this one</div>
   <h2 class="lu-h1" style="max-width:36ch">One router, two places it can send a turn</h2>
   <div class="lu-board" style="margin-top:var(--lu-s4)">
@@ -299,7 +299,7 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
 </section>
 
 <!-- ==================================================================== 11 -->
-<section class="slide slide--tint" data-label="Walkthrough: a turn that gets escalated" data-section="Lecture" data-minutes="3">
+<section class="slide slide--tint" data-label="Walkthrough: a turn that gets escalated" data-section="Lecture" data-minutes="2">
   <div class="lu-eyebrow">Watching the router make the boring, correct choice</div>
   <h2 class="lu-h2">The router decides, it never answers</h2>
   <div class="lu-walk" data-label="Escalation walkthrough">
@@ -330,7 +330,99 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
       </div>
     </div>
   </div>
-  <template data-notes><p>Four minutes. The point to land: escalation is a clean, deliberate stop, not a failure state. The reason string is what makes it reviewable rather than a mystery drop.</p></template>
+  <template data-notes><p>Two minutes. The point to land: escalation is a clean, deliberate stop, not a failure state. The reason string is what makes it reviewable rather than a mystery drop.</p></template>
+</section>
+
+<!-- ==================================================================== 11a -->
+<section class="slide slide--night" data-chrome="none" data-label="Research dive · Helping Customers in Distress" data-section="Research dive" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">12 minutes · one paper, read closely</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">Routing and escalation, at bank-fraud scale</h2>
+    <p class="lu-lead" style="max-width:44ch">The same router-and-escalate pattern you just saw, deployed against real fraud, scam, and dispute cases, and measured against a legacy system it had to beat.</p>
+  </div>
+  <template data-notes><p>Ten seconds.</p></template>
+</section>
+
+<!-- ==================================================================== 11b -->
+<section class="slide" data-label="The problem: triage is slow, manual, and easy to misroute" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Atreya et al., 2026, cs.HC</div>
+  <h2 class="lu-h1" style="max-width:34ch">Millions of fraud and dispute reports, routed by hand</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <p class="lu-p">A bank receives millions of fraud, scam, and disputed-transaction reports a year. The existing process, menu-based phone trees and manual human triage, is slow, stressful for customers and staff, and prone to misrouting a case to the wrong specialist team.</p>
+      <ul class="lu-list">
+        <li>Effective triage matters on both sides: customers get routed faster with fewer repeat contacts, staff spend less time on misdirected cases and more on real investigations.</li>
+        <li>The paper's fix: an LLM-powered triage agent that has a multi-turn conversation with the customer, asks targeted questions, then classifies and routes the case, exactly this module's router-plus-escalation shape, at production scale.</li>
+      </ul>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Same shape, higher stakes</span>
+      <p class="lu-sub">This module's router decides "specialist path or human escalation." This paper's triage agent decides "Fraud, Scam, Dispute, or Inconclusive," then hands off to a person for anything ambiguous or distressing, the same two-branch idea, now regulated and safety-critical.</p>
+    </div>
+  </div>
+  <template data-notes><p>Three minutes. Land the parallel explicitly: this is the routing slide's own diagram, deployed somewhere the cost of a wrong route is a frustrated, possibly defrauded customer, not a lab exercise.</p></template>
+</section>
+
+<!-- ==================================================================== 11c -->
+<section class="slide" data-label="The architecture: triage, then hand off or guardrail" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Three pieces, one job each</div>
+  <h2 class="lu-h1" style="max-width:34ch">A triage agent, a handoff agent, and layered guardrails, not one do-everything model</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <dl class="lu-defs">
+        <dt>Triage agent</dt><dd>Conducts the multi-turn conversation, asks clarifying questions, classifies the case. Prompted, not fine-tuned, deliberately, for policy compliance and flexibility.</dd>
+        <dt>Handoff (escalation) agent</dt><dd>Detects when to end the automated chat and route to a human channel: the customer asks to end the conversation, or a vulnerability indicator appears.</dd>
+        <dt>Guardrail agents</dt><dd>Layered input and output filters (AWS Bedrock plus custom controls) blocking unauthorized requests, prompt injection, and non-English messages, checked separately from the triage decision itself.</dd>
+      </dl>
+    </div>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Why separate the handoff from the triage classification</span>
+      <p class="lu-sub">Exactly this module's own point: escalation is a distinct, named decision, not the triage agent quietly giving up. A separate handoff agent means the "route to a human" decision is its own auditable step with its own accuracy measurement, not folded into the same call that classified the case.</p>
+    </div>
+  </div>
+  <template data-notes><p>Three minutes. The three-piece split is the thing to land: one agent per job, same discipline as this module's router/specialist/escalation split, just with a guardrail layer added because real customer messages, unlike this course's lab utterances, can be adversarial or distressing.</p></template>
+</section>
+
+<!-- ==================================================================== 11d -->
+<section class="slide" data-label="The evaluation: digital twins plus expert review" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">How you validate a system you cannot A/B test on real fraud victims</div>
+  <h2 class="lu-h1">Synthetic "digital twin" customers, at scale, plus real experts, in the loop</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+    <div class="lu-stack">
+      <p class="lu-p">You cannot ethically run large-scale live experiments on distressed fraud victims to tune a triage agent. The paper's answer: build "digital twin" customer agents from real historical telephony transcripts, simulate around 3,000 realistic multi-turn cases, and separately have subject-matter experts hand-test the live agent across multiple rounds.</p>
+      <ul class="lu-list">
+        <li>Automated evaluation: GPT-4.1 as an LLM-as-judge, scoring synthetic and real conversations.</li>
+        <li>Human evaluation: SMEs rating satisfaction, empathy, compliance, factuality, and more, on a dedicated web interface.</li>
+      </ul>
+    </div>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Where automated judging breaks down</span>
+      <p class="lu-sub">Human/LLM-judge agreement is strong on objective criteria (79 to 92%), but drops to around 60% on subjective ones like empathy and frustration. The paper's own conclusion: automated evaluation is dependable for content-focused criteria, not yet for emotionally nuanced ones, so human-in-the-loop review stays necessary there.</p>
+    </div>
+  </div>
+  <template data-notes><p>Three minutes. This is directly relevant to Module 5's own evaluation theme, flag that connection if there is time: LLM-as-judge is not equally trustworthy across every metric, and this paper gives a real, measured example of exactly where it falls short.</p></template>
+</section>
+
+<!-- ==================================================================== 11e -->
+<section class="slide" data-label="The results: accuracy gains, and where automation still needs a human" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">Relative to the legacy system</div>
+  <h2 class="lu-h2">Up to +30.6% classification accuracy, and handoffs that reliably catch the cases that need a person</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <table class="lu-table">
+      <thead><tr><th>Metric</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Synthetic-customer accuracy gain (best model, GPT-5)</td><td>+30.6%</td></tr>
+        <tr><td>SME-tested accuracy gain over legacy</td><td>+16.0%</td></tr>
+        <tr><td>Handoff precision and recall</td><td>both &gt;90%</td></tr>
+        <tr><td>Guardrail accuracy (injection, hallucination)</td><td>96 to 98%</td></tr>
+      </tbody>
+    </table>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Read this the way the paper does</span>
+      <p class="lu-sub">Every model tested (Claude, Gemini, GPT variants) beat the legacy IVR system, but by different margins, +20.0% to +30.6%. The paper reports this as a reproducible pattern across models, not a single model's lucky result, which is why it names all five in its own results table rather than just the best one.</p>
+    </div>
+  </div>
+  <template data-notes><p>Two minutes. The handoff precision/recall figures are the ones to connect back to this module's own escalation slide: a >90% handoff detection rate is what "the router makes the boring, correct choice" looks like measured, not just illustrated.</p></template>
 </section>
 
 <!-- ==================================================================== 12 -->
@@ -622,6 +714,7 @@ a short delay. No other routing was added.</code></pre>
         <ul class="lu-list">
           <li>LangGraph documentation: <a href="https://docs.langchain.com/oss/python/langgraph/persistence" target="_blank" rel="noopener">persistence</a> and <a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop" target="_blank" rel="noopener">human-in-the-loop</a>, the two capabilities that build on the graph structure from today.</li>
           <li>Anthropic, <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">"Building Effective Agents,"</a> the routing pattern section specifically, it is the same pattern today's lab implemented.</li>
+          <li>Atreya et al. (2026), <a href="https://arxiv.org/abs/2605.16268" target="_blank" rel="noopener">"Helping Customers in Distress: An LLM-powered Agent that Converses, Probes, and Routes"</a>, this module's research dive, worth a full read if Dialogue is a topic your team is considering.</li>
         </ul>
       </div>
       <div class="lu-callout">
