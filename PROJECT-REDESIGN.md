@@ -40,7 +40,9 @@ with material the whole cohort gets taught, at lecture depth, either way:
 
 ### Team and paper selection
 
-- Teams of up to 3. Cohort of 24 students means 8 teams.
+- Teams of up to 3. The syllabus's own cohort size is 12 to 21 participants,
+  so 6 to 7 teams in practice, not a fixed number; treat any specific team
+  count elsewhere in this document as an illustrative example only.
 - Each team picks one topic and one paper. The paper can come from the
   curated menu (see "Still to build" below) or be self-proposed, subject
   to the idea-pitch approval step below either way.
@@ -101,14 +103,16 @@ targeted questions live rather than judging novelty cold in real time.
 
 ## Defense day (Module 6)
 
-- **12 minutes presenting, 12 minutes of questions, per team.** 8 teams
-  is 192 minutes of defenses alone, before setup, deliberation/scoring,
-  and course close. The instructor has agreed to extend Module 6's
-  session length to fit this (originally a fixed 3-hour block); the exact
-  new total and its internal segment minutes are decided when Module 6
-  itself is rebuilt (a separate, still-open task), not fixed here. Time
-  is deliberately not the constraint being protected in this document;
-  the content and rubric decisions above and below are.
+- **12 minutes presenting, 12 minutes of questions, per team.** At the
+  syllabus's own cohort range (6 to 7 teams), defenses alone run 144 to
+  168 minutes, before setup, deliberation/scoring, and course close, more
+  than fits inside the module's normal 180-minute block once those other
+  segments are added. The instructor's own call, confirmed when Module 6
+  was rebuilt (`module-06-defense/DEFENSE-DAY.md`), is to run the normal
+  180-minute block and use up to 1 more hour if the actual team count on
+  the day needs it, not to reconcile to one fixed, precise total in
+  advance. Time is deliberately not the constraint being protected in
+  this document; the content and rubric decisions above and below are.
 - **Any of the three teammates can be asked about any part**: the
   baseline paper, the extension idea, or the code. There is no
   division of "who built what" the way the old design had one person per
@@ -194,7 +198,18 @@ Q&A, not just the sub-score that maps to the part they personally wrote.
    stack (Gemini plus Mem0 or Zep plus ChromaDB), since that now depends
    on which paper each team picked.
 6. Rebuild Module 6 itself: segment minutes, the instructor scoring sheet
-   for the rubric above, and the defense-day materials.
+   for the rubric above, and the defense-day materials. Done, 2026-09-17:
+   `module-06-defense/DEFENSE-DAY.md` and `module-06-defense/scoring-sheet.xlsx`
+   in the course repository, plus the syllabus docx's Session 6 entry, its
+   Time Allocation and Course Structure tables, and the per-team defense
+   table were all brought in line with the paper-extension model. Timing
+   is deliberately left flexible rather than reconciled to an exact
+   total, per the instructor's own direction: the syllabus's cohort range
+   (12 to 21 participants, 6 to 7 teams) does not fix an exact team
+   count the way the redesign's own illustrative "24 students, 8 teams"
+   example implied, so Module 6 runs its normal 180-minute block with up
+   to 1 more hour available if the actual team count needs it, rather
+   than a fixed, precisely-reconciled longer total.
 7. Update `PROGRESS.md` and `index.html`/`README.md` so a new session (or
    a student rereading the site) sees the current model, not the old one.
 

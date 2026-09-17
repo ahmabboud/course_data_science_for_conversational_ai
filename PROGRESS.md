@@ -45,11 +45,35 @@ see what is left:
    assume every team runs the same stack. See `PROJECT-REDESIGN.md`'s own
    item 5 for the full detail.
 6. Rebuild Module 6: segment minutes, scoring sheet, defense-day
-   materials. **Not started.**
+   materials. **Done**, 2026-09-17: `module-06-defense/DEFENSE-DAY.md`
+   (the instructor's run-of-show) and `module-06-defense/scoring-sheet.xlsx`
+   (a fillable schedule and a four-criterion, 100-point scoring sheet with
+   band descriptors, zero formula errors on recalculation). The syllabus
+   docx's Session 6 entry, Time Allocation table, Course Structure table,
+   and per-team defense table were all brought in line with the
+   paper-extension model. A real discovery along the way: the syllabus's
+   own cohort size (12 to 21 participants, 6 to 7 teams) does not match
+   `PROJECT-REDESIGN.md`'s illustrative "24 students, 8 teams" example, so
+   both documents now treat the team count as variable and Module 6's
+   timing as flexible (180-minute base, up to 1 more hour if the actual
+   team count needs it) rather than reconciled to one fixed total, per
+   the instructor's own direction.
 7. Update `PROGRESS.md` and `index.html`/`README.md` so a new session sees
    the current model. **In progress**: this file now reflects items 1
-   through 5; `index.html` and `README.md` have not yet been checked
+   through 6; `index.html` and `README.md` have not yet been checked
    against the redesign.
+
+**Known gap, found while rebuilding Module 6, not yet fixed:** the
+syllabus docx's Course Description (Section 1), Learning Outcomes
+(Section 2), and Sessions 1 through 5's own Objective and Deliverable
+lines (Section 8) still describe the old continuous-agent model directly
+("the thing you are building in week one is the thing you defend," "Issue
+1 merged... a working structured-extraction endpoint," and so on). Task
+#74's rewrite and this Module 6 pass both touched Sections 6 through 10
+and the per-session Module 6 entry, not Sections 1, 2, or Sessions 1
+through 5. A future session should reconcile those too, so the syllabus
+does not describe two different projects depending which section a
+reader is on.
 
 This tracker exists because of four standing quality bars the instructor
 set for every module, on top of the mechanical authoring contract in
