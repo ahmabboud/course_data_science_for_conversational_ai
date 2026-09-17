@@ -93,7 +93,7 @@ set for every module, on top of the mechanical authoring contract in
 | 2 | Agentic Dialogue Management | Not started | Not started | Not started | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Not started |
-| 5 | Evaluation and Responsible Deployment | Not started | Not started | Not started | Not started |
+| 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | Not started | Not started |
 
 Module 6 has no lecture deck (live defense session), so it carries no row
 here; see `README.md`.
@@ -379,6 +379,128 @@ turned into slides yet).
   real production systems accurately; the runnable demo builds the
   mechanism directly so students see what is inside it.
 - Demo not yet written. Planned build order is in `lecture-notes.md` §3.
+
+## Module 5, Evaluation and Responsible Deployment, detail
+
+Planned and built 2026-09-16, following the module build order above, with
+one process deviation noted in the paper track below.
+
+### Syllabus row (Session 5, from the syllabus docx, rebalanced 2026-09-16)
+
+- **Objective.** Decide, with evidence, whether the agent built over the
+  last four modules is actually good and safe to put in front of users.
+- **Segments (rebalanced this pass, previous split was Lecture 35 / Research
+  dive 20 / Hands-on lab 95).** Lecture 50 min (component metrics versus
+  end-to-end and trajectory-level metrics, bias probing, PII detection and
+  redaction and regulation, deployment concerns); Research dive 40 min
+  (tau-bench and tau2-bench, the documented blind spots of LLM-as-judge
+  grading); Hands-on lab 60 min, capped firmly at the instructor's request
+  (build a multi-turn regression harness, run bias and PII-leakage probes,
+  produce a scorecard); Discussion and wrap 30 min (defend-rubric read
+  against the team's own scorecard, Issue 5 checkpoint). Total 180.
+- **Deliverable (Issue 5).** A working evaluation harness with a scripted
+  regression set, plus a scorecard covering task success, bias probes, and
+  PII probes for the team's own agent.
+- **Reading.** *AI Engineering*, the evaluation chapter. The tau-bench and
+  tau-squared-bench papers (named directly in the syllabus's own reading
+  line, the two anchor papers for this module, see paper track below).
+- **Rubric rows.** Evaluation rigor (15 pts): the regression harness is
+  reproducible and trajectory-aware, not just final-answer accuracy, and
+  the team reports its own weaknesses honestly. Ethics/privacy/safety
+  (5 pts): bias probe results and PII handling are documented and
+  demonstrated, not just claimed.
+
+### Lecture-notes track: done
+
+- **Written to:** `research/module-05/lecture-notes.md`. Covers the
+  compounding-error problem and pass^k, tau2-bench's dual-control model and
+  its reasoning-vs-coordination split, persona-conditioned bias in task
+  performance, the PII detection-and-redaction pipeline mechanism, EU AI
+  Act Article 50 versus the deferred Annex III date stated precisely,
+  deployment concerns (latency budgets, cost per conversation, drift), and
+  the trajectory-judge paper's full blind-spot findings, at the `AGENTS.md`
+  §12 depth bar.
+- **Not yet done:** instructor review and edit, same standing rule as every
+  other module's lecture-notes track.
+
+### Paper track: done, with one process deviation
+
+- **The two anchor papers, named directly in the syllabus's own Research
+  dive line and Reading line:** Yao, Shinn, Razavi & Narasimhan (2024),
+  "tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World
+  Domains," arXiv:2406.12045; and Barres, Dong, Ray, Si & Narasimhan
+  (2025), "tau2-Bench: Evaluating Conversational Agents in a Dual-Control
+  Environment," arXiv:2506.07982.
+- **Two supporting citations**, not syllabus-named, added to answer the
+  syllabus's own framing questions with real, verified numbers: Mohammadi
+  (2026), "trajectory-judge: What Outcome-Only LLM Judges Miss on Agent
+  Trajectories," arXiv:2609.00038 (single-author preprint, under review,
+  cited as the only source found with concrete, ground-truth-by-
+  construction numbers for the syllabus's own "how much it under-detects"
+  phrase); and Cao, Sun & Yue (2026), "From Biased Chatbots to Biased
+  Agents," AAAI 2026 TrustAgent Workshop, arXiv:2602.12285 (bias-probing
+  mechanism and its 26.2% figure). Plus one peer-reviewed anchor for
+  critical reading: Zheng et al. (2023), NeurIPS 2023 Datasets and
+  Benchmarks, arXiv:2306.05685.
+- **Deviation from the standard process, and why:** none of these five
+  sources were downloaded as local PDFs into `research/module-05/`, unlike
+  every prior module's paper track. This sandbox has no outbound fetch to
+  arxiv.org's PDF endpoint (confirmed via a failed direct `curl`, and a
+  `web_fetch` call that returned an oversized, unusable text dump); only
+  abstract/HTML pages were reachable. The arXiv links in
+  `lecture-notes.md`'s sources section are the citable source until a PDF
+  copy is added by whoever has an environment that can download one.
+- **First deck draft over-weighted all four sources equally** (2026-09-16):
+  built with tau-bench, tau2-bench, trajectory-judge, and the persona-bias
+  paper as four co-equal deep-dive papers. Corrected the same day, after the
+  instructor questioned the paper count, once a direct read of the syllabus
+  docx confirmed only tau-bench and tau2-bench are actually named for the
+  research dive. The deck now gives those two the deepest treatment (10 and
+  9 minutes respectively) and reframes trajectory-judge as supporting
+  evidence (6 min) and the persona-bias paper as a compact citation (4 min).
+  See commits `f2c215f` and `108d17b`.
+- **NotebookLM prompts:** not sent through the usual flow. The instructor
+  asked for the raw arXiv links directly, to build infographics in parallel
+  with the deck rather than through a NotebookLM handoff; links were given
+  in chat on 2026-09-16 (tau-bench, tau2-bench, trajectory-judge,
+  persona-bias, Zheng et al.). No infographic has come back yet.
+
+### Graphics track: not started
+
+- Offered, not yet actioned: a `research/module-05/pii-pipeline-notes.md`
+  brief (matching `lecture-notes.md`'s format) for the PII
+  detection-and-redaction pipeline, a non-paper mechanism dense enough to
+  merit its own infographic, in the same style as Module 4's four
+  standalone infographics (`AGENTS.md` §7b). Instructor has not yet said
+  whether they want this written.
+- No `assets/infographics/module-05/` folder exists yet. Follow `AGENTS.md`
+  §7b exactly once anything comes in: fact-check against source, save with
+  a README documenting origin and fixes, link from speaker notes and a
+  visible reading-slide entry, never embed inline in a slide body.
+
+### Deck track: done
+
+- **Built:** `lectures/dsca-module-05.html`, 28 slides. Heavy use of
+  `.lu-pipeline`, `.lu-board`, `.lu-matrix`, `.lu-walk`, and `.lu-table` per
+  the instructor's explicit "less reading, more expressive images and
+  illustrations" instruction. Verified tag-balanced, zero em/en dashes, two
+  unique MCQ `data-qid`s (`m5-q1`, `m5-q2`), and `data-minutes` reconciling
+  exactly to 2 Opening / 50 Lecture / 40 Research dive / 60 Hands-on lab /
+  28 Wrap = 180 (the 2-minute Opening carve-out taken from the syllabus's
+  30-minute Discussion-and-wrap line, same precedent as every prior module).
+  Commits `f2c215f` (initial build) and `108d17b` (two-anchor-paper
+  rebalance, see paper track above).
+- **Not yet done:** live rendering/click-through verification in an actual
+  browser (this sandbox cannot serve localhost to its own browser pane,
+  same standing gap as Modules 3 and 4). Also not yet done: adding a
+  Module 5 card to `index.html`, the way Module 4 got one (task done for
+  Module 4, not yet repeated here).
+
+### Code track: not started
+
+- `demos/module-05/` does not exist yet. Following the course's own
+  precedent (each module's demo has followed its deck build), this is the
+  natural next step, though it has not been explicitly requested.
 
 ## Conventions for adding a new module or course
 
