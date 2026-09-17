@@ -58,22 +58,46 @@ see what is left:
    timing as flexible (180-minute base, up to 1 more hour if the actual
    team count needs it) rather than reconciled to one fixed total, per
    the instructor's own direction.
-7. Update `PROGRESS.md` and `index.html`/`README.md` so a new session sees
-   the current model. **In progress**: this file now reflects items 1
-   through 6; `index.html` and `README.md` have not yet been checked
-   against the redesign.
+7. Update `PROGRESS.md`, `index.html`, `README.md`, and the syllabus's
+   remaining stale sections, so a new session sees one consistent model
+   everywhere. **Done**, 2026-09-17:
+   - `index.html`: the "Five modules, one project" summary paragraph and
+     the Module 6 card rewritten for the paper-extension model; Modules
+     1 through 3's slide counts corrected to the decks' real current
+     counts (33, 31, 31; Modules 4 and 5 were already correct at 24 and
+     28).
+   - `README.md`: "The course in one paragraph" rewritten, the module
+     status table changed from "To build" to "Built" for Modules 1
+     through 5, the Repository file listing extended to cover
+     `research/PROJECT-PAPER-MENU.md`, `assets/infographics/module-NN/`,
+     `module-06-defense/`, and `PROJECT-REDESIGN.md`, and the
+     "Before teaching from it" note about team repositories corrected to
+     name `dsca-team-template` and "baseline reproduction and novel
+     extension" instead of "the agents students build."
+   - The syllabus docx's Course Description (Section 1), Learning
+     Outcomes (Section 2, outcomes 8 and 9), and Sessions 1 through 5's
+     own Objective, Deliverable, and per-segment table content (Section
+     8) were rewritten to drop the old continuous-agent framing
+     ("the thing you are building in week one is the thing you defend,"
+     "Issue 1 merged... a working structured-extraction endpoint," "Issue
+     N checkpoint," and so on). Verified by rendering to PDF and reading
+     every affected page, and validated structurally (paragraph count
+     unchanged, all checks passed).
 
-**Known gap, found while rebuilding Module 6, not yet fixed:** the
-syllabus docx's Course Description (Section 1), Learning Outcomes
-(Section 2), and Sessions 1 through 5's own Objective and Deliverable
-lines (Section 8) still describe the old continuous-agent model directly
-("the thing you are building in week one is the thing you defend," "Issue
-1 merged... a working structured-extraction endpoint," and so on). Task
-#74's rewrite and this Module 6 pass both touched Sections 6 through 10
-and the per-session Module 6 entry, not Sections 1, 2, or Sessions 1
-through 5. A future session should reconcile those too, so the syllabus
-does not describe two different projects depending which section a
-reader is on.
+**Known gap, found while doing this pass, still not fixed:** Sessions 2
+through 5's own "Hands-on lab" table cells in the syllabus (and possibly
+the corresponding slides in `dsca-module-02.html` through
+`dsca-module-05.html` themselves, not checked here) still frame the lab
+exercise as building toward "the team's agent" as a single cumulative
+system (for example, "Add persistent memory to the team's agent so it
+recognizes a returning user," "Build a multi-turn regression harness for
+the team's own agent"). Whether these should become explicitly
+topic-agnostic practice exercises (parallel to how Module 1's own lab
+was just reworded, see the Session 1 detail above), or whether the labs
+themselves need a real content redesign so a team whose own project
+topic is Extraction still gets something useful out of Module 4's memory
+lab, is a real pedagogical decision, not a wording fix, and needs the
+instructor's input before a future session touches it.
 
 This tracker exists because of four standing quality bars the instructor
 set for every module, on top of the mechanical authoring contract in
