@@ -130,7 +130,7 @@
         </div>
       </div>
       <div data-walk-step="3" data-caption-short="Issue one instruction" hidden
-           data-caption="<b>Step 3.</b> An LLM call decides which of four operations applies, given the candidate and its closest existing match. Exactly one instruction per candidate, never a silent duplicate.">
+           data-caption="<b>Step 3.</b> Given the candidate and its closest existing match, decide which of four operations applies. Exactly one instruction per candidate, never a silent duplicate, but see the callout below for who actually makes this decision in the library you will run today.">
         <div class="lu-code lu-code--sm" data-name="the four operations">
 <pre><code><span class="tok-kw">ADD</span>     <span class="tok-com"># genuinely new fact, no close existing match</span>
 <span class="tok-kw">UPDATE</span>  <span class="tok-com"># contradicts or refines an existing fact ("Beirut" -> "Paris")</span>
@@ -139,7 +139,7 @@
         </div>
       </div>
       <div data-walk-step="4" data-caption-short="Apply it, memory stays clean" hidden
-           data-caption="<b>Step 4.</b> The store applies the instruction. There is never more than one live fact per real-world claim, which is exactly what keeps the memory bank from becoming a growing pile of stale duplicates.">
+           data-caption="<b>Step 4.</b> Whoever owns this decision applies it with an explicit call. There is never more than one live fact per real-world claim, which is exactly what keeps the memory bank from becoming a growing pile of stale duplicates, but only because something enforces it.">
         <div class="lu-code lu-code--sm" data-name="the result">
 <pre><code>UPDATE("lives in Beirut" -> "lives in Paris")
 <span class="tok-com"># one current fact, not two contradictory ones sitting side by side</span></code></pre>
@@ -147,14 +147,18 @@
       </div>
     </div>
   </div>
+  <div class="lu-callout" style="margin-top:var(--lu-s4)">
+    <span class="lu-callout__label">Read this critically: paper versus the library you actually run</span>
+    <p class="lu-sub">This four-operation pipeline is Mem0's own paper's description of its design. Verified directly against the installed <code>mem0ai</code> package (2.0.20, this course's own pin), not assumed from the paper: a plain <code>memory.add()</code> call is currently additive only. It does not run step 2's comparison and choose UPDATE or DELETE for you, a restated fact comes back as a second, separate ADD. A real application has to detect the conflict itself and call <code>memory.update()</code> and <code>memory.delete()</code> explicitly, exactly what <code>demos/module-04/memory_demo.py</code>'s <code>session_one()</code> does. Always check a paper's described mechanism against the exact library version you actually run, not just the paper's own claims about it.</p>
+  </div>
   <div class="lu-reveal" style="margin-top:var(--lu-s4)">
     <button class="lu-reveal__btn" type="button">The cost this mechanism does not advertise</button>
     <div class="lu-reveal__panel" hidden>
-      <p class="lu-sub">Step 2 is a similarity search against the <i>entire</i> existing memory bank for every single incoming fact. Done naively, that is <b>O(n)</b> comparisons per new fact against n stored facts, the exact same scaling concern Module 3 raised about vector search at scale: a small personal memory bank never notices, a memory bank shared across many users or growing for months needs the same approximate-nearest-neighbour indexing already covered for document retrieval, not a linear scan re-derived from scratch.</p>
+      <p class="lu-sub">Step 2, whether run automatically by a library or by your own conflict-resolution code, is a similarity search against the <i>entire</i> existing memory bank for every single incoming fact. Done naively, that is <b>O(n)</b> comparisons per new fact against n stored facts, the exact same scaling concern Module 3 raised about vector search at scale: a small personal memory bank never notices, a memory bank shared across many users or growing for months needs the same approximate-nearest-neighbour indexing already covered for document retrieval, not a linear scan re-derived from scratch.</p>
       <p class="lu-sub">On real benchmarks (LOCOMO, GPT-4o-mini scale), Mem0 answers from roughly 1,764 tokens of retrieved memory versus 26,031 tokens for replaying the full transcript, about 15 times less context per query, at a median search latency of about 0.15 seconds.</p>
     </div>
   </div>
-  <template data-notes><p>Seven minutes. Step through all four operations, then open the reveal and say the complexity point plainly: comparing every new fact against every stored fact does not stay cheap forever, this is the same lesson as vector search at scale, applied to a different data structure. The token and latency numbers are real, from the Mem0 paper (arXiv:2504.19413), not illustrative round numbers, say so if asked. <code>demos/module-04/memory_demo.py</code> runs this exact ADD-then-UPDATE sequence against the real mem0ai package, useful to pull up live if a team doubts the similarity comparison actually catches a paraphrase. The infographic at <code>assets/infographics/module-04/mem0.html</code> is a visual companion to this whole walkthrough, open it live if the room responds better to a diagram than to code.</p></template>
+  <template data-notes><p>Seven minutes. Step through all four operations as the paper's own conceptual design, then open the "read this critically" callout and say it plainly: the installed library's own add() call does not run this decision for you, your application code does, exactly what demos/module-04/memory_demo.py's session_one() demonstrates with real update() and delete() calls. Then open the cost reveal and say the complexity point: comparing every new fact against every stored fact does not stay cheap forever, whoever runs that comparison, this is the same lesson as vector search at scale, applied to a different data structure. The token and latency numbers are real, from the Mem0 paper (arXiv:2504.19413), not illustrative round numbers, say so if asked. The infographic at <code>assets/infographics/module-04/mem0.html</code> is a visual companion to this whole walkthrough, open it live if the room responds better to a diagram than to code.</p></template>
 </section>
 
 <!-- ==================================================================== 06 -->
@@ -191,7 +195,7 @@
       <p class="lu-mcq__q">A user asks, "where did I live before I moved to Paris?" Which memory pattern can answer this, and why?</p>
       <div class="lu-mcq__opts">
         <button class="lu-mcq__opt" type="button" data-key="a">Neither can, this needs a fresh web search<span class="lu-mcq__why" hidden>The information was already stated by the user earlier in the relationship; the question is whether either memory pattern kept it, not whether it exists anywhere.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="b">Mem0, because ADD keeps every fact ever extracted<span class="lu-mcq__why" hidden>ADD is for genuinely new facts. A contradicting later fact ("Paris") triggers UPDATE on the same claim, which is exactly the operation that replaces the old value.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="b">Mem0, because ADD keeps every fact ever extracted<span class="lu-mcq__why" hidden>ADD is for genuinely new facts. A contradicting later fact ("Paris") should trigger an explicit UPDATE on the same claim (your own application's job, not something add() does for you), which is exactly the operation that replaces the old value.</span></button>
         <button class="lu-mcq__opt" type="button" data-key="c">Zep, because the old "lives in Beirut" edge is closed (invalid_at set) rather than overwritten<span class="lu-mcq__why" hidden>Correct: the temporal graph keeps every edge, closed or open, so a question about a past state has an answer a flat store already discarded.</span></button>
         <button class="lu-mcq__opt" type="button" data-key="d">Both equally well, the underlying LLM call is the same either way<span class="lu-mcq__why" hidden>The LLM call pattern looks similar, but what the store actually retains afterward is not the same, and that difference is the entire point of today's comparison.</span></button>
       </div>
@@ -328,16 +332,24 @@ memory = Memory()</code></pre>
 <span class="tok-com"># user_id identifies the person, across every session they ever start</span></code></pre>
         </div>
       </div>
-      <div data-walk-step="3" data-caption-short="Watch the operation it chose" hidden
-           data-caption="<b>Step 3.</b> Print the operation Mem0 actually applied. Seeing ADD on a genuinely new fact and UPDATE on a restated one is how a team confirms deduplication is really working, not just assumed.">
+      <div data-walk-step="3" data-caption-short="Add is additive, check what it returned" hidden
+           data-caption="<b>Step 3.</b> Print what memory.add() actually returned. The installed mem0ai library's add() is additive only, verified directly against the real package, not assumed from the paper: a restated fact comes back as a second, separate ADD, not an automatic UPDATE.">
         <div class="lu-code lu-code--sm" data-name="inspecting the result">
 <pre><code>result = memory.add(messages, user_id=<span class="tok-str">"user-482"</span>)
 <span class="tok-kw">print</span>(result[<span class="tok-str">"results"</span>])
-<span class="tok-com"># [{"memory": "lives in Paris", "event": "UPDATE"}]</span></code></pre>
+<span class="tok-com"># [{"memory": "lives in Paris", "event": "ADD"}]  (always ADD, even for a restated fact)</span></code></pre>
         </div>
       </div>
-      <div data-walk-step="4" data-caption-short="Restart the process, memory persists" hidden
-           data-caption="<b>Step 4.</b> Kill the script and run it again. Mem0's store lives on disk (or wherever it is configured to persist), not in the now-dead process's memory, so the facts are still there on the next run.">
+      <div data-walk-step="4" data-caption-short="Resolve the conflict yourself" hidden
+           data-caption="<b>Step 4.</b> add() will not do this for you: check the new fact against what you already have, then call update() to fix the current value and delete() to remove the now-superseded entry. This is your own application logic, not something the library runs automatically.">
+        <div class="lu-code lu-code--sm" data-name="explicit conflict resolution">
+<pre><code><span class="tok-com"># add() alone would leave both "Beirut" and "Paris" stored side by side</span>
+memory.update(beirut_fact_id, text=<span class="tok-str">"lives in Paris"</span>)
+memory.delete(paris_duplicate_id)</code></pre>
+        </div>
+      </div>
+      <div data-walk-step="5" data-caption-short="Restart the process, memory persists" hidden
+           data-caption="<b>Step 5.</b> Kill the script and run it again. Mem0's store lives on disk (or wherever it is configured to persist), not in the now-dead process's memory, so the facts are still there on the next run.">
         <div class="lu-code lu-code--sm" data-name="the point of today's lab">
 <pre><code><span class="tok-com"># stop the process entirely, start a new one:</span>
 memory.get_all(user_id=<span class="tok-str">"user-482"</span>)
@@ -346,7 +358,7 @@ memory.get_all(user_id=<span class="tok-str">"user-482"</span>)
       </div>
     </div>
   </div>
-  <template data-notes><p>Ten minutes. Step 4 is the whole lab in miniature, make every team actually kill and restart the process, not just trust that it would work. Expected blocker: a team keys memory.add by session id out of habit from Module 2's state graph, which silently defeats the entire point; watch for it and correct it early. <code>demos/module-04/memory_demo.py</code> runs this exact add-then-restart sequence against the real library, with a second Memory instance standing in for the restart, useful to project if a team wants to see the pattern before writing their own.</p></template>
+  <template data-notes><p>Ten minutes. Step 5 is the whole lab in miniature, make every team actually kill and restart the process, not just trust that it would work. Expected blocker: a team assumes add() deduplicates on its own and skips step 4 entirely, then wonders why their memory bank fills with contradictory duplicates; watch for it and correct it early, this is exactly the bug slide 19's own table names. A second expected blocker: a team keys memory.add by session id out of habit from Module 2's state graph, which silently defeats the entire point. <code>demos/module-04/memory_demo.py</code>'s session_one() runs this exact add-then-explicit-update-and-delete sequence against the real library, and a second Memory instance stands in for the restart, useful to project if a team wants to see the pattern before writing their own.</p></template>
 </section>
 
 <!-- ==================================================================== 15 -->
@@ -390,7 +402,7 @@ candidates = memory_chunks + document_chunks
       <tbody>
         <tr><td>Facts are keyed by user, not session</td><td>Grep your own code for every memory.add and memory.search call, confirm user_id, not session_id or conversation_id</td></tr>
         <tr><td>Recall survives a real process restart</td><td>Kill the script, start a new process, ask the agent something only revealed in the earlier run</td></tr>
-        <tr><td>Deduplication actually fires</td><td>State the same fact two different ways in two turns, confirm the second produced UPDATE or NOOP, not a second ADD</td></tr>
+        <tr><td>Your own conflict resolution actually fires</td><td>State the same fact two different ways in two turns; add() will report ADD both times, confirm your own code detected the conflict and called update() or delete(), not that a second, separate ADD went unhandled</td></tr>
       </tbody>
     </table>
     <div class="lu-callout lu-callout--concept">
@@ -438,20 +450,20 @@ messages = [summary] + messages[<span class="tok-num">10</span>:]</code></pre>
 <!-- ==================================================================== 18 -->
 <section class="slide" data-label="Check: a duplicate is about to be created" data-section="Hands-on lab" data-minutes="5">
   <div class="lu-eyebrow">Decide out loud, with your partner, before you code</div>
-  <div class="lu-mcq" data-qid="m4-q2" data-answer="a"
-       data-label="What Mem0's own pipeline should do when a paraphrase of an existing fact arrives"
-       data-fb-correct=" Correct: the comparison step exists precisely to recognise this as the same claim restated, and issue NOOP or a no-op UPDATE, not a second ADD."
-       data-fb-wrong=" Reconsider what similarity(new, existing) would return for a clear paraphrase of the same fact, and which of the four operations that similarity should trigger.">
-    <p class="lu-mcq__q">A user who already has the stored fact "lives in Paris" says, "yeah, I'm based in Paris these days." What should happen?</p>
+  <div class="lu-mcq" data-qid="m4-q2" data-answer="b"
+       data-label="What the installed mem0ai library actually does when a paraphrase of an existing fact arrives"
+       data-fb-correct=" Correct: verified directly against the real, installed mem0ai package, add() does not run a compare-and-decide step on your behalf. Your own code has to detect the paraphrase and call update() or delete()."
+       data-fb-wrong=" Reconsider what memory_demo.py's session_one() had to do explicitly after calling add() twice with a restated fact, and why.">
+    <p class="lu-mcq__q">A user who already has the stored fact "lives in Paris" says, "yeah, I'm based in Paris these days." Your code calls memory.add() with this new turn. What actually happens, with the mem0ai library this course pins?</p>
     <div class="lu-mcq__opts">
-      <button class="lu-mcq__opt" type="button" data-key="a">High similarity to the existing fact triggers NOOP (or a no-op UPDATE), not a new ADD<span class="lu-mcq__why" hidden>Correct: this is exactly the case the compare-then-decide step exists for, a paraphrase should not become a duplicate entry.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="b">A second, separate memory is added, since the wording is different<span class="lu-mcq__why" hidden>This is precisely the duplicate-pile failure mode the four-operation design exists to prevent; wording differing is exactly why similarity, not exact match, drives the comparison.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="c">The system should ask the user to confirm before storing anything<span class="lu-mcq__why" hidden>Nothing about this restated fact is ambiguous or contradictory; asking for confirmation on an unambiguous restatement is friction the four-operation design exists to avoid.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="d">DELETE the old fact and store nothing new, since it was only restated<span class="lu-mcq__why" hidden>The fact is still true and still needed; deleting it would lose information the agent legitimately has.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="a">add() recognises the paraphrase by similarity and returns NOOP on its own<span class="lu-mcq__why" hidden>This is the paper's own described design, but verified against the installed library, add() does not run this comparison for you: it is additive only.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="b">add() creates a second, separate memory entry; your own code has to detect the duplicate and call update() or delete() to clean it up<span class="lu-mcq__why" hidden>Correct: this is exactly what memory_demo.py's session_one() demonstrates, add() reports ADD both times, and the application explicitly calls update() and delete() afterward to keep one current fact.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="c">add() raises an error, since the fact already exists in the store<span class="lu-mcq__why" hidden>add() does not check for existing facts before writing; it never raises on a restated fact, it just adds another entry.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="d">add() silently does nothing, since nothing new was learned<span class="lu-mcq__why" hidden>add() is additive, not idempotent: it does not compare against existing memories at all, so it writes a new entry regardless of whether the fact is already stored.</span></button>
     </div>
     <div class="lu-mcq__fb" hidden></div>
   </div>
-  <template data-notes><p>Five minutes. If a team pushes back with "but how would the system know it's the same fact," point to the embedding-similarity mechanism from the lecture directly: this is exactly what step 2 of the extraction walkthrough computes, not a special case bolted on afterward.</p></template>
+  <template data-notes><p>Five minutes. If a team pushes back with "but the lecture's walkthrough showed this happening automatically," point them straight at the lecture's own "read this critically" callout: that four-operation pipeline is the paper's description of Mem0's design, the installed library's add() call does not run it for you today, which is exactly why session_one() calls update() and delete() explicitly. This is the same critical-reading habit Module 5 spends a whole research dive on: a paper's described mechanism is not automatically what the shipped code does.</p></template>
 </section>
 
 <!-- ==================================================================== 19 -->
