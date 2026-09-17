@@ -93,7 +93,7 @@ set for every module, on top of the mechanical authoring contract in
 | 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first | Not started (no research dive in syllabus, see detail) | Not started | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
-| 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | Not started | Done, see below |
+| 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | 3 of 4 papers done, see below | Done, see below |
 
 Module 6 has no lecture deck (live defense session), so it carries no row
 here; see `README.md`.
@@ -571,18 +571,33 @@ one process deviation noted in the paper track below.
   in chat on 2026-09-16 (tau-bench, tau2-bench, trajectory-judge,
   persona-bias, Zheng et al.). No infographic has come back yet.
 
-### Graphics track: not started
+### Graphics track: three of the module's papers done, PII pipeline still open
 
-- Offered, not yet actioned: a `research/module-05/pii-pipeline-notes.md`
+- **Shipped 2026-09-16:** `assets/infographics/module-05/tau-bench.html`,
+  `tau2-bench.html`, and `trajectory-judge.html`. Instructor-designed
+  (Clearpaper template), delivered as finished HTML files and integrated
+  by an agent per `AGENTS.md` §7b: fact-checked against each paper's own
+  text (fetched from arXiv), linked from the corresponding research-dive
+  slide's speaker notes (`tau-bench, worked through`,
+  `tau-squared-bench: when the user can act too`,
+  `The blind spot: what an outcome-only judge misses`) and from the
+  "Before Module 6" reading slide's visible link list, never embedded
+  inline. Full fact-check findings, including which specific numbers were
+  confirmed against the primary source and which could not be reached in
+  this pass (a sandbox page-fetch limitation, not a finding of error), are
+  in `assets/infographics/module-05/README.md`. Short version:
+  `trajectory-judge.html` fully verified (paper's short enough to fetch in
+  full); `tau-bench.html` and `tau2-bench.html` have their headline
+  figures verified but a handful of more granular numbers (tau-bench's
+  per-model comparison bars and failure-cause breakdown, tau2-bench's
+  step-count cliff chart) were not reachable in the fetched text and are
+  flagged, not confirmed or contradicted.
+- Still offered, not yet actioned: a `research/module-05/pii-pipeline-notes.md`
   brief (matching `lecture-notes.md`'s format) for the PII
   detection-and-redaction pipeline, a non-paper mechanism dense enough to
   merit its own infographic, in the same style as Module 4's four
-  standalone infographics (`AGENTS.md` §7b). Instructor has not yet said
-  whether they want this written.
-- No `assets/infographics/module-05/` folder exists yet. Follow `AGENTS.md`
-  §7b exactly once anything comes in: fact-check against source, save with
-  a README documenting origin and fixes, link from speaker notes and a
-  visible reading-slide entry, never embed inline in a slide body.
+  standalone infographics. Instructor has not yet said whether they want
+  this written.
 
 ### Deck track: done
 

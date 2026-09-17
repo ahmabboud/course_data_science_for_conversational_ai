@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Can AI agents follow the rules, every time? · τ-bench · Clearpaper</title>
+<!-- Clearpaper slide. Open in any browser. Print or Save as PDF: landscape, margins none, background graphics on. -->
+<meta name="description" content="A one slide visual summary of a research paper for students.">
+<style>
+/* Clearpaper tokens (light, dark via system setting, print forces light) */
+:root{--paper:#fbf6ee;--paper-raised:#ffffff;--paper-sunk:#f3ebdd;--ink:#2a2320;--ink-muted:#5f554d;--line:#e4d9c8;--line-strong:#8f8171;--on-accent:#2a2320;--focus:#2a2320;--coral:#e0663f;--coral-ink:#a8401f;--coral-soft:#fbe3d8;--teal:#2a9d8f;--teal-ink:#16665d;--teal-soft:#d8f0eb;--sun:#f2b33d;--sun-ink:#865600;--sun-soft:#fcefcf;--sky:#5a8fdb;--sky-ink:#1f58a3;--sky-soft:#dfeafa;--shadow-card:0 1px 2px rgba(42,35,32,0.06), 0 6px 16px rgba(42,35,32,0.07);--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;--space-12:48px;--radius-sm:6px;--radius-md:12px;--radius-lg:20px;--radius-pill:999px;--page-max:1080px;--measure:68ch;--icon-md:28px;--font-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;--font-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]){--paper:#1c1917;--paper-raised:#27231f;--paper-sunk:#141210;--ink:#f4ede4;--ink-muted:#b8ada2;--line:#3d3631;--line-strong:#857869;--on-accent:#1c1917;--focus:#f4ede4;--coral:#f08a66;--coral-ink:#f6a98c;--coral-soft:#46281d;--teal:#4fc2b4;--teal-ink:#82d8cd;--teal-soft:#163a36;--sun:#f5c566;--sun-ink:#f7d48d;--sun-soft:#40331a;--sky:#7aabee;--sky-ink:#a3c5f4;--sky-soft:#1c2f4c;--shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 6px 16px rgba(0,0,0,0.35);}}
+:root[data-theme=dark]{--paper:#1c1917;--paper-raised:#27231f;--paper-sunk:#141210;--ink:#f4ede4;--ink-muted:#b8ada2;--line:#3d3631;--line-strong:#857869;--on-accent:#1c1917;--focus:#f4ede4;--coral:#f08a66;--coral-ink:#f6a98c;--coral-soft:#46281d;--teal:#4fc2b4;--teal-ink:#82d8cd;--teal-soft:#163a36;--sun:#f5c566;--sun-ink:#f7d48d;--sun-soft:#40331a;--sky:#7aabee;--sky-ink:#a3c5f4;--sky-soft:#1c2f4c;--shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 6px 16px rgba(0,0,0,0.35);}
+@media print{:root{--paper:#fbf6ee;--paper-raised:#ffffff;--paper-sunk:#f3ebdd;--ink:#2a2320;--ink-muted:#5f554d;--line:#e4d9c8;--line-strong:#8f8171;--on-accent:#2a2320;--focus:#2a2320;--coral:#e0663f;--coral-ink:#a8401f;--coral-soft:#fbe3d8;--teal:#2a9d8f;--teal-ink:#16665d;--teal-soft:#d8f0eb;--sun:#f2b33d;--sun-ink:#865600;--sun-soft:#fcefcf;--sky:#5a8fdb;--sky-ink:#1f58a3;--sky-soft:#dfeafa;--shadow-card:0 1px 2px rgba(42,35,32,0.06), 0 6px 16px rgba(42,35,32,0.07);}}
+
+/* Clearpaper components */
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&display=swap");
+
+/* Clearpaper components: plain CSS, no JavaScript. Prefix cp-. */
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 24px; }
+
+/* Tones: set once on any component, children read --tone* */
+.cp-tone-coral { --tone: var(--coral); --tone-ink: var(--coral-ink); --tone-soft: var(--coral-soft); }
+.cp-tone-teal  { --tone: var(--teal);  --tone-ink: var(--teal-ink);  --tone-soft: var(--teal-soft); }
+.cp-tone-sun   { --tone: var(--sun);   --tone-ink: var(--sun-ink);   --tone-soft: var(--sun-soft); }
+.cp-tone-sky   { --tone: var(--sky);   --tone-ink: var(--sky-ink);   --tone-soft: var(--sky-soft); }
+
+/* Shared text */
+.cp-eyebrow { font: 700 12px/16px var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--tone-ink, var(--ink-muted)); margin: 0 0 var(--space-2); display: flex; align-items: center; gap: var(--space-2); }
+.cp-eyebrow svg { width: 20px; height: 20px; flex: none; }
+.cp-hl { background: var(--sun-soft); box-shadow: inset 0 -0.45em 0 var(--sun-soft); padding: 0 2px; border-radius: 3px; color: var(--ink); }
+.cp-icon { width: var(--icon-md); height: var(--icon-md); stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+a { color: var(--sky-ink); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* Page */
+.cp-page { max-width: var(--page-max); margin: 0 auto; padding: var(--space-8); display: flex; flex-direction: column; gap: var(--space-12); }
+@media (max-width: 640px) { .cp-page { padding: var(--space-4); gap: var(--space-8); } }
+
+/* Poster Header */
+.cp-poster { display: grid; grid-template-columns: 1fr auto; gap: var(--space-6); align-items: end; padding-bottom: var(--space-6); border-bottom: 2px solid var(--ink); }
+.cp-poster h1 { font: 800 44px/48px var(--font-display); letter-spacing: -.02em; margin: 0 0 var(--space-3); max-width: 18ch; }
+.cp-poster .cp-lead { font: 400 19px/28px var(--font-body); color: var(--ink); margin: 0; max-width: 52ch; }
+.cp-meta { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+.cp-chip { display: inline-flex; align-items: center; gap: var(--space-1); font: 700 12px/16px var(--font-body); padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); background: var(--paper-sunk); color: var(--ink); border: 1px solid var(--line); }
+.cp-chip.cp-tone-coral, .cp-chip.cp-tone-teal, .cp-chip.cp-tone-sun, .cp-chip.cp-tone-sky { background: var(--tone-soft); color: var(--tone-ink); border-color: transparent; }
+.cp-poster-mark { display: flex; gap: 6px; align-items: flex-end; }
+.cp-poster-mark span { width: 18px; border-radius: var(--radius-sm); }
+@media (max-width: 640px) { .cp-poster { grid-template-columns: 1fr; } .cp-poster h1 { font-size: 34px; line-height: 38px; } .cp-poster-mark { display: none; } }
+
+/* Big Idea */
+.cp-bigidea { background: var(--coral); color: var(--on-accent); border-radius: var(--radius-lg); padding: var(--space-6) var(--space-8); display: grid; grid-template-columns: auto 1fr; gap: var(--space-6); align-items: center; }
+.cp-bigidea .cp-eyebrow { color: var(--on-accent); margin: 0; }
+.cp-bigidea p:not(.cp-eyebrow) { font: 700 24px/32px var(--font-display); margin: 0; }
+.cp-bigidea-num { font: 800 64px/56px var(--font-display); }
+@media (max-width: 640px) { .cp-bigidea { grid-template-columns: 1fr; padding: var(--space-6); } .cp-bigidea p:not(.cp-eyebrow) { font-size: 20px; line-height: 28px; } }
+
+/* Section */
+.cp-section > header { margin-bottom: var(--space-6); }
+.cp-section h2 { font: 700 24px/30px var(--font-display); letter-spacing: -.01em; margin: 0; }
+.cp-section .cp-intro { color: var(--ink-muted); margin: var(--space-2) 0 0; max-width: var(--measure); }
+
+/* Question panel */
+.cp-question { background: var(--tone-soft, var(--sky-soft)); border-radius: var(--radius-lg); padding: var(--space-6); display: grid; grid-template-columns: auto 1fr; gap: var(--space-4); align-items: start; }
+.cp-question .cp-qmark { font: 800 56px/48px var(--font-display); color: var(--tone-ink, var(--sky-ink)); }
+.cp-question h3 { font: 700 20px/28px var(--font-display); margin: 0 0 var(--space-2); }
+.cp-question p { margin: 0; max-width: var(--measure); }
+
+/* Concept Card grid */
+.cp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); }
+.cp-card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: var(--space-3); }
+.cp-card-icon { width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--tone-soft, var(--paper-sunk)); color: var(--tone-ink, var(--ink)); display: grid; place-items: center; }
+.cp-card h3 { font: 700 18px/24px var(--font-display); margin: 0; }
+.cp-card p { margin: 0; }
+.cp-analogy { font-size: 14px; line-height: 20px; color: var(--ink-muted); border-top: 1px dashed var(--line-strong); padding-top: var(--space-3); margin-top: auto; }
+.cp-analogy b { color: var(--tone-ink, var(--ink)); }
+
+/* Process Flow */
+.cp-flow { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: var(--space-4); counter-reset: cp-step; }
+.cp-flow li { position: relative; counter-increment: cp-step; background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-6) var(--space-4) var(--space-4); }
+.cp-flow li::before { content: counter(cp-step); position: absolute; top: -16px; left: var(--space-4); width: 32px; height: 32px; border-radius: var(--radius-pill); background: var(--tone, var(--teal)); color: var(--on-accent); font: 800 16px/32px var(--font-display); text-align: center; }
+.cp-flow li:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -14px; width: 12px; height: 12px; border-top: 2px solid var(--line-strong); border-right: 2px solid var(--line-strong); transform: translateY(-50%) rotate(45deg); }
+.cp-flow h3 { font: 700 16px/22px var(--font-display); margin: var(--space-2) 0 var(--space-1); }
+.cp-flow p { margin: 0; font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+@media (max-width: 720px) { .cp-flow { grid-auto-flow: row; gap: var(--space-6); } .cp-flow li:not(:last-child)::after { top: auto; bottom: -18px; right: auto; left: 50%; transform: translateX(-50%) rotate(135deg); } }
+
+/* Stat Callout */
+.cp-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); }
+.cp-stat { background: var(--tone-soft, var(--paper-raised)); border-radius: var(--radius-md); padding: var(--space-6); }
+.cp-stat-num { font: 800 56px/56px var(--font-display); letter-spacing: -.03em; color: var(--tone-ink, var(--ink)); display: block; }
+.cp-stat-what { font-weight: 700; margin: var(--space-2) 0 var(--space-1); display: block; }
+.cp-stat-note { font-size: 12px; line-height: 16px; color: var(--ink-muted); display: block; }
+
+/* Bar Compare */
+.cp-bars { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-6); }
+.cp-bars figcaption { font: 700 16px/22px var(--font-display); margin-bottom: var(--space-4); }
+.cp-bar { display: grid; grid-template-columns: 9em 1fr; gap: var(--space-3); align-items: center; margin-bottom: var(--space-2); }
+.cp-bar-label { font-size: 14px; line-height: 20px; }
+.cp-bar-track { border-left: 2px solid var(--line-strong); padding: 2px 0; }
+.cp-bar-fill { height: 28px; width: var(--v, 50%); background: var(--tone, var(--coral)); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; display: flex; align-items: center; justify-content: flex-end; padding-right: var(--space-2); box-sizing: border-box; font: 700 14px/20px var(--font-body); color: var(--on-accent); min-width: 3.2em; }
+.cp-bar-fill.cp-tone-sun { box-shadow: inset 0 0 0 2px var(--sun-ink); }
+.cp-bars .cp-note { font-size: 12px; line-height: 16px; color: var(--ink-muted); margin: var(--space-3) 0 0; }
+
+/* Compare (before / after, A vs B) */
+.cp-compare { display: grid; grid-template-columns: 1fr 1fr; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line-strong); }
+.cp-compare > div { padding: var(--space-6); background: var(--tone-soft, var(--paper-raised)); }
+.cp-compare > div + div { border-left: 1px solid var(--line-strong); }
+.cp-compare h3 { font: 700 18px/24px var(--font-display); margin: 0 0 var(--space-3); color: var(--tone-ink, var(--ink)); }
+.cp-compare ul { margin: 0; padding-left: 1.2em; }
+.cp-compare li + li { margin-top: var(--space-1); }
+@media (max-width: 640px) { .cp-compare { grid-template-columns: 1fr; } .cp-compare > div + div { border-left: 0; border-top: 1px solid var(--line-strong); } }
+
+/* Caveat */
+.cp-caveat { background: var(--sun-soft); border: 2px solid var(--sun); border-radius: var(--radius-lg); padding: var(--space-6); }
+.cp-caveat .cp-eyebrow { color: var(--sun-ink); }
+.cp-caveat ul { margin: 0; padding-left: 1.2em; }
+.cp-caveat li + li { margin-top: var(--space-2); }
+
+/* Takeaways */
+.cp-takeaways { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.cp-takeaways li { display: grid; grid-template-columns: 32px 1fr; gap: var(--space-3); align-items: start; font-size: 17px; line-height: 26px; }
+.cp-takeaways li::before { content: ""; width: 28px; height: 28px; border-radius: var(--radius-pill); background: var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232a2320' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/16px no-repeat; }
+
+/* Glossary */
+.cp-glossary { background: var(--paper-sunk); border-radius: var(--radius-lg); padding: var(--space-6); display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4) var(--space-6); margin: 0; }
+.cp-glossary div { margin: 0; }
+.cp-glossary dt { font: 700 16px/22px var(--font-display); }
+.cp-glossary dd { margin: var(--space-1) 0 0; font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+
+/* Source Footer */
+.cp-source { border-top: 2px solid var(--ink); padding-top: var(--space-4); display: grid; grid-template-columns: 1fr auto; gap: var(--space-4); font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+.cp-source cite { font-style: normal; color: var(--ink); font-size: 14px; line-height: 20px; display: block; margin-bottom: var(--space-1); }
+@media (max-width: 640px) { .cp-source { grid-template-columns: 1fr; } }
+
+/* ===== Slide: the one page layout (16:9, 1920 x 1080 px) ===== */
+.cp-stage { position: fixed; inset: 0; background: var(--paper-sunk); overflow: hidden; }
+.cp-stage .cp-sheet { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(var(--s, 1)); transform-origin: center; box-shadow: var(--shadow-card); }
+.cp-sheet { width: 1920px; height: 1080px; box-sizing: border-box; padding: 44px 56px 32px; background: var(--paper); color: var(--ink);
+  display: grid; grid-template-columns: 1fr 1.35fr 1fr; grid-template-rows: auto minmax(0, 1fr) auto; gap: 20px 36px; overflow: hidden; }
+.cp-sheet > .cp-sheet-head { grid-column: 1 / -1; display: grid; grid-template-columns: 1.2fr 1fr; gap: 36px; align-items: stretch; padding-bottom: 18px; border-bottom: 3px solid var(--ink); }
+.cp-sheet > .cp-sheet-foot { grid-column: 1 / -1; display: grid; grid-template-columns: 2fr 1fr; gap: 28px; align-items: stretch; }
+.cp-col { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+.cp-block { display: flex; flex-direction: column; gap: 8px; }
+.cp-block > h2 { font: 700 20px/24px var(--font-display); letter-spacing: -.01em; margin: 0; }
+.cp-block > .cp-eyebrow { margin: 0; }
+.cp-grow { flex: 1; }
+
+/* compact component variants inside the sheet */
+.cp-sheet .cp-poster { border: 0; padding: 0; display: block; }
+.cp-sheet .cp-poster h1 { font-size: 58px; line-height: 62px; max-width: none; margin-bottom: 8px; }
+.cp-sheet .cp-bigidea { padding: 20px 28px; }
+.cp-sheet .cp-meta { margin-top: 12px; }
+.cp-sheet .cp-bigidea p:not(.cp-eyebrow) { font-size: 26px; line-height: 34px; }
+.cp-sheet .cp-bigidea-num { font-size: 96px; line-height: 80px; }
+.cp-sheet .cp-question { padding: 14px 18px; gap: 12px; }
+.cp-sheet .cp-question h3 { font-size: 18px; line-height: 24px; }
+.cp-sheet .cp-question p:not(.cp-eyebrow) { font-size: 14px; line-height: 20px; }
+.cp-sheet .cp-grid { grid-template-columns: 1fr; gap: 10px; }
+.cp-sheet .cp-card { padding: 12px 16px; display: grid; grid-template-columns: 48px 1fr; column-gap: 14px; row-gap: 2px; box-shadow: none; }
+.cp-sheet .cp-card-icon { grid-row: span 3; }
+.cp-sheet .cp-card h3 { font-size: 17px; line-height: 22px; }
+.cp-sheet .cp-card p { font-size: 14px; line-height: 20px; }
+.cp-sheet .cp-analogy { border-top: 0; padding-top: 0; font-size: 13px; line-height: 18px; }
+.cp-sheet .cp-flow { gap: 12px; margin-top: 16px; }
+.cp-sheet .cp-flow li { padding: 20px 12px 12px; }
+.cp-sheet .cp-flow li:not(:last-child)::after { right: -11px; width: 9px; height: 9px; }
+.cp-sheet .cp-flow p { font-size: 13px; line-height: 18px; }
+.cp-sheet .cp-stats { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.cp-sheet .cp-stat { padding: 12px 16px; }
+.cp-sheet .cp-stat-num { font-size: 48px; line-height: 50px; }
+.cp-sheet .cp-stat-what { font-size: 14px; line-height: 20px; }
+.cp-sheet .cp-bars { padding: 18px 20px; box-shadow: none; }
+.cp-sheet .cp-bars figcaption { margin-bottom: 12px; }
+.cp-sheet .cp-bar-fill { height: 30px; }
+.cp-sheet .cp-compare { grid-template-columns: 1fr; }
+.cp-sheet .cp-compare > div { padding: 10px 18px; }
+.cp-sheet .cp-compare > div + div { border-left: 0; border-top: 1px solid var(--line-strong); }
+.cp-sheet .cp-compare h3 { font-size: 16px; line-height: 22px; margin-bottom: 6px; }
+.cp-sheet .cp-compare li, .cp-sheet .cp-caveat li { font-size: 14px; line-height: 20px; }
+.cp-sheet .cp-caveat { padding: 12px 18px; }
+.cp-sheet .cp-caveat .cp-eyebrow { margin-bottom: 6px; }
+.cp-sheet .cp-caveat li + li { margin-top: 6px; }
+.cp-sheet .cp-takeaways { gap: 6px; }
+.cp-sheet .cp-takeaways li { font-size: 15px; line-height: 22px; grid-template-columns: 24px 1fr; gap: 10px; }
+.cp-sheet .cp-takeaways li::before { width: 22px; height: 22px; background-size: 13px; }
+.cp-sheet .cp-glossary { grid-template-columns: repeat(3, 1fr); padding: 14px 18px; gap: 16px; }
+.cp-sheet .cp-glossary dd { font-size: 13px; line-height: 18px; }
+.cp-sheet .cp-source { grid-template-columns: 1fr; align-content: center; border-top: 0; border-left: 3px solid var(--ink); padding: 0 0 0 20px; }
+
+@page { size: 1280px 720px; margin: 0; }
+
+/* Print: one clean page flow */
+@media print {
+  body { background: #fff; }
+  .cp-card, .cp-bars { box-shadow: none; }
+  .cp-page { padding: 0; gap: var(--space-8); }
+  .cp-stage { position: static; background: none; width: 1280px; height: 720px; }
+  .cp-stage .cp-sheet { position: static; transform: scale(.66667); transform-origin: top left; box-shadow: none; }
+  .cp-section, .cp-card, .cp-stat, .cp-caveat, .cp-flow li { break-inside: avoid; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+</style>
+</head>
+<body>
+<div class="cp-stage">
+<article class="cp-sheet" aria-label="Infographic slide">
+<div class="cp-sheet-head">
+<header class="cp-poster">
+  <div>
+    <p class="cp-eyebrow cp-tone-coral"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M8 7h7"/></svg> Research explained · Artificial intelligence</p>
+    <h1>Can AI agents follow the rules, every time?</h1>
+    <p class="cp-lead">A new test puts AI customer service agents in real conversations with tools and a company rulebook.</p>
+    <div class="cp-meta">
+      <span class="cp-chip cp-tone-sky"><svg class="cp-icon" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> 5 min read</span>
+      <span class="cp-chip cp-tone-teal">Benchmark study</span>
+      <span class="cp-chip">Yao et al., 2024 · τ-bench</span>
+    </div>
+  </div>
+</header>
+<section class="cp-bigidea" aria-label="The big idea">
+  <span class="cp-bigidea-num" aria-hidden="true">1</span>
+  <div><p class="cp-eyebrow">The big idea in one sentence</p>
+  <p>The best AI agent solved under half the tasks, and repeated the same success less than 25% of the time.</p></div>
+</section>
+</div>
+<div class="cp-col">
+<section class="cp-block"><p class="cp-eyebrow cp-tone-sky"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7"/><path d="M12 17h.01"/></svg> Step 1 · Question</p><h2>What did they want to know?</h2>
+<section class="cp-question cp-tone-sky">
+  <span class="cp-qmark" aria-hidden="true">?</span>
+  <div><h3>Can an AI agent serve customers with tools and rules, reliably?</h3>
+  <p>Older tests gave agents every fact upfront, with no chat and no rulebook.</p></div>
+</section>
+</section>
+<section class="cp-block"><p class="cp-eyebrow cp-tone-coral"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg> Step 2 · Key ideas</p><h2>Three ideas you need first</h2>
+<div class="cp-grid"><article class="cp-card cp-tone-coral"><div class="cp-card-icon"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></div><h3>Language agent</h3><p>An AI chatbot that can also use software tools.</p><p class="cp-analogy"><b>Like:</b> a new call center worker with a computer.</p></article><article class="cp-card cp-tone-teal"><div class="cp-card-icon"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M8 7h7"/></svg></div><h3>Domain policy</h3><p>The company rulebook the agent must obey.</p><p class="cp-analogy"><b>Like:</b> the staff handbook on day one.</p></article><article class="cp-card cp-tone-sky"><div class="cp-card-icon"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16v-5"/><path d="M12 16V6"/><path d="M17 16v-8"/></svg></div><h3>pass^k</h3><p>Chance of success on all k repeats of a task.</p><p class="cp-analogy"><b>Like:</b> a pilot must land safely every flight.</p></article></div>
+</section>
+</div>
+<div class="cp-col">
+<section class="cp-block"><p class="cp-eyebrow cp-tone-teal"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg> Step 3 · Method</p><h2>How they tested it</h2>
+<ol class="cp-flow cp-tone-teal">
+  <li><h3>Build</h3><p>Shop and airline worlds, 165 tasks.</p></li>
+  <li><h3>Role play</h3><p>GPT-4 plays a customer.</p></li>
+  <li><h3>Chat</h3><p>Agent talks and uses tools.</p></li>
+  <li><h3>Grade</h3><p>Compare with the one right outcome.</p></li>
+</ol>
+</section>
+<section class="cp-block"><p class="cp-eyebrow cp-tone-coral"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16v-5"/><path d="M12 16V6"/><path d="M17 16v-8"/></svg> Step 4 · Findings</p><h2>What they found</h2>
+<div class="cp-stats">
+  <div class="cp-stat cp-tone-coral"><span class="cp-stat-num">61%</span><span class="cp-stat-what">shop tasks solved</span><span class="cp-stat-note">best model (gpt-4o), one try</span></div>
+  <div class="cp-stat cp-tone-teal"><span class="cp-stat-num">35%</span><span class="cp-stat-what">airline tasks solved</span><span class="cp-stat-note">same model, harder rules</span></div>
+  <div class="cp-stat cp-tone-sky"><span class="cp-stat-num">&lt;25%</span><span class="cp-stat-what">right in all 8 tries</span><span class="cp-stat-note">gpt-4o, same shop tasks</span></div>
+</div>
+<figure class="cp-bars" style="margin:0"><figcaption>Shop tasks solved on the first try (%, 0 to 100)</figcaption><div class="cp-bar"><span class="cp-bar-label">gpt-4o</span><div class="cp-bar-track"><div class="cp-bar-fill cp-tone-teal" style="--v:61.2%">61</div></div></div><div class="cp-bar"><span class="cp-bar-label">claude-3-opus</span><div class="cp-bar-track"><div class="cp-bar-fill cp-tone-coral" style="--v:44.2%">44</div></div></div><div class="cp-bar"><span class="cp-bar-label">gpt-3.5-turbo</span><div class="cp-bar-track"><div class="cp-bar-fill cp-tone-sun" style="--v:20.0%">20</div></div></div></figure>
+</section>
+</div>
+<div class="cp-col">
+<section class="cp-block"><p class="cp-eyebrow cp-tone-teal"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg> Step 5 · Why agents fail</p><h2>Where it goes wrong</h2>
+<figure class="cp-bars" style="margin:0"><figcaption>Causes of 36 gpt-4o failures (axis 0 to 40%)</figcaption><div class="cp-bar"><span class="cp-bar-label">Wrong argument</span><div class="cp-bar-track"><div class="cp-bar-fill cp-tone-coral" style="--v:83%">33%</div></div></div><div class="cp-bar"><span class="cp-bar-label">Wrong decision</span><div class="cp-bar-track"><div class="cp-bar-fill cp-tone-teal" style="--v:62.5%">25%</div></div></div><div class="cp-bar"><span class="cp-bar-label">Wrong info</span><div class="cp-bar-track"><div class="cp-bar-fill cp-tone-sky" style="--v:55.5%">22%</div></div></div><div class="cp-bar"><span class="cp-bar-label">Partial job</span><div class="cp-bar-track"><div class="cp-bar-fill cp-tone-sun" style="--v:48.5%">19%</div></div></div></figure>
+</section>
+<aside class="cp-caveat">
+  <p class="cp-eyebrow"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg> Keep in mind</p>
+  <ul>
+    <li><strong>Fake customers:</strong> an AI plays the user and can err.</li>
+    <li><strong>2 simple worlds:</strong> shop and airline only.</li>
+    <li><strong>End result only:</strong> not every rule step is checked.</li>
+    <li><strong>2024 models:</strong> newer ones may differ.</li>
+  </ul>
+</aside>
+<section class="cp-block"><p class="cp-eyebrow cp-tone-teal"><svg class="cp-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></svg> Remember</p>
+<ul class="cp-takeaways">
+  <li><span>Succeeding once is not the same as being <span class="cp-hl">reliable</span>.</span></li>
+  <li><span>Complex rules and multi part requests are hardest.</span></li>
+  <li><span>No rulebook: gpt-4o lost 22 points on airline.</span></li>
+</ul>
+</section>
+</div>
+<div class="cp-sheet-foot">
+<dl class="cp-glossary">
+  <div><dt>Large language model (LLM)</dt><dd>AI trained on huge amounts of text to predict and write language.</dd></div>
+  <div><dt>Tool call (API)</dt><dd>A structured command the AI sends to software, like "cancel order #123".</dd></div>
+  <div><dt>Benchmark</dt><dd>A standard test used to compare AI systems fairly.</dd></div>
+</dl>
+<footer class="cp-source">
+  <div><cite>Yao, S., Shinn, N., Razavi, P., &amp; Narasimhan, K. (2024). τ-bench: A benchmark for tool-agent-user interaction in real-world domains. <i>arXiv preprint</i> arXiv:2406.12045.</cite>
+  doi.org/10.48550/arXiv.2406.12045 · Code: github.com/sierra-research/tau-bench · Simplified for teaching.</div>
+</footer>
+</div>
+</article>
+</div>
+<script>
+/* Fit the 1920x1080 slide to any window, like a presentation */
+(function(){var r=document.documentElement;function fit(){r.style.setProperty("--s",Math.min(innerWidth/1920,innerHeight/1080));}addEventListener("resize",fit);fit();})();
+</script>
+</body>
+</html>
