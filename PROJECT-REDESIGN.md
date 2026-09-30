@@ -142,6 +142,26 @@ than one blended number:
 Every teammate is individually accountable across all four of these in
 Q&A, not just the sub-score that maps to the part they personally wrote.
 
+### Final grade: project defense 85, attendance and participation 15
+
+Decided 2026-09-30. The four criteria above are still scored out of 25 each
+(100 in all) at the defense, and that score is now multiplied by 0.85, giving
+**85 course points** (Part A). **Attendance and participation are 15 course
+points** (Part B): 6 sessions at 2.5 points each, made of 1.5 for attendance and
+1.0 for participation in that session's instructor demonstration and
+discussion (labs are instructor-led demonstrations, so participation means
+taking part in them, not finishing a challenge). The instructor records
+participation after each session: 1 = contributed at least once, 0.5 = took
+part only when asked directly, 0 = no contribution. One absence is excused and
+keeps that session's 2.5 points if the missed project work is completed before
+the next module; any further absence loses the session's points.
+
+Final grade = 0.85 x (defense score out of 100) + attendance and participation
+points (out of 15). The defense score belongs to the team; the attendance
+and participation points are individual. The workbook
+`module-06-defense/scoring-sheet.xlsx` (Scoring, Attendance and Rubric tabs)
+computes all of it, and the syllabus (Sections 9, 10 and 11) states it.
+
 ## What this fully removes
 
 - The "Continuous Project" model: one team, one domain, one agent grown

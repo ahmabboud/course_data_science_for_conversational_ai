@@ -17,7 +17,7 @@ This is an LLM-only course: there is no classical NLP stack and no build-it-twic
 | 3 | Grounded Generation | Built |
 | 4 | Memory | Built |
 | 5 | Evaluation and Responsible Deployment | Built |
-| 6 | Project Defense | No lecture deck, live session only, see `module-06-defense/` |
+| 6 | Project Defense | No lecture deck, live session only; its run-of-show and scoring sheet are instructor-only (see below) |
 
 Module length is 180 minutes. At the deck pacing of 3 to 4 minutes per content slide, a 3-hour module lands around 24 to 33 slides including dividers and the wrap, the same pacing the Knowledge Representation reference deck uses. Module 6 has no lecture deck: it is a live demo and defense session, run from `module-06-defense/DEFENSE-DAY.md` and its scoring sheet, not a slide deck.
 
@@ -35,7 +35,7 @@ Module length is 180 minutes. At the deck pacing of 3 to 4 minutes per content s
 - **`research/PROJECT-PAPER-MENU.md`**, the curated paper-and-repo menu for the team project: two to four candidate papers per topic, each with a verified, working repository and a compute/cost note.
 - **`demos/`**, instructor-only demo material used live during specific lectures, a notebook for one module, a `langgraph dev` / Studio demo for another. See `demos/README.md` for the setup steps and which demo belongs to which lecture, both directions of that link matter.
 - **`assets/infographics/module-NN/`**, standalone interactive or reference infographics for a module's research dive, linked from the deck's speaker notes and reading slide, never embedded inline. See each folder's own `README.md` for fact-check provenance.
-- **`module-06-defense/`**, Module 6's own materials since it has no lecture deck: `DEFENSE-DAY.md` (the instructor's run-of-show) and `scoring-sheet.xlsx` (the fillable schedule and rubric).
+- **`module-06-defense/`** (instructor-only, **not in the repository**, kept in the instructor's own course folder): Module 6's run-of-show (`DEFENSE-DAY.md`) and the grading workbook (`scoring-sheet.xlsx`: schedule, scoring, attendance and participation, rubric bands). Listed in `.gitignore` so it is never published.
 - **`PROJECT-REDESIGN.md`**, the locked source of truth for the team project's design: the five topics, paper selection rules, the idea-pitch and related-work guardrails, deliverables, defense-day format, and the 100-point rubric.
 
 Built from the [`LebUniv_Course_Template`](https://github.com/ahmabboud/LebUniv_Course_Template) design system. Fixes to the stylesheet or runtime belong upstream in the template, not here.

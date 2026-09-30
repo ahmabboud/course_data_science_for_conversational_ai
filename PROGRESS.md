@@ -26,39 +26,22 @@ drift behind the actual state of the repository.
 
 ### 2. Where to continue
 
-**State on 2026-09-30 (end of a long session):** nothing is pushed. Local
-commits are ahead of GitHub (`git log --oneline origin/main..HEAD`), and the
-finished Module 1 rebuild is committed locally; check `git status` first.
-**Ask the instructor before pushing.**
+**State on 2026-09-30 (end of a long session):** everything described here was
+committed and pushed to GitHub (`origin/main`) at the end of the session, at the
+instructor's request. Run `git fetch` and `git status` first anyway, and ask
+before pushing anything new.
 
 **Waiting on the instructor:**
 
-- **Review Module 1** (`lectures/dsca-module-01.html`, 57 slides, 180 min).
-  Look first at the animated slides (from "One LLM call, step by step") and
-  the Gorilla research dive (from "The paper card"). It is not approved yet;
-  do not mark Module 1 done.
-- **Approve the new time split.** The syllabus docx still says Session 1 is
-  50 lecture / 70 lab. The deck is now Opening 2, Hook 16, Lecture 75,
-  Research dive 33, Kickoff 12, Instructor demo 32, Wrap 10 = 180. The
-  research dive grew from 12 to 33 minutes because a paper now has to be
-  explained fully (AGENTS.md §2c rules 10 and 11). Bring the syllabus in line
-  once they agree.
+- **Module 1:** the instructor said "it is good" on 2026-09-30 after seeing
+  the rebuilt deck and the Gorilla research dive. Treat it as accepted unless
+  they raise something new; do not mark the course "done".
+- **Time split approved 2026-09-30** (instructor: "I approve ... fix all
+  necessary points"): Opening 2, Hook 16, Lecture 75, Research dive 33,
+  Kickoff 12, Instructor demo 32, Wrap 10 = 180. The syllabus Session 1 entry
+  was rewritten to match, and its audience, setup and in-class-time wording was
+  fixed (see "Grading and syllabus" below).
 - **Module 3 review** (its redrawn diagrams and three new slides).
-- **Attendance and participation points (undecided).** On 2026-09-30 the
-  instructor wanted 15 of the 100 points for attendance and participation in
-  labs and said they will decide later. A proposal was given in chat (85
-  project points = the current 100-point defense score times 0.85, plus 15:
-  2.5 per session, 1.5 attendance and 1.0 participation in that session's
-  demo, one excused absence as the syllabus already allows). Nothing was
-  changed. If they decide, update together: syllabus Section 10 and its
-  table, `module-06-defense/scoring-sheet.xlsx`, `PROJECT-REDESIGN.md`,
-  `DEFENSE-DAY.md`, and Module 1's slide "The rubric and what is due before
-  you defend" (it says 100 points, four criteria of 25). Also still to bring
-  in line in the syllabus: its "assumed knowledge" says students can already
-  call an LLM API and read JSON, and "no tokenizers, taggers or classical
-  classifiers appear anywhere" (Module 1 now teaches tokens and JSON and shows
-  the old two-model approach for contrast), and it says setup finishes before
-  Module 1 while the team template says to set up after picking a paper.
 - **Set a deadline for the idea pitch.** Nothing in the course documents sets
   one; the "Your project this week" slide lists steps without dates.
 
@@ -160,6 +143,54 @@ Files added: `research/module-01/patil-2023-gorilla.pdf` (CC BY 4.0,
 downloaded from arXiv 2026-09-30), five cropped figures
 `assets/img/m01-gorilla-fig*.png`, `demos/module-01/extraction_demo.ipynb`,
 `scripts/pdf-text.swift`, `scripts/pdf-crop.swift`.
+
+### 2c. Grading and syllabus, decided and done 2026-09-30
+
+The instructor approved the recommendation made in chat:
+
+- **Final grade = 0.85 x (defense score out of 100) + attendance and
+  participation points (out of 15).** Part A, the defense, keeps the four
+  criteria of 25 and is scaled by 0.85 to 85 course points (team score). Part
+  B is 15 points, individual: 6 sessions x 2.5 = 1.5 attendance + 1.0
+  participation in that session's demonstration and discussion (instructor
+  records 1, 0.5 or 0 after each session). One absence is excused and keeps
+  that session's 2.5 points if the missed project work is completed before the
+  next module; any other absence loses the session's points.
+- **Where it lives:** the syllabus `Data Science for Conversational AI -
+  Syllabus.docx` (Sections 3, 5, 6, 8 Session 1 and a note at its top, 9, 10,
+  11; the old file is kept as `... (pre-attendance-rubric backup
+  2026-09-30).docx`); `PROJECT-REDESIGN.md` ("Final grade" under the rubric);
+  `module-06-defense/scoring-sheet.xlsx` (Scoring has a Part A column, a new
+  Attendance tab computes Part B and the final grade per participant, Rubric
+  has the Part B rules; 204 formulas, zero errors, checked with the example row
+  and with two absences, no team and an unscored team); `DEFENSE-DAY.md`; and
+  Module 1's two rubric slides ("The rubric and what is due before you defend"
+  is Part A, "The rubric, part B: attendance and participation" is Part B).
+- **Syllabus fixes made at the same time:** "assumed knowledge" no longer says
+  participants can already call an LLM API (Module 1 teaches it); the
+  "no classical NLP" line now says Module 1 shows the old approach once, as a
+  contrast; setup happens after choosing a paper, on the team's own time;
+  in-class lab time is an instructor demonstration, project work is between
+  sessions; the Section 6 time table is **not** recomputed (it will be when
+  Modules 2 to 5 are rebuilt; a sentence says so); a note at the top of
+  Section 8 says Sessions 2 to 5 are being rebuilt to the same format.
+- Still **not** decided: the idea-pitch deadline.
+
+### 2d. What is in git and what is not (changed 2026-09-30)
+
+The instructor asked to keep Claude files and instructor-only files out of git.
+`.gitignore` (course repo and `dsca-team-template`) now lists `.claude/`,
+`CLAUDE.md`, `CLAUDE.local.md`; the course repo also lists `module-06-defense/`
+(run-of-show and grading workbook) and all raw NotebookLM output
+(`research/**/*notebooklm*`, `research/module-04/notebooklm-reference/`, which
+has known wrong numbers). Those files were **removed from tracking** and still
+sit in the instructor's iCloud folder, so a **fresh clone of the repo does not
+have them**. They remain in the git history of earlier commits. Deliberately
+**still tracked**: `AGENTS.md`, `PROGRESS.md`, `PROJECT-REDESIGN.md`,
+`PROMPT.md`, because they are the handoff between sessions and devices and a
+session that starts from a clone needs them; if the instructor wants them
+private too, add them to `.gitignore` and run `git rm --cached` on them, and
+keep a copy in the iCloud folder.
 
 ### 3. How to audit and rebuild a module (the §2c method)
 
@@ -309,6 +340,7 @@ as the working model:
 - More slides are fine if a concept needs them.
 - Clarity beats everything; write for a college student; every term gets definition, example and steps (AGENTS.md §2c rules 6 and 7).
 - Labs are instructor-led demos, no student challenge; students work offline (rule 8).
+- Grading: 85 points project defense (score out of 100 times 0.85) plus 15 points attendance and participation, 2.5 per session (section 2c).
 - Every paper: read the PDF yourself, crop its own figures, keep a local copy, answer the five questions on the slides (rules 10 and 11, section 3b).
 
 ---

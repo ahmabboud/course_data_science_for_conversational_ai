@@ -8,3 +8,16 @@ __pycache__/
 .langgraph_api/
 mem0_store/
 eval_scorecard.json
+
+# Claude and other agent local files: never commit
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+
+# Instructor-only materials. They live in the instructor's own (iCloud) course
+# folder and are never published: the Module 6 run-of-show and grading workbook
+# (scores, attendance, rubric bands), and raw NotebookLM output, which contains
+# known wrong numbers and is kept as instructor reference only.
+module-06-defense/
+research/**/*notebooklm*
+research/**/notebooklm-reference/
