@@ -18,11 +18,14 @@ sw.js                          Service worker (offline cache).
 assets/
   lu.css                       The entire design system. ~1,200 lines, sectioned.
   lu-deck.js                   The runtime. Frames slides, wires every component.
+  lu-flow.js                   Flow diagrams and step animations (§7 route 0). Load after lu-deck.js.
   sparql-lite.js               Offline SPARQL engine. Only needed for query sandboxes.
   icon.svg, icon-maskable.svg  PWA icons.
   img/                         Instructor-supplied screenshots and plots.
 scripts/
   audit-deck.js                Paste into the console. Measures what static checks cannot.
+  print-handout.sh             Prints a deck's handout to PDF (headless Chrome), optional PNG pages.
+  pdf-pages.swift              Renders chosen PDF pages to PNG. Used by print-handout.sh.
 lectures/
   _template.html               COPY THIS. Your starting point, always.
   _reference.html              The worked example. A built deck from another course on this

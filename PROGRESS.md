@@ -5,6 +5,184 @@ says what is done, what is in flight, and what a new session should pick up
 next. Update it in the same turn as any work it describes, do not let it
 drift behind the actual state of the repository.
 
+## Start here (updated 2026-09-30)
+
+### 1. Before you do anything
+
+1. **Load the `lu-lecture-builder` skill** if your environment has it. It
+   covers this deck system's known failure modes and the verification
+   discipline. Where it disagrees with `AGENTS.md`, `AGENTS.md` wins.
+2. **Sync:** `git fetch origin`, `git status`,
+   `git log --oneline origin/main..HEAD` (local, not pushed) and
+   `git log --oneline HEAD..origin/main` (pushed from elsewhere). If the
+   working tree has changes you did not make, stop and ask.
+3. **Read, in this order:** this section; `AGENTS.md` in full, especially
+   **§2c** (teaching standard), **§7 route 0** (flow animations), **§12**
+   (depth bar) and §2b (measurement traps); then the detail section below
+   for the module you are touching.
+4. **Commits:** author is the repo's configured user (Ahmad Abboud). No
+   `Co-Authored-By` or any AI attribution line. **Do not push without the
+   instructor's go-ahead**; pushing publishes to GitHub Pages.
+
+### 2. Where to continue
+
+As of 2026-09-30, **2 commits are local and not pushed** (`f8427d8`
+Module 3 layout fixes, `5f9947f` the flow-animation port, the §2c standard,
+and two Module 1 prototypes). Ask the instructor before pushing.
+
+**Waiting on the instructor (ask first, do not start without an answer):**
+
+- **A. Approve the animation style.** Prototypes: Module 1 slides "One LLM
+  call, step by step" and "Constrained decoding, token by token". If
+  approved, that is the pattern for every module; if not, record what they
+  want changed here and in `AGENTS.md` §7 before building more.
+- **B. The outdated lab slides.** Module 1's lab slides (and the labs in
+  Modules 2 to 5) still teach the old one-shared-agent project ("Issue 1",
+  `agent/understanding.py`, "the same agent you defend in Module 6"). Ask:
+  reword them as general practice exercises (a pair writes a schema and
+  three test sentences for any domain, in a scratch notebook), or redesign
+  each lab around the team's own paper topic?
+- **C. Module 3 review.** Its four redrawn diagrams and three new slides
+  (see Module 3's "Deck track" below) are built and verified but not yet
+  reviewed.
+
+**Then, in this order:**
+
+1. **Finish Module 1 against §2c** (full findings in "Module 1 ...
+   Teaching-standard audit, 2026-09-30" below):
+   - New visual slides for the missing prerequisites: JSON and JSON Schema
+     (real `type`/`properties`/`required`, not the current pseudo-code;
+     define required and optional); the real API call from
+     `demos/module-01/hook_demo.ipynb` (`client.interactions.create` with
+     `response_format`); classical NLU (intent classifier plus slot tagger)
+     next to one LLM call, as a flow; function calling as an animated flow
+     (model picks a function and its arguments, your code runs it, the
+     result goes back); Gorilla's method as a flow, with fine-tuning,
+     zero-shot, AST, retriever and RLHF defined.
+   - Replace the pseudo-code schema on "The schema is the whole contract"
+     and the lab walkthrough with real JSON Schema.
+   - Fix the six overflowing slides and `m1-q1`'s answered state (list in
+     the Module 1 audit below); split slides rather than shrink them.
+   - Plain-English pass on every slide's visible text and captions.
+   - Apply decision B to the lab slides.
+   - Rebalance `data-minutes` (keep 180 unless the instructor agrees
+     otherwise) and update the slide count on `index.html`.
+2. **Run the same §2c audit on Modules 2, 3, 4, 5**, one at a time: write
+   the findings into that module's detail section first, show the
+   instructor, then build. Module 3 has already had its layout fixed but
+   not its §2c pass.
+3. **Other open items** (details in each module's section): Module 3
+   `lecture-notes.md` never written and `grounded_rag.py` has no tests;
+   Module 4's five NotebookLM images have number errors and none are in
+   the deck; Module 5's PII-pipeline infographic not decided; Modules 1, 2,
+   4 and 5 show "Correct. Correct:" in some MCQ feedback (the runtime
+   already adds "Correct.", so drop it from `data-fb-correct`);
+   `design-system.html` has no live `.lu-flow` example yet (`AGENTS.md`
+   §11 says it must); the handout prints 38 pages for Module 1's 35
+   slides, so find the slides that spill onto a second page.
+
+### 3. How to audit and rebuild a module (the §2c method)
+
+Walk every slide and write findings under these headings, by `data-label`
+(never by slide number, numbers drift):
+
+- **Missing prerequisites.** For each term or idea a slide uses, ask: did
+  an earlier slide or module teach it? Students are MSc level but many have
+  never called an LLM from code. Ideas that have been missing so far: what
+  one LLM call is (prompt in, text out, no memory), tokens, decoding, JSON
+  and JSON Schema, the real API code, function calling, embeddings, fine-
+  tuning, zero-shot, AST, RLHF, F1, and the names of datasets and hubs. A
+  pop-up definition (`.lu-term`) is not enough on its own, a printed
+  handout never shows it. Put the definition visibly on the slide, in
+  **bold**, in one plain sentence, usually in a `.lu-callout--concept`
+  labelled "Definition" or in the walkthrough caption.
+- **Visuals.** Every concept slide should lead with a picture. Anything
+  that moves (a request, state, tokens, a tool call, a retrieval pipeline)
+  becomes an animated `.lu-flow` inside a `.lu-walk`. Anything that does
+  not move can be a static flow, a table or a comparison. Mix picture
+  types across a deck.
+- **Language.** Students are not native English speakers. Short sentences,
+  common words, no idioms. Words and phrases already found and to avoid:
+  "bolted onto", "fair game", "the receipts", "rhyme with", "house style",
+  "live with it", "land it", "strawman", "punctuation" (meaning a short
+  slide). Headings on one line where possible. Name every acronym the
+  first time.
+- **Render bugs.** Audit script results, plus the answered MCQ state (see
+  4 below).
+- **Stale content.** Anything describing the old project model, and any
+  claim about another repo (check `dsca-team-template` itself).
+
+Adding slides is allowed (instructor, 2026-09-30). Split a crowded slide
+rather than shrinking text, and move cut detail into the speaker notes.
+
+### 4. How to build a flow animation (lessons from the Module 1 prototypes)
+
+- Markup: copy "One LLM call, step by step" in `lectures/dsca-module-01.html`.
+  One `<script type="application/json" class="lu-flow__spec">` inside
+  `.lu-flow`, then one empty `<div data-walk-step="N" data-caption-short
+  data-caption>` per step, all inside `.lu-walk__view`. Add
+  `<script src="../assets/lu-flow.js?v=1.2.1" defer></script>` after
+  `lu-deck.js` on any deck that uses it. The spec format is documented in
+  the header of `assets/lu-flow.js`.
+- Kinds (colour = meaning): `user` green, `model` plum, `code` blue,
+  `tool` teal, `data` grey mono. States: `active` (ring), `inferred`
+  (amber dashed, use for "new" or "picked"), `impossible` (red, use for
+  "blocked" or "invalid"). Rename the badge text with `"flags"` and the
+  legend entries with `"legend": {kind-or-state: "label"}`, so KR's words
+  ("Inferred", "Impossible") never show up on a DSCA slide.
+- **Space budget.** The slide body is 652px. A walk's step bar takes about
+  66px, the legend about 40px (set `"legend": false` if the node labels
+  already say what each colour is), the eyebrow plus a one-line h2 about
+  100px with gaps. A flow taller than the walk view is clipped, not
+  scaled. With a definition callout below, keep the spec height at about
+  290. Measure `.lu-walk__view` against `.lu-flow`'s height.
+- **Labels.** Edge labels are mono, about 12px per character, centred on
+  the edge. Leave a gap between two nodes of at least the label's width
+  plus 20px, or drop the label and say it in the caption. `data` nodes use
+  a mono font, so make them wider than you think.
+- A node's label cannot change between steps. Use a label that is true at
+  every step (for example "State {party_size, day, time}", not a value
+  that changes).
+- Print shows the diagram's last step, but the caption shown is step 1;
+  write step 1's caption so it still reads sensibly under the full diagram.
+
+### 5. How to verify (every deck you touch, before calling it done)
+
+1. **Serve locally.** `LebUniv/.claude/launch.json` defines `dsca-course`
+   (this repo on port 8765) and `kr-course` (the Knowledge Representation
+   repo on 8766, useful for looking at its animations). Otherwise run
+   `python3 -m http.server 8765` in this repo's root.
+2. Open the deck with a `?cb=<random>` cache-buster and clear saved state:
+   `Object.keys(localStorage).filter(k=>k.startsWith('lu:')).forEach(k=>localStorage.removeItem(k))`,
+   then reload. Study mode persists across reloads; make sure it is off.
+3. **After any change in `assets/`, bump the version query** (`lu.css?v=`)
+   in every HTML file and in `sw.js`. The service worker serves the old
+   stylesheet otherwise: the first flow prototype rendered as black boxes
+   for exactly this reason.
+4. Run `scripts/audit-deck.js` in the console (fetch it and `eval` it).
+5. **Answered MCQs.** The audit does not open the feedback box. For every
+   option of every MCQ, load a fresh copy of the deck (a hidden iframe
+   works), click the option, and measure the slide.
+6. **Click everything**: every node popover, every walkthrough step with
+   its Next button (measure at each step), every reveal, study mode (`S`).
+7. **Handout:** `scripts/print-handout.sh lectures/<deck>.html <out-dir>
+   8765 3,4,7` prints the handout with headless Chrome in the Handout
+   button's own state and renders the listed pages to PNG for checking.
+8. Structural: tags balanced, one notes template per slide, no em or en
+   dashes, unique `data-qid`s, `data-minutes` per section reconciled.
+
+### 6. Settled decisions (do not reopen without the instructor)
+
+- Project model: paper extension (`PROJECT-REDESIGN.md`), not the old
+  continuous agent.
+- Provider: Gemini for every demo, for its free tier; say so honestly.
+- `lu-flow` is the diagram and animation standard for new work; do not
+  hand-position new `.lu-board` diagrams.
+- Students are not native English speakers; plain English always.
+- More slides are fine if a concept needs them.
+
+---
+
 **Read `PROJECT-REDESIGN.md` next, before this file's own contents below.**
 Decided 2026-09-17: the continuous-agent project (one team, one domain, one
 agent grown across five required GitHub issues) is being fully replaced by
