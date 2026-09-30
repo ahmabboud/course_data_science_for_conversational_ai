@@ -183,7 +183,7 @@ set for every module, on top of the mechanical authoring contract in
 
 | # | Title | Lecture notes | Paper | Graphics | Code |
 |---|---|---|---|---|---|
-| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Done, agent-built interactive infographic, see detail | Not started |
+| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Research infographic done; §2c teaching-standard audit 2026-09-30 found gaps, two animated prototypes awaiting review | Not started |
 | 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Helping Customers in Distress, arXiv:2605.16268), see detail | Done, agent-built interactive infographic, see detail | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress; deck layout debt fixed 2026-09-30, awaiting review | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
@@ -324,6 +324,73 @@ and 2, not a rebuild.
   `lectures/dsca-module-01.html`, and the "Before Module 2" reading
   callout, both pointing to `../assets/infographics/module-01/gorilla.html`.
   Not embedded inline anywhere in the deck.
+
+### Teaching-standard audit, 2026-09-30 (AGENTS.md §2c): findings, prototypes awaiting review
+
+Run against the new §2c standard (visuals first, animated dataflow, plain
+English for non-native speakers, no missing prerequisites, more slides
+allowed). Findings, by `data-label`:
+
+**Render bugs** (`scripts/audit-deck.js`, local, storage cleared): six
+slides cut content off: "Why classifiers and taggers are replaced" 138px,
+"How the enforcement actually works" 46px (68px revealed), "The LLM API
+landscape" 156px (197px revealed), "Gorilla: retrieval-aware fine-tuning"
+132px, "Form your team, pick your topic and paper" 15px, "Discussion and
+wrap" 68px. MCQ `m1-q1` overflows 99px once answered. Not yet fixed.
+
+**Prerequisite gaps** (ideas a slide uses that the course never teaches):
+- What an LLM call is: prompt in, text out, no memory between calls.
+  The whole "state is passed in" lesson depends on it.
+- Tokens and decoding: "How the enforcement actually works" talks about
+  tokens, sampling and zero probability with no picture of generation.
+- JSON and JSON Schema: the deck's schema is pseudo-code
+  (`"integer | null"`); the real call in `demos/module-01/hook_demo.ipynb`
+  uses real JSON Schema (`type`, `properties`, `required`). "Required" and
+  "optional" are used in the bugs table but never defined.
+- The actual API call is never shown: no slide opens
+  `client.interactions.create(..., response_format=...)`.
+- Function calling versus structured output: defined only in popovers,
+  never shown as a flow (model picks a function, your code runs it).
+- Classical NLU: "intent classifier", "entity tagger", "slot",
+  "sequence labeling", "F1" appear without a picture of the old pipeline.
+- Research dive: fine-tuning, zero-shot, self-instruct, AST and sub-tree
+  matching, retriever, RLHF, HuggingFace/TorchHub/TensorHub are used
+  without definitions.
+
+**Visuals**: apart from the five-stage pipeline, every concept slide is
+text or code. No diagram for the old versus new pipeline, the call loop,
+function calling, constrained decoding, or Gorilla's method.
+
+**Plain English**: slide text uses idioms a non-native reader will
+stumble on ("bolted onto", "fair game", "the receipts", "rhyme with the
+example", "no house style", "live with it"). Several h1s are long
+two-line sentences.
+
+**Stale project model**: the lab slides still teach the old
+continuous-agent project: "Issue 1", `agent/understanding.py`'s
+`extract()`, "Issue 1 merged", `dialogue.py`, a "memory-service key", and
+"the same agent they defend in Module 6" (title notes, "The five stages",
+"Lab kickoff · what you build", "Documenting the decision for the PR",
+"Discussion and wrap"). None of these exist in the rebuilt
+`dsca-team-template`. This is the same open decision as the Modules 2 to 5
+labs (see the known gap at the top of this file): reword as a practice
+exercise, or redesign.
+
+**Prototypes built 2026-09-30, awaiting the instructor's review** (not
+yet approved as the style for the rest of the rebuild):
+- `assets/lu-flow.js` ported from the Knowledge Representation course,
+  with this course's own kinds (`user`, `model`, `code`, `tool`, `data`),
+  plus its CSS (section 8d), colour tokens, and the walkthrough
+  `overflow:hidden` fix. Asset version bumped to `lu.css?v=1.3.0`
+  everywhere; `lu-flow.js` added to `sw.js`'s cache list.
+- New slide "One LLM call, step by step" (4 steps: code gets the line and
+  the state, one prompt to the LLM, the LLM writes JSON, code parses and
+  saves the new state), with a visible definition box.
+- New slide "Constrained decoding, token by token" (4 steps: text so far,
+  candidates go to the schema check, three bad tokens blocked, the comma
+  picked).
+- Both measured at 0px overflow at every step; minutes rebalanced to keep
+  the Lecture section at 40 and the deck at 180. Deck is now 35 slides.
 
 ## Module 2, Agentic Dialogue Management, detail
 

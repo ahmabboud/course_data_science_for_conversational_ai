@@ -113,6 +113,20 @@ Two measurement rules that cost real time:
   same aspect ratio. Keep the `flex:none`: without it, study mode's legend
   squashes the board instead of clipping.
 
+## 2c. Teaching standard: visuals first, plain English, no missing prerequisites (instructor, 2026-09-30)
+
+Stated by the instructor when starting the Module 1 audit. Applies to every module, new or revisited, alongside the depth bar in §12 (depth says *what* a graduate student must learn; this says *how* it has to reach them).
+
+| Rule | What it means in practice |
+|---|---|
+| **1. Explain with visuals first.** | A concept slide leads with a picture that carries the idea; the text explains the picture. Bullets-only slides are for lab steps and the wrap. |
+| **2. Animate dataflow.** | When a concept is data moving through stages (a request through an API, state through a loop, tokens through decoding), show it as a step-by-step `.lu-flow` inside a `.lu-walk` (§7, route 0), so dots move along the active arrow. A structure that does not change stays a static diagram. The Knowledge Representation course's decks are the reference for the look. |
+| **3. Plain, common English.** | The students are not native English speakers. Short sentences, everyday words, no idioms ("bolted on", "fair game", "the receipts", "land it"). A technical term is fine, but **bold** it and define it in one plain sentence on the slide the first time it appears. A popover alone is not a definition: a printed handout never shows it. Name every acronym at first use. |
+| **4. No missing prerequisites.** | Before a slide uses an idea (a token, JSON Schema, an embedding, a KV cache, fine-tuning, an AST), check that an earlier slide or module taught it. If not, add the explanation, usually as its own short visual slide, before it is needed. |
+| **5. More slides are fine.** | If a concept needs two or three slides to be clear, give it two or three. Never squeeze a concept to protect a slide count; rebalance `data-minutes` instead. |
+
+---
+
 ## 3. Anatomy of a lecture file
 
 ```html
@@ -217,6 +231,7 @@ Do not restate the slide. If a note only repeats what is visible, delete it and 
 
 ## 7. Graphics: three routes, in order
 
+0. **Flow diagram** (`.lu-flow` + `assets/lu-flow.js`, ported from the Knowledge Representation course 2026-09-30). The default for anything with boxes and arrows, and for every step-by-step animation. One JSON spec lists nodes, edges and steps; arrows name their two nodes, so they cannot drift. Put it inside a `.lu-walk` with one empty `[data-walk-step]` per step and the step bar drives it: nodes fade in, the active node gets a ring, dots run along the edges named in `run`. Load `lu-flow.js` after `lu-deck.js`. Colour comes only from `kind` (this course: `user` green, `model` plum, `code` blue, `tool` teal, `data` grey mono) and `state` (`active` ring, `inferred` amber dashed for "new or changed", `impossible` red for an error or a rejected value; rename a badge with the spec's `flags`). Spec reference: the header comment of `assets/lu-flow.js`, and the live example in `design-system.html`. Prefer this to hand-positioning a new `.lu-board`.
 1. **CSS primitives** (`.lu-pipeline`, `.lu-layers`, `.lu-board`, `.lu-matrix`, `.lu-table`). Semantic, restyleable, highlightable by `data-state`. Try these first, every time.
 2. **Inline SVG using the kit classes** (`.lu-svg` with `.s-fill-red`, `.s-stroke`, `.s-hair`, `.s-label`, `.s-mono`). For genuinely geometric relationships. Never hardcode a hex value. Add `role="img"` + `<title>`, or `aria-hidden="true"` when a caption carries the meaning.
 3. **Image placeholder** (`.lu-figure__ph`). For anything photographic or captured. State the exact path (`assets/img/<slug>.png`), the size, and what must be visible in the shot.

@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/lu.css?v=1.2.0">
+<link rel="stylesheet" href="../assets/lu.css?v=1.3.0">
 </head>
 
 <body
@@ -124,7 +124,7 @@
 </section>
 
 <!-- ==================================================================== 05 -->
-<section class="slide" data-label="The five-stage arc, in detail" data-section="Lecture" data-minutes="6">
+<section class="slide" data-label="The five-stage arc, in detail" data-section="Lecture" data-minutes="4">
   <div class="lu-eyebrow">The reference architecture</div>
   <h2 class="lu-h1" style="max-width:34ch">Every conversational agent does five things. This course builds each one once.</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -153,8 +153,20 @@
   </template>
 </section>
 
+<!-- ==================================================================== 05a -->
+<section class="slide" data-label="One LLM call, step by step" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Before anything else: what one call actually does</div>
+  <h2 class="lu-h2">An <b>LLM</b> reads one prompt and writes one answer. It keeps no memory between calls.</h2>
+  <div class="lu-walk" data-label="One LLM call, step by step"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 290, "nodes": [{"id": "user", "label": "User: \"make\nthat Tuesday\"", "kind": "user", "x": 150, "y": 60, "w": 280, "h": 80}, {"id": "state", "label": "State\n{party_size, day, time}", "kind": "data", "x": 170, "y": 228, "w": 320, "h": 80}, {"id": "code", "label": "Your code\nbuilds the prompt", "kind": "code", "x": 580, "y": 140, "w": 250, "h": 86}, {"id": "llm", "label": "LLM\n(no memory)", "kind": "model", "x": 930, "y": 140, "w": 190, "h": 86}, {"id": "json", "label": "JSON text\n{\"day\": \"tuesday\"}", "kind": "data", "x": 1280, "y": 140, "w": 300, "h": 86}], "edges": [{"id": "e_user", "from": "user", "to": "code", "label": ""}, {"id": "e_state", "from": "state", "to": "code", "label": ""}, {"id": "e_call", "from": "code", "to": "llm", "label": "prompt"}, {"id": "e_out", "from": "llm", "to": "json", "label": "writes"}, {"id": "e_save", "from": "json", "to": "state", "label": "parsed, saved as the new state", "route": "elbow", "sides": ["bottom", "right"]}], "steps": [{"show": ["user", "state", "code", "e_user", "e_state"], "run": ["e_user", "e_state"], "set": {"code": "active"}}, {"show": ["llm", "e_call"], "run": ["e_call"], "set": {"code": "idle", "llm": "active"}}, {"show": ["json", "e_out"], "run": ["e_out"], "set": {"llm": "idle", "json": "inferred"}}, {"show": ["e_save"], "run": ["e_save"], "set": {"json": "idle", "state": "inferred"}}], "flags": {"inferred": "new"}, "legend": false}</script></div><div data-walk-step="1" data-caption-short="Your code gets the new line" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The user sends a new line. &lt;b&gt;Your code&lt;/b&gt; also holds the &lt;b&gt;current state&lt;/b&gt;: what the conversation has agreed so far. The model does not hold it."></div><div data-walk-step="2" data-caption-short="One prompt to the LLM" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; Your code puts the state and the new line into one &lt;b&gt;prompt&lt;/b&gt; and sends it to the &lt;b&gt;LLM&lt;/b&gt;. This prompt is everything the model sees. It remembers nothing from earlier calls."></div><div data-walk-step="3" data-caption-short="The LLM writes JSON" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; The LLM writes its answer one small piece at a time. Here the answer is &lt;b&gt;JSON&lt;/b&gt; text: the booking with the day changed."></div><div data-walk-step="4" data-caption-short="Parse and save" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; Your code reads the JSON and saves it as the new state. On the next turn, this new state is passed in again. That loop is how a stateless model can follow a conversation."></div></div></div>
+  <div class="lu-callout lu-callout--concept">
+    <span class="lu-callout__label">Definition</span>
+    <p class="lu-sub"><b>LLM</b> (large language model): reads text, writes text. <b>Prompt</b>: all the text sent in one call. <b>State</b>: what your program keeps between turns.</p>
+  </div>
+  <template data-notes><p>Four minutes. This is a prerequisite slide: some students have used ChatGPT but never called a model from code, and they assume the model "remembers" the chat. Step through slowly. On step 2, say it twice: the prompt is everything the model sees. On step 4, point at the loop arrow: memory inside one conversation is your code passing the state back in, every turn. The check question after the walkthrough tests exactly this.</p></template>
+</section>
+
 <!-- ==================================================================== 06 -->
-<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="5">
+<section class="slide" data-label="Why classifiers and taggers are replaced" data-section="Lecture" data-minutes="4">
   <div class="lu-eyebrow">What changed, and why it is not a downgrade</div>
   <h2 class="lu-h1" style="max-width:36ch">One call replaces a trained classifier and a trained tagger</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -186,7 +198,7 @@
 </section>
 
 <!-- ==================================================================== 06b -->
-<section class="slide" data-label="The schema is the whole contract" data-section="Lecture" data-minutes="4">
+<section class="slide" data-label="The schema is the whole contract" data-section="Lecture" data-minutes="3">
   <div class="lu-eyebrow">What the call actually enforces</div>
   <h2 class="lu-h1" style="max-width:34ch">The schema is the whole contract</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -210,8 +222,16 @@ SCHEMA = {
   </template>
 </section>
 
+<!-- ==================================================================== 06c0 -->
+<section class="slide" data-label="Constrained decoding, token by token" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">How the API forces the schema</div>
+  <h2 class="lu-h2">The schema is checked before every token is written, not after</h2>
+  <div class="lu-walk" data-label="Constrained decoding, token by token"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 350, "nodes": [{"id": "sofar", "label": "Written so far:\n{\"party_size\": 4", "kind": "data", "x": 200, "y": 70, "w": 330, "h": 84}, {"id": "llm", "label": "LLM scores every\npossible next token", "kind": "model", "x": 200, "y": 260, "w": 300, "h": 90}, {"id": "gram", "label": "Schema check\n(the grammar)", "kind": "tool", "x": 640, "y": 175, "w": 250, "h": 90}, {"id": "c1", "label": ",  (next field)", "kind": "data", "x": 1170, "y": 45, "w": 300, "h": 60}, {"id": "c2", "label": "}  (ends too early)", "kind": "data", "x": 1170, "y": 130, "w": 300, "h": 60}, {"id": "c3", "label": "Sure!  (not JSON)", "kind": "data", "x": 1170, "y": 215, "w": 300, "h": 60}, {"id": "c4", "label": "\"price\"  (not a field)", "kind": "data", "x": 1170, "y": 300, "w": 300, "h": 60}], "edges": [{"id": "e_s", "from": "sofar", "to": "llm", "label": ""}, {"id": "e_g", "from": "llm", "to": "gram", "label": ""}, {"id": "e1", "from": "gram", "to": "c1", "label": ""}, {"id": "e2", "from": "gram", "to": "c2", "label": ""}, {"id": "e3", "from": "gram", "to": "c3", "label": ""}, {"id": "e4", "from": "gram", "to": "c4", "label": ""}], "steps": [{"show": ["sofar", "llm", "e_s"], "run": ["e_s"], "set": {"llm": "active"}}, {"show": ["gram", "e_g"], "run": ["e_g"], "set": {"llm": "idle", "gram": "active"}}, {"show": ["c1", "c2", "c3", "c4", "e1", "e2", "e3", "e4"], "run": ["e2", "e3", "e4"], "set": {"c2": "impossible", "c3": "impossible", "c4": "impossible"}}, {"show": [], "run": ["e1"], "set": {"gram": "idle", "c1": "inferred"}}], "flags": {"impossible": "blocked", "inferred": "picked"}, "legend": {"model": "The LLM", "tool": "The API's schema check", "data": "Text and tokens", "impossible": "Blocked by the schema", "inferred": "Picked"}}</script></div><div data-walk-step="1" data-caption-short="The text so far" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The model writes one &lt;b&gt;token&lt;/b&gt; at a time. A token is a small piece of text, often part of a word. Here it has written the first field."></div><div data-walk-step="2" data-caption-short="Candidates go to the check" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; The model gives a score to every possible next token. Before one is picked, the API checks each candidate against your &lt;b&gt;schema&lt;/b&gt;."></div><div data-walk-step="3" data-caption-short="Bad tokens are blocked" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; A token that would break the schema gets probability zero. It is not just unlikely, it can never be picked. Ending early breaks the required fields, &quot;Sure!&quot; is not JSON, and &quot;price&quot; is not in the schema."></div><div data-walk-step="4" data-caption-short="Only a legal token is picked" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; Only legal tokens are left, so the model picks the comma and goes on to the next field. This is &lt;b&gt;constrained decoding&lt;/b&gt;: the output always has the schema&#x27;s shape."></div></div></div>
+  <template data-notes><p>Four minutes. Prerequisite first: students need "token" before this makes sense, step 1 defines it. The key sentence is in step 3: probability zero, not just low. Expected question: "is this Gemini only?" No, OpenAI and Anthropic enforce structured output the same way (the API landscape slide says so). The next slide gives the limit: shape is guaranteed, the values inside are not.</p></template>
+</section>
+
 <!-- ==================================================================== 06c -->
-<section class="slide" data-label="How the enforcement actually works" data-section="Lecture" data-minutes="5">
+<section class="slide" data-label="How the enforcement actually works" data-section="Lecture" data-minutes="3">
   <div class="lu-eyebrow">Not a request, a constraint</div>
   <h2 class="lu-h1" style="max-width:34ch">The schema is compiled into the decoding process itself</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -316,7 +336,7 @@ state = {
 </section>
 
 <!-- ==================================================================== 09 -->
-<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="5">
+<section class="slide" data-label="The LLM API landscape" data-section="Lecture" data-minutes="4">
   <div class="lu-eyebrow">What you are actually calling</div>
   <h2 class="lu-h1" style="max-width:32ch">One provider, one shape of call, for the whole course</h2>
   <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
@@ -350,7 +370,7 @@ state = {
 </section>
 
 <!-- ==================================================================== 10 -->
-<section class="slide" data-label="Designing for evaluation from day one" data-section="Lecture" data-minutes="5">
+<section class="slide" data-label="Designing for evaluation from day one" data-section="Lecture" data-minutes="4">
   <div class="lu-eyebrow">A decision made now, paid for in Module 5</div>
   <h2 class="lu-h1" style="max-width:34ch">Log the three example utterances today. Module 5 needs exactly them.</h2>
   <div class="lu-split" style="margin-top:var(--lu-s4)">
@@ -811,5 +831,6 @@ affected_system  <span class="tok-com"># which internal tool broke</span></code>
 
 <script src="../assets/sparql-lite.js?v=1.1.0"></script>
 <script src="../assets/lu-deck.js?v=1.2.0" defer></script>
+<script src="../assets/lu-flow.js?v=1.2.1" defer></script>
 </body>
 </html>
