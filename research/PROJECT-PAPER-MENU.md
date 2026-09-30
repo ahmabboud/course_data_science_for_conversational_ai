@@ -83,7 +83,7 @@ non-LLM baselines.
 ## Grounding (Module 3)
 
 ### Cache-Augmented Generation ("Don't Do RAG"), taught in this module's own research dive
-Chan, Chen, Cheng and Huang (2024), arXiv:2412.15605, WWW '25 short paper.
+Chan, Chen, Cheng and Huang (2024), arXiv:2412.15605, WWW Companion '25 short paper (ACM, DOI 10.1145/3701716.3715490).
 Repo: `github.com/hhhuang/CAG` (active).
 
 Cheapest reproduction on this whole menu: preload a knowledge source into

@@ -883,6 +883,79 @@ same pass as Module 1, 2026-09-16.
   `../assets/infographics/module-02/helping-customers-in-distress.html`.
   Not embedded inline anywhere in the deck.
 
+### Clarity-standard audit (AGENTS.md §2c), 2026-09-30: findings, nothing rebuilt yet
+
+Done by a read-only reviewer, then the main claims were verified by hand (no
+MCP in any demo file, no `tools=` parameter in `raw_loop.py`, three graph nodes,
+`MessagesState`, the deck mentions MCP 17 times and "Issue 1" or "Issue 2" 8
+times). The paper's numbers were **not** verified: nobody has read its PDF yet.
+
+- **Missing prerequisites** (none taught in Module 1 or earlier in this deck):
+  the messages array and its four roles; what an agent and an agent loop are;
+  tool call (popover only); context window and the O(n squared) cost (no worked
+  numbers); graph, node, edge, conditional edge, START and END, TypedDict;
+  explicit state, persistence, human-in-the-loop; **MCP is never expanded**, and
+  protocol, client, server are undefined; chain-of-thought (the slide says it is
+  "measurably less reliable" with no source); routing, escalation, multi-agent
+  (used before the learner has met one agent); in the paper slides IVR, SME,
+  LLM-as-judge, digital twin, telephony, guardrail, prompt injection, handoff
+  precision and recall (precision and recall were never taught), preprint.
+- **Text-only slides that need an animated flow:** "Why the raw loop breaks down
+  at scale", "The raw agent loop, with nothing hidden" (should grow the array one
+  message per step), "LangGraph: nodes, edges, and state as one object", the two
+  MCP slides, "Chain-of-thought for tool selection", the routing and escalation
+  slides, and all four paper slides (the paper's own figure exists at
+  `assets/infographics/module-02/images/triage-workflow-original-figure.jpg`
+  but is a 4 KB thumbnail and is not used on a slide).
+- **Language:** idioms ("nothing hidden", "the boring, correct choice", "earns
+  its complexity", "earn their keep", "a wall of messages", "glue code", "bespoke",
+  "under the hood"), two-line headings, rare words (inspectable, auditable,
+  loggable, emergent, reproducible), sentences over 40 words.
+- **Stale old-project content in about 16 of 31 slides, roughly 100 of 180
+  minutes:** "Issue 1 merged", "Issue 2 merged", `agent/` folder, "the team's
+  agent", student-challenge labs, "Closes #2", "Open the PR", pairs activities;
+  there is no "Your project this week" slide.
+- **The paper (arXiv:2605.16268, "Helping Customers in Distress"):** the arXiv
+  page says authors Atreya, Wagner, Batra, Hankache, Iglesias, Sinclair,
+  Pelosio, McMillan, Cowan, Khraishi (the menu file spells some surnames
+  differently: check), submitted 31 March 2026 and **revised 23 September
+  2026**, cs.HC / cs.AI / cs.LG, **CC BY 4.0, so a local PDF is allowed**. Not
+  downloaded; `research/module-02/` holds only `lecture-notes.md`. Against the
+  five questions: what it is (partly), the limitation with a real example (no),
+  how it works (no step-by-step, no prompts, figure unused), the result (numbers
+  without baseline, sample size or per-model values: +30.6%, +16.0%, over 90%,
+  96 to 98%, 79 to 92%, about 60%, all unchecked), where to read it (no arXiv
+  link on any research-dive slide, no paper card). The deck frames the paper as
+  "a router plus escalation", which may be an invented simplification of a
+  triage agent that converses and classifies: read the PDF before teaching.
+- **Deck versus demo mismatches:** (1) the MCP slides and "Wiring your tools
+  through MCP" have **no counterpart in the demo code**; tools are a Python
+  dict; (2) "Walkthrough: the raw loop" shows `call_model(messages,
+  tools=[...])` and `reply.tool_call.args`, but `raw_loop.py` sends one
+  transcript string and forces a JSON decision `{action, reply, order_id,
+  reason}` with schema-constrained output, not native function calling;
+  (3) the LangGraph slides show `AgentState` with `needs_tool` and two nodes;
+  `graph.py` uses `MessagesState`, a `route` field, `route_from_agent`, and
+  **three** nodes (agent, tool, escalate); (4) the escalation slide shows
+  `flagged_for_human: {turn, reason}`, which does not exist: the real escalate
+  node drops the model's `reason`; (5) there is no chain-of-thought field and no
+  `cancel_order` or `issue_refund` tool; (6) the scripts and README cite slide
+  numbers that no longer match: use slide labels.
+- **Proposed rebuild (about 33 slides, 180 min, animated flows marked in the
+  reviewer's list):** hook; what an agent is; the messages array; one agent turn;
+  what a tool call is; why every call resends everything (worked numbers);
+  explicit state; graph, node, edge defined; conditional edge and the loop;
+  routing, escalation, human-in-the-loop; a check question; research dive of
+  nine slides (paper card, problem with the paper's real example, the words,
+  the system from the authors' figure, one conversation step by step, how it was
+  tested, results with every number checked, limits, what it means for us);
+  instructor demo of seven slides that match the two scripts; discussion;
+  "Your project this week"; reading; glossary; self-check.
+- **Decision for the instructor:** MCP and chain-of-thought are on slides but not
+  in the demo. Cut them, teach them briefly as background, or add them to the
+  demo code (the demo then needs a small MCP server or a clearly labelled
+  stand-in).
+
 ## Module 3, Grounded Generation, detail
 
 ### Paper track — done
@@ -1069,6 +1142,112 @@ Still open on this deck:
 - **Readiness:** not ready. The instructor owns running the coding agent's
   output and the tests; update this line to "ready, tests passing as of
   <date>" once that happens, or note what failed.
+
+### Clarity-standard audit (AGENTS.md §2c), 2026-09-30: findings, not rebuilt yet
+
+A read-only reviewer audited the deck. The claims that matter were then checked
+by hand against the paper's PDF and the demo code, and the worked examples were
+recomputed (identical numbers). **Already fixed in the deck the same day** (they
+were false statements): the results slide said CAG had "higher BERTScore than
+any RAG baseline" (false at the Large size: CAG 0.7407, dense RAG 0.7409, sparse
+RAG top-5 0.7535) and "it's faster" (CAG generation takes 2.2631 s at Large,
+sparse RAG top-10 takes 0.0012 + 1.5175 s in total, so CAG is slower than
+sparse and faster than dense top-10); the "0.0000s" for CAG retrieval is a dash
+in the paper; the venue is **WWW Companion '25** (ACM DOI
+10.1145/3701716.3715490), not "WWW '25" (also fixed in
+`research/PROJECT-PAPER-MENU.md`); the discussion slide said the paper named
+"update frequency" as a deciding factor, but its Limitations paragraph names
+only knowledge base size.
+
+**Still to do (the rebuild):**
+- **Missing prerequisites.** Module 1 teaches only token and context window.
+  Never explained: BM25 (never even expanded), term frequency, IDF, length
+  normalisation, cosine similarity, embedding, bi-encoder versus cross-encoder,
+  ANN, HNSW, IVF, reciprocal rank fusion (formula only), reranking (no example),
+  chunking (units never stated), Recall@k, MRR, nDCG (compressed table, no
+  example), KV cache (one clause; transformers and attention are not taught),
+  citation and refusal (no example), and "retrieval-augmented generation"
+  itself (never expanded on a slide, no plain RAG flow before the hybrid
+  complexity begins). Also SKU, top-k, Big-O, SQuAD, HotPotQA, multi-hop,
+  BERTScore, F1.
+- **Verified worked examples, ready for slides** (k1=1.5, b=0.75, IDF =
+  ln((N - n + 0.5) / (n + 0.5) + 1), whitespace tokens). Documents: d1 "shipping
+  takes 3 to 5 days" (6 tokens), d2 "returns accepted within 30 days for a full
+  refund" (9), d3 "warranty covers defects for 1 year warranty does not cover
+  water damage" (12), d4 "gift cards never expire and cannot be returned" (8);
+  N = 4, average length 8.75. Query "refund days": IDF(refund) = 1.204 (1
+  document), IDF(days) = 0.693 (2 documents). BM25: d2 = 1.189 + 0.684 = **1.873**,
+  d1 = **0.807**, d3 and d4 = **0**. Saturation for tf = 1, 2, 5, 10 at average
+  length: 1.00, 1.43, 1.92, 2.17. RRF with k = 60, BM25 order [d2, d1, d3, d4]
+  and vector order [d3, d2, d4, d1]: d2 = 0.03252, d3 = 0.03227, d1 = 0.03175,
+  d4 = 0.03150, fused order d2, d3, d1, d4. Teach k with k = 1 versus k = 60.
+  Note `rank_bm25.BM25Okapi` (used by the demo) uses a slightly different IDF, so
+  the demo's own scores will not equal these numbers.
+- **Text-only slides needing an animated flow or picture:** "Under the hood",
+  RRF, chunking, the reranking cost table, "Why the order matters", the
+  paper's challenge and experiment and results slides, all four lab
+  walkthroughs (they show pseudo-code; they should show the real printed output
+  of `grounded_rag.py`), and the two infographic slides (static; the hybrid one
+  contains invented numbers). The deck has 0 `lu-flow` diagrams.
+- **Language:** idioms ("float to the top", "casts a wide, robust net", "let it
+  sit", "wearing a citation", "sidesteps", "out of the box"), rare words
+  (lexical, dilutes, dampens, adversarial, attributable), sentence-style headings,
+  undefined acronyms (RAG, BM25, MRR, nDCG, SKU, F1).
+- **Old project model in the lab part:** "Issue 2 merged", "Ground your Module 2
+  agent", "Deliverable Issue 3", "Open the PR, Closes #3", a 23-minute student
+  build block, pair decisions, a stretch challenge, "Before Module 4: Issue 3
+  merged", no "Your project this week" slide. The README and the script's
+  docstring cite slide numbers that no longer match (use labels).
+- **The paper (read from the PDF).** Authors Chan, Chen, Cheng (National Chengchi
+  University, Taipei) and Huang (Academia Sinica, Taipei), three of them
+  equal contributors; arXiv v1 December 2024, v2 23 February 2025; code
+  github.com/hhhuang/CAG. Method has three phases (Section 2): preload (encode
+  all documents once into a KV cache), inference (load the cache plus the
+  query), cache reset (truncate the new query tokens). The deck omits the reset
+  phase and never explains what a KV cache is or why long text is expensive. The
+  paper says the effective context length is 32K tokens for Llama 3.1 8B (64K
+  for 70B) while its Large set is about 85K tokens, which probably explains the
+  Large result; the deck omits this. Missing from the results slide: the
+  **In-Context Learning rows of Table 3** (9.3197 s generation at Small against
+  0.8512 s for CAG, the real speed evidence for caching), SQuAD's Table 2 (CAG
+  wins all three sizes: 0.7695, 0.7383, 0.7734) and Table 1 (dataset sizes:
+  HotPotQA 16, 32, 64 documents = 21K, 43K, 85K tokens; SQuAD 3, 4, 7 documents =
+  21K, 32K, 50K). Inconsistencies inside the paper: the abstract says "caching its
+  runtime parameters" but the body caches keys and values; it says "most cases"
+  and "consistently"; Table 3 covers HotPotQA only; dense RAG loses to sparse
+  RAG on HotPotQA (the authors read that as the datasets being too easy); BERTScore
+  variant and the LlamaIndex chunk size and embedding model are not stated;
+  single run, no variance. Figures to crop: Figure 1 (page 2, RAG versus CAG
+  workflow, best single picture for the method slide), Table 1 (page 3), Tables
+  2 and 3 (page 4), Figure 2 (page 5, response-time bars). The PDF carries an ACM
+  notice and **no CC BY licence**: its notice allows personal and classroom
+  copying, so check before publishing crops on the public site (the repo is
+  public).
+- **Demo versus deck mismatches** (demo code verified): the deck shows reranking,
+  coverage check and answer as separate steps, but `assess_candidates` does
+  **all three in one structured call** (three questions make three generation
+  calls, plus embedding calls); "reranking" is pointwise LLM scoring (0 to 10),
+  not a cross-encoder; the code uses a six-entry FAQ, `top_k=4` per lane and keeps
+  the top 3, while the slides show `top_k=20` and "top 5"; BM25 is
+  `BM25Okapi` with `text.lower().split()` (no punctuation stripping, so
+  "electronics?" does not match "electronics"); vector search is brute-force
+  cosine over six vectors, not an ANN index, so the HNSW and IVF slide does not
+  describe the demo; the README's claim that the blender question shares
+  "almost no exact words" is not verified; nothing in the code logs refusals.
+- **Proposed rebuild (about 40 slides, 180 min):** hook with a wrong confident
+  answer, a cited one and a refusal; RAG in one picture; words (document, query,
+  corpus, rank); BM25 in three stages (count, rarity, saturation and length) and
+  end to end on the four documents; where keyword search fails; embeddings;
+  cosine similarity with a computed example; bi-encoder and the vector index
+  (brute force versus IVF and HNSW pictures); hybrid search and RRF worked
+  example; reranking with five candidates before and after; chunking (one
+  document cut three ways); citation and refusal with good and bad examples;
+  Recall@k, MRR, nDCG with an example; a check; a research dive of nine slides
+  (paper card, problem with the 32K point, what a KV cache is as an animated flow,
+  the method from Figure 1, the test, BERTScore, results with the Large row
+  highlighted, time results with the In-Context Learning rows, limits and a
+  critical read); an instructor demo of about eight slides that follow the real
+  printed output; discussion; "Your project this week"; glossary; self-check.
 
 ## Module 4, Memory, detail
 
