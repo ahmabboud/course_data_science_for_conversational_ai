@@ -174,10 +174,10 @@
     {step:"5", title:"Verify with AST matching", body:"<p>Because many correct APIs can exist for one task, the paper checks <b>functional correctness</b> by parsing the generated call into an abstract syntax tree and testing whether it matches a real API's own AST in APIBench.</p><p>A <b>hallucination</b> is defined precisely: a generated call with no matching API anywhere in the dataset, an entirely invented tool, distinct from picking a real but wrong API (scored separately, as an error).</p>"}
   ];
   var statsData = [
-    {num:"+20.43 pts", label:"Gorilla's accuracy over GPT-4", body:"Overall AST-matched accuracy across all three hubs, zero-shot. Gorilla also beats GPT-3.5 (ChatGPT) by 10.75 points, and base LLaMA-7B by as much as 83 points."},
+    {num:"+20.43 pts", label:"Gorilla's accuracy over GPT-4, on TorchHub", body:"TorchHub, zero-shot, AST-matched: Gorilla 59.13% against GPT-4 38.70%. On TorchHub Gorilla also beats GPT-3.5 (ChatGPT) by 10.75 points. The paper says it beats base LLaMA-7B by as much as 83 points (TensorHub)."},
     {num:"78.65% &rarr; 5.40%", label:"TensorHub hallucination, GPT-4 vs Gorilla", body:"The sharpest single comparison in the paper: same task, same benchmark. GPT-4 invents a nonexistent API on 78.65% of zero-shot attempts; Gorilla, on 5.40%."},
     {num:"+12.37 / +23.46 pts", label:"Retriever-aware training gain (Torch Hub / HuggingFace)", body:"When a ground-truth (oracle) retriever is available both during fine-tuning and at evaluation, accuracy improves this much over fine-tuning without a retriever at all."},
-    {num:"11,000+", label:"Instruction-API pairs released", body:"The full APIBench dataset (1,645 APIs × ~10 synthetic instructions each), released openly alongside the model and code."}
+    {num:"11,000+", label:"Instruction-API pairs released", body:"The paper says the released dataset has over 11,000 pairs. Its own Figure 3 says 10 requests per API were generated for 1,645 APIs, which is 16,450 pairs. The paper does not explain the difference."}
   ];
 
   function buildPipeline(){

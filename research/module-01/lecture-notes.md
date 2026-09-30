@@ -48,12 +48,15 @@ The paper's own benchmark, APIBench, is built from three real API hubs:
 HuggingFace (925 models, the top 20 most-downloaded per domain across
 7 multimodal, 8 computer-vision, 12 NLP, 5 audio, 2 tabular, and 2
 reinforcement-learning domains, out of 203,681 total models on the
-platform), TorchHub (94 API calls, exhaustive), and TensorHub (696 API
-calls after filtering out poorly documented ones, out of 801 in v2).
+platform), TorchHub (94 API calls, exhaustive), and TensorHub (626 API
+calls after filtering out poorly documented ones, out of 801 in v2; the
+paper's introduction says 696, but Section 3.1 and Figure 3 say 626, and
+94 + 626 + 925 = 1,645).
 1,645 APIs total, each converted to ten synthetic instruction-API pairs
 via self-instruct prompting (GPT-4 generating realistic user requests
-with no API names or hints given), for 11,000+ pairs released as an
-open dataset.
+with no API names or hints given): 16,450 pairs generated (Figure 3).
+The limitations section says the released dataset has "over 11,000"
+pairs; the paper does not explain the difference.
 
 Zero-shot GPT-4 hallucinates 78.65% of its TensorHub API calls: it names
 a tool that has no match anywhere in the real API space. GPT-3.5 does
@@ -115,9 +118,14 @@ retrieval becomes necessary rather than optional.
 Zero-shot overall accuracy (Table 1, AST-matched against APIBench):
 Gorilla 59.13% / 71.68% / 83.79% across TorchHub / HuggingFace /
 TensorHub respectively, beating GPT-4 (38.70% / 19.80% / 18.20%) by
-20.43 points overall and ChatGPT (GPT-3.5, 48.38% / 16.81% / 41.75%) by
-10.75 points overall, and beating base LLaMA-7B (0% across all three,
-zero-shot, with no fine-tuning) by as much as 83 points.
+20.43 points on TorchHub (59.13 minus 38.70) and ChatGPT (GPT-3.5,
+48.38% / 16.81% / 41.75%) by 10.75 points on TorchHub (59.13 minus
+48.38), not averaged over all hubs as an earlier version of this note
+said. It beats base LLaMA-7B (0% across all three, zero-shot, with no
+fine-tuning) by as much as 83 points (TensorHub). Caveat from Section
+4.1: on HuggingFace the other models are only checked for naming the
+correct domain, while Gorilla is checked with full AST matching, so the
+HuggingFace columns are not like for like.
 
 Hallucination reduction (the paper's headline safety claim): Gorilla's
 zero-shot hallucination rate is 6.98% (TorchHub), 10.95% (HuggingFace),
@@ -152,3 +160,7 @@ paper naming what it does not know rather than overclaiming.
 - Patil, Zhang, Wang & Gonzalez (2023), "Gorilla: Large Language Model
   Connected with Massive APIs," arXiv:2305.15334.
   <https://arxiv.org/abs/2305.15334>
+
+## Correction log
+
+2026-09-30: re-read against the PDF (`patil-2023-gorilla.pdf`). Fixed: TensorHub 696 to 626, generated 16,450 versus released 11,000+ pairs, and the 20.43 and 10.75 point gaps (TorchHub, not all hubs). Figures used on the slides are cropped from the PDF into `assets/img/m01-gorilla-*.png`.

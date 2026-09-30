@@ -628,7 +628,7 @@ strong, .lu-strong { font-weight: 600; }
 
 /* Inline code */
 :not(pre) > code, .lu-inline-code {
-  font-family: var(--lu-mono); font-size: .9em;
+  font-family: var(--lu-mono); font-size: max(.9em, var(--lu-t-caption));
   background: var(--lu-paper-2); border: 1px solid var(--lu-line);
   border-radius: var(--lu-r1); padding: .06em .3em;
 }
@@ -838,6 +838,18 @@ strong, .lu-strong { font-weight: 600; }
 .slide--night .lu-walk__cap { color: var(--lu-on-night-2); }
 .lu-walk__nav { display: flex; gap: var(--lu-s2); flex: none; }
 .lu-walk__count { font-family: var(--lu-mono); font-size: var(--lu-t-caption); color: var(--lu-ink-3); flex: none; }
+/* Every step's caption, as a list. Hidden on screen; shown in study mode and print,
+   where the one-caption bar is hidden. Built by Walk.init in lu-deck.js. */
+.lu-walk__all { display: none; list-style: none; margin: 0; padding: 0; flex: none; font-size: var(--lu-t-caption); line-height: 1.4; color: var(--lu-ink-2); }
+.lu-walk__all li { padding: var(--lu-s2) 0; border-top: 1px solid var(--lu-line); }
+.lu-walk__all b:first-child { color: var(--lu-ink); }
+/* Study mode: the finished picture plus every caption. The slide scrolls if it is long. */
+body.lu-selfstudy .lu-walk__all { display: block; }
+body.lu-selfstudy .lu-walk__bar { display: none; }
+body.lu-selfstudy .lu-walk { flex: none; }
+body.lu-selfstudy .lu-walk__view { flex: none; overflow: visible; }
+body.lu-selfstudy .lu-walk__view > [data-walk-step] { display: block !important; height: auto !important; }
+body.lu-selfstudy .slide__body { overflow-y: auto; }
 
 /* 11.5 Progressive build (fragments) -------------------------------------- */
 .lu-ready [data-build] {
@@ -1151,6 +1163,8 @@ body.lu-presenter .deck, body.lu-presenter .lu-hud, body.lu-presenter .lu-progre
   [data-build] { opacity: 1 !important; transform: none !important; visibility: visible !important; }
   .lu-reveal__panel { display: block !important; }
   .lu-walk__view > [data-walk-step] { display: block !important; height: auto !important; }
+  .lu-walk__all { display: block; }
+  .lu-walk__bar { display: none; }
   .lu-walk__view [data-walk-step] > .lu-board { width: 100% !important; height: 400px !important; aspect-ratio: auto !important; }
   .lu-code pre { overflow: visible !important; }
   /* A wipe cannot print. Unclip both panes and set them side by side. */

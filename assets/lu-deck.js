@@ -809,6 +809,18 @@
           '<button class="lu-btn lu-btn--sm" data-walk="1" aria-label="Next step">Next step &#8594;</button>';
         bar.appendChild(dots); bar.appendChild(cap); bar.appendChild(count); bar.appendChild(nav);
         w.appendChild(bar);
+        /* Every step's caption as a plain list. Hidden on screen. Study mode and the
+           printed handout show it instead of the one-caption bar, so a reader who
+           cannot click through the steps still gets all of them. */
+        var all = el('ul', 'lu-walk__all');
+        steps.forEach(function (s) {
+          var c = s.getAttribute('data-caption');
+          if (!c) return;
+          var li = document.createElement('li');
+          li.innerHTML = c;
+          all.appendChild(li);
+        });
+        w.appendChild(all);
 
         w._steps = steps; w._cap = cap; w._count = count; w._dots = dots; w._at = 0;
         bar.addEventListener('click', function (e) {

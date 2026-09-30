@@ -30,7 +30,7 @@
   })();
   const canvasPx = (screenPx) => Math.round(screenPx / stageScale);
 
-  const report = { overflow: [], revealedOverflow: [], hiddenLeaks: [], gridEscapes: [], strayChars: [], deadSandboxes: [], tinyText: [], collisions: [], edges: [] };
+  const report = { overflow: [], revealedOverflow: [], hiddenLeaks: [], gridEscapes: [], strayChars: [], deadSandboxes: [], tinyText: [], collisions: [], edges: [], flowText: [], flowLabels: [], flowCrossings: [], flowClipped: [] };
 
   /* 1. OVERFLOW, content taller than the slide box is clipped with no
         scrollbar and no error. Students simply never see it. */
@@ -157,6 +157,56 @@
     }
   }
 
+  /* 10. FLOW DIAGRAMS (.lu-flow). Three things that only show up when drawn:
+        a) a node's text is wider than its box, b) an arrow label sits on a box,
+        c) an arrow passes through a node that is not one of its two ends.
+        All numbers are in the diagram's own units (see its viewBox). */
+  for (let i = 0; i < slides.length; i++) {
+    const flows = slides[i].querySelectorAll('.lu-flow svg');
+    if (!flows.length) continue;
+    go(i + 1); await sleep(90);
+    flows.forEach((svg) => {
+      const label = slides[i].dataset.label;
+      /* The walk frame hides overflow, so a diagram taller than its frame is cut
+         silently and the slide's own overflow check stays green. */
+      const view = svg.closest('.lu-walk__view');
+      if (view) {
+        const cut = Math.round(svg.getBoundingClientRect().height / stageScale) - view.clientHeight;
+        if (cut > 3) report.flowClipped.push({ slide: i + 1, label: slides[i].dataset.label, diagramPx: Math.round(svg.getBoundingClientRect().height / stageScale), framePx: view.clientHeight, cutPx: cut });
+      }
+      const nodes = [...svg.querySelectorAll('.lu-flow__node')].map((g) => {
+        const r = g.querySelector('.lu-flow__box'), t = g.querySelector('.lu-flow__label');
+        return { g, text: t.textContent.replace(/\s+/g, ' ').trim(), t, x: +r.getAttribute('x'), y: +r.getAttribute('y'), w: +r.getAttribute('width'), h: +r.getAttribute('height') };
+      });
+      nodes.forEach((n) => {
+        const b = n.t.getBBox();
+        if (b.width > n.w - 14) report.flowText.push({ slide: i + 1, label, node: n.text.slice(0, 30), textW: Math.round(b.width), boxW: Math.round(n.w) });
+        if (b.height > n.h - 4) report.flowText.push({ slide: i + 1, label, node: n.text.slice(0, 30), textH: Math.round(b.height), boxH: Math.round(n.h) });
+      });
+      const hit = (x, y, n, pad) => x > n.x - pad && x < n.x + n.w + pad && y > n.y - pad && y < n.y + n.h + pad;
+      svg.querySelectorAll('.lu-flow__edge').forEach((g) => {
+        const lab = g.querySelector('.lu-flow__elabel');
+        if (lab && lab.textContent.trim()) {
+          const b = lab.getBBox();
+          nodes.forEach((n) => {
+            const ox = Math.min(b.x + b.width, n.x + n.w) - Math.max(b.x, n.x), oy = Math.min(b.y + b.height, n.y + n.h) - Math.max(b.y, n.y);
+            if (ox > 2 && oy > 2) report.flowLabels.push({ slide: i + 1, label, arrowLabel: lab.textContent, onNode: n.text.slice(0, 24) });
+          });
+        }
+        const pts = g.querySelector('.lu-flow__line').getAttribute('points').split(' ').map((p) => p.split(',').map(Number));
+        const ends = [pts[0], pts[pts.length - 1]];
+        nodes.forEach((n) => {
+          const isEnd = ends.some((e) => hit(e[0], e[1], n, 3));
+          if (isEnd) return;
+          for (let k = 1; k < pts.length; k++) for (let f = 0; f <= 1; f += 0.04) {
+            const x = pts[k - 1][0] + (pts[k][0] - pts[k - 1][0]) * f, y = pts[k - 1][1] + (pts[k][1] - pts[k - 1][1]) * f;
+            if (hit(x, y, n, -2)) { report.flowCrossings.push({ slide: i + 1, label, through: n.text.slice(0, 24) }); return; }
+          }
+        });
+      });
+    });
+  }
+
   go(1);
   const fail = Object.values(report).some(v => v.length);
   console.log('%c=== DECK AUDIT ===', 'font-weight:bold');
@@ -174,6 +224,10 @@
   show('deadSandboxes', 'Every query sandbox returns rows', 'A sandbox that runs and returns nothing reads as a broken button. Seed data that actually satisfies the pattern.');
   show('tinyText', 'No text below the 20px floor', 'Projection floor is --lu-t-caption.');
   show('collisions', 'No diagram nodes overlap', 'Reposition, or make the board taller.');
+  show('flowText', 'Flow node text fits its box', 'Make the node wider or taller, or shorten its label. Mono text is about 13 units per character.');
+  show('flowClipped', 'Flow diagrams are not cut by their frame', 'Lower the spec height, shorten the definition box below it, or split the slide. The walk frame hides overflow, so this is invisible elsewhere.');
+  show('flowLabels', 'Flow arrow labels do not sit on a box', 'Shorten the label, drop it (say it in the caption), or move the two nodes apart.');
+  show('flowCrossings', 'Flow arrows do not pass through other nodes', 'Move the node, or use an elbow route with explicit sides.');
   show('edges', 'Every edge endpoint reaches a node', 'Compute path coords from node percentages: viewBox x = left% * (vbWidth/100), y = top% * (vbHeight/100).');
   console.log(fail ? '%cAudit FAILED. Fix the above before shipping.' : '%cAudit passed.', 'font-weight:bold;color:' + (fail ? '#b00' : 'green'));
   console.log('Not covered here, check by hand: print preview with Handout on, presenter view (P), study mode (S), and keyboard through every step.');

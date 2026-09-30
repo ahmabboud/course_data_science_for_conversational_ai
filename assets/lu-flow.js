@@ -1,6 +1,6 @@
 /* ==========================================================================
    LU Teaching Slides, flow diagrams
-   lu-flow.js · v1.2.1 (DSCA port 2026-09-30, adds kinds user/model/code/tool/data) · no dependencies, works from file://
+   lu-flow.js · v1.2.2 (DSCA port 2026-09-30: kinds user/model/code/tool/data; shows the final step in study mode) · no dependencies, works from file://
    --------------------------------------------------------------------------
    Why it exists: in hand-drawn SVG, blocks and arrows are positioned
    separately, so they drift apart. Here every arrow names its two blocks and
@@ -248,9 +248,11 @@
       hosts.push(host);
       var walk = host.closest('.lu-walk');
       var last = host._flow.spec.steps.length - 1;
-      var sync = function () { apply(host, !walk || (printing && printing.matches) ? last : currentStep(walk)); };
+      var study = function () { return document.body.classList.contains('lu-selfstudy'); };
+      var sync = function () { apply(host, !walk || study() || (printing && printing.matches) ? last : currentStep(walk)); };
       sync();
       if (walk) new MutationObserver(sync).observe(walk, { attributes: true, subtree: true, attributeFilter: ['hidden'] });
+      new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });   // study mode on or off
       if (printing && printing.addEventListener) printing.addEventListener('change', sync);
       window.addEventListener('beforeprint', function () { apply(host, last); });
       window.addEventListener('afterprint', sync);

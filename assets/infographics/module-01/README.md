@@ -52,3 +52,7 @@ itself, and then asked for it interactive (click to reveal, not
 everything shown at once) rather than in any particular existing design
 system. This page is the result: real content, fact-checked the same way,
 but agent-authored HTML/CSS/JS rather than a delivered template.
+
+## Correction, 2026-09-30
+
+Re-read against the downloaded PDF (`research/module-01/patil-2023-gorilla.pdf`). Two statements were wrong and are fixed in `gorilla.html`: the "+20.43 pts" card said "across all three hubs" (it is the TorchHub gap, 59.13 minus 38.70), and the "11,000+" card said the dataset was 1,645 APIs times about 10 instructions (that is 16,450; the paper says the released dataset has over 11,000 pairs and does not explain the difference).

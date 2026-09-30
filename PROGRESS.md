@@ -26,115 +26,125 @@ drift behind the actual state of the repository.
 
 ### 2. Where to continue
 
-As of 2026-09-30, **2 commits are local and not pushed** (`f8427d8`
-Module 3 layout fixes, `5f9947f` the flow-animation port, the §2c standard,
-and two Module 1 prototypes). Ask the instructor before pushing.
+**State on 2026-09-30 (end of a long session):** nothing is pushed. Local
+commits are ahead of GitHub (`git log --oneline origin/main..HEAD`), and the
+finished Module 1 rebuild is committed locally; check `git status` first.
+**Ask the instructor before pushing.**
 
-**Waiting on the instructor (ask first, do not start without an answer):**
+**Waiting on the instructor:**
 
-- **A. DECIDED 2026-09-30, approved by the instructor: use the Module 1 slide 6 "One LLM call, step by step" style (animated `.lu-flow` in a `.lu-walk`) and apply it to all the other lectures.** Not a question any more. Prototypes: Module 1 slides "One LLM
-  call, step by step" and "Constrained decoding, token by token". If
-  approved, that is the pattern for every module; if not, record what they
-  want changed here and in `AGENTS.md` §7 before building more.
-- **B. DECIDED 2026-09-30, instructor chose option C, refined:** labs are
-  **instructor-led demos with no student challenge** (AGENTS.md §2c rule 8).
-  Students do project work offline; a closing slide per module lists the
-  project milestone (rule 9). The time that hands-on work used to take moves
-  into slides and explanation, and each module stays at 180 minutes unless
-  the instructor says otherwise. Also decided the same day: clarity beats
-  everything, every term and paper idea gets definition, example and
-  steps (rules 6 and 7). A lot of concepts in every module are introduced
-  with no prior explanation, for example BM25, term frequency and IDF in
-  Module 3, so every module needs this pass, not only Module 1.
-- **C. Module 3 review.** Its four redrawn diagrams and three new slides
-  (see Module 3's "Deck track" below) are built and verified but not yet
-  reviewed.
+- **Review Module 1** (`lectures/dsca-module-01.html`, 57 slides, 180 min).
+  Look first at the animated slides (from "One LLM call, step by step") and
+  the Gorilla research dive (from "The paper card"). It is not approved yet;
+  do not mark Module 1 done.
+- **Approve the new time split.** The syllabus docx still says Session 1 is
+  50 lecture / 70 lab. The deck is now Opening 2, Hook 16, Lecture 75,
+  Research dive 33, Kickoff 12, Instructor demo 32, Wrap 10 = 180. The
+  research dive grew from 12 to 33 minutes because a paper now has to be
+  explained fully (AGENTS.md §2c rules 10 and 11). Bring the syllabus in line
+  once they agree.
+- **Module 3 review** (its redrawn diagrams and three new slides).
+- **Set a deadline for the idea pitch.** Nothing in the course documents sets
+  one; the "Your project this week" slide lists steps without dates.
 
-**Then, in this order:**
+**Next work, in this order:**
 
-1. **Finish Module 1 against §2c** (full findings in "Module 1 ...
-   Teaching-standard audit, 2026-09-30" below):
-   - New visual slides for the missing prerequisites: JSON and JSON Schema
-     (real `type`/`properties`/`required`, not the current pseudo-code;
-     define required and optional); the real API call from
-     `demos/module-01/hook_demo.ipynb` (`client.interactions.create` with
-     `response_format`); classical NLU (intent classifier plus slot tagger)
-     next to one LLM call, as a flow; function calling as an animated flow
-     (model picks a function and its arguments, your code runs it, the
-     result goes back); Gorilla's method as a flow, with fine-tuning,
-     zero-shot, AST, retriever and RLHF defined.
-   - Replace the pseudo-code schema on "The schema is the whole contract"
-     and the lab walkthrough with real JSON Schema.
-   - Fix the six overflowing slides and `m1-q1`'s answered state (list in
-     the Module 1 audit below); split slides rather than shrink them.
-   - Plain-English pass on every slide's visible text and captions.
-   - Rewrite the lab slides as explained instructor demos (decision B), ending with a "Your project this week" slide.
-   - Rebalance `data-minutes` (keep 180 unless the instructor agrees
-     otherwise) and update the slide count on `index.html`.
-2. **Run the same §2c audit on Modules 2, 3, 4, 5**, one at a time: write
-   the findings into that module's detail section first, show the
-   instructor, then build. Module 3 has already had its layout fixed but
-   not its §2c pass.
-3. **Other open items** (details in each module's section): Module 3
-   `lecture-notes.md` never written and `grounded_rag.py` has no tests;
-   Module 4's five NotebookLM images have number errors and none are in
-   the deck; Module 5's PII-pipeline infographic not decided; Modules 1, 2,
-   4 and 5 show "Correct. Correct:" in some MCQ feedback (the runtime
-   already adds "Correct.", so drop it from `data-fb-correct`);
-   `design-system.html` has no live `.lu-flow` example yet (`AGENTS.md`
-   §11 says it must); the handout prints 38 pages for Module 1's 35
-   slides, so find the slides that spill onto a second page.
+1. **Run the same audit and rebuild on Modules 2, 3, 4, 5, one at a time.**
+   For each: (a) write findings into its detail section and show the
+   instructor; (b) **papers first**: for every paper the module cites,
+   download the PDF into `research/module-NN/`, read it with
+   `scripts/pdf-text.swift` (or `pdftotext`, installed with Homebrew on the
+   instructor's Mac), crop its figures with `scripts/pdf-crop.swift`, check
+   every number, and rebuild the paper slides to the five-question standard
+   (section 3b below); (c) teach every term with definition, example and
+   steps, using Module 1 as the model (AGENTS.md §2c rules 6 and 7); (d)
+   rewrite the lab part as an explained instructor demo plus a "Your project
+   this week" slide (rules 8 and 9); (e) run the audit and fix.
+   Specific known items:
+   - **Module 3:** BM25, term frequency and IDF are named with almost no
+     explanation; teach them with a worked example (two short documents, one
+     query, the actual scores) and an animated flow. Also RRF, cosine
+     similarity, HNSW, cross-encoder, KV cache. The Chan et al. CAG paper is
+     at `research/module-03/chan-2025-dont-do-rag.pdf`; "Lost in the Middle"
+     (Liu et al., arXiv:2307.03172) is cited and **not** downloaded.
+   - **Module 2:** paper arXiv:2605.16268 ("Helping Customers in Distress")
+     is **not** downloaded.
+   - **Module 4:** the three memory papers are downloaded
+     (`research/module-04/`); the 5 NotebookLM images have number errors (see
+     Module 4's section) and must not be used as they are: crop the papers'
+     own figures instead.
+   - **Module 5:** tau-bench (arXiv:2406.12045), tau2-bench, the trajectory
+     judge paper (arXiv:2506.07982), the persona-bias paper and Zheng et al.
+     are **not** downloaded.
+   - **Layout debt found 2026-09-30 by the current audit** (the kind Module
+     3 had): Module 2 has 7 slides that overflow and 11 stray diagram
+     endpoints; Module 4 has 8 and 3; Module 5 has 7, 2 and one stray
+     character. Fix by splitting slides, and use `lu-flow` for diagrams.
+2. **Module 1 follow-ups after review:** run the instructor demo notebook
+   once with a live key (`demos/module-01/extraction_demo.ipynb` is tested
+   only against a stand-in for the model); run `hook_demo.ipynb` once so its
+   reference-agent cell has saved output; bring the syllabus docx in line.
+3. **Other open items:** Module 3 `lecture-notes.md` was never written and
+   `grounded_rag.py` has no tests; Module 5's PII-pipeline infographic is
+   undecided; Modules 2, 4, 5 show "Correct. Correct:" in some MCQ feedback
+   (Module 1 is fixed; the runtime already adds "Correct.", so drop it from
+   `data-fb-correct`); `design-system.html` has no live `.lu-flow` example yet
+   (AGENTS.md §11 says it must); the handout prints a few slides onto a
+   second page (Module 1: 60 pages for 57 slides), which is acceptable.
 
-### 2b. Module 1 rebuild in progress (started 2026-09-30, decisions A and B applied)
+### 2b. Module 1, rebuilt 2026-09-30 (awaiting review)
 
-The instructor approved the animation style and option C, and asked for
-clarity above all (AGENTS.md §2c rules 6 to 9). Module 1 is being rebuilt
-as a whole, about 51 slides, still 180 minutes:
+Built from scratch against AGENTS.md §2c. 57 slides, 180 minutes:
 
 | Section | Min | What it holds |
 |---|---|---|
 | Opening | 2 | title |
-| Hook | 18 | setup 2, live two-bot demo 12, five stages 4 |
-| Lecture | 75 | five jobs; intent and entity; the old way (two trained models) and its labeled examples; one LLM call; tokens; JSON; JSON Schema and checking a reply; the real API call line by line; asking for JSON versus requiring it; constrained decoding; shape versus truth; function calling and structured output compared; old versus new; validation and fallback; the correction walkthrough; check question; providers; saving test sentences |
-| Research dive (Gorilla) | 24 | what an API call is; the problem; the test set (APIBench); AST grading; the method; results; limits |
-| Kickoff | 13 | what is done, team and paper, rubric |
-| Instructor demo | 38 | plan, helpdesk schema, test sentences, live run, fallback choice, decision note, likely bugs (instructor-led, no student challenge) |
-| Wrap | 10 | "Your project this week", reading, glossary, self-check |
+| Hook | 16 | setup, live two-bot demo (10), five stages |
+| Lecture | 75 | five jobs; intent and entity; the old way and its labeled examples; one LLM call; tokens; JSON; JSON Schema and checking a reply; the real API call line by line; asking versus requiring JSON; constrained decoding; shape versus truth; function calling; structured output versus function calling; old versus new; validation and fallback; the correction walkthrough; check question; providers; saving test sentences |
+| Research dive (Gorilla) | 33 | paper card; what an API call is; why it is hard; Figure 1 (the problem); APIBench; AST grading (Figure 4); the method step by step; Figure 3; documentation changes (Figure 6); results (Table 1); does giving documents help (Table 2); limits and a critical read |
+| Kickoff | 12 | the project in one picture, team and paper, rubric |
+| Instructor demo | 32 | plan, helpdesk schema, test sentences, live run, fallback table, a check question, decision note, likely bugs |
+| Wrap | 10 | "Your project this week", reading, two glossary slides, self-check |
 
-If this list is only partly done when you read it, the deck in
-`lectures/dsca-module-01.html` is the truth: compare it to this table,
-finish what is missing, and update this section. The deck is hand-edited
-HTML (there is no generator for this course), so edit it directly.
+The deck is hand-edited HTML, there is no generator: edit
+`lectures/dsca-module-01.html` directly. Audit result 2026-09-30: zero
+failures on every check in `scripts/audit-deck.js` (overflow at rest and
+revealed, hidden leaks, grid escapes, stray characters, collisions, edges,
+flow text fit, flow labels, flow crossings, flow clipped); `tinyText` still
+lists the 8 shared elements (logo line, keyboard chips). All 16 animated
+walkthroughs fit at every step; both MCQs fit and grade correctly in all six
+answered states; study mode has no overflow; the handout prints every step
+caption.
 
-Facts found while planning, to carry into the slides:
+**Shared runtime changes made the same day** (every deck gets them; version
+bumped to `lu.css?v=1.3.2`, `lu-deck.js?v=1.3.0`, `lu-flow.js?v=1.2.2`):
+inline code is at least the 20px floor; a walkthrough now also builds a hidden
+list of every step's caption (`.lu-walk__all`), shown in study mode and in the
+printed handout in place of the one-caption bar; in study mode a flow shows
+its finished state and a long slide scrolls instead of clipping; the audit
+script gained four flow checks. Modules 2 to 5 use walkthroughs too, so they
+got these changes, and Module 3 was re-audited clean.
 
-- The hook notebook's real outputs: the keyword bot answers line 1 with
-  `Booked: {'party_size': '4', 'day': 'monday', 'time': '7pm'}` and line 2
-  with "Sorry, I didn't understand that. Could you start your booking
-  again?". The reference agent cell has **no saved output**: run it once
-  before class (the notebook asks for this) so there is a safety net.
-- The real structured-output call (from the notebook): a JSON Schema with
-  `type`, `properties` (each `["integer","null"]` or `["string","null"]`)
-  and `required`; `client.interactions.create(model=..., input=prompt,
-  response_format={"type":"text","mime_type":"application/json",
-  "schema":schema})`; `json.loads(interaction.output_text)`.
-- **A JSON Schema allows extra keys** unless it says
-  `"additionalProperties": false`. The slides must not claim an extra key
-  is rejected.
-- `research/module-01/lecture-notes.md` gives per-hub API counts
-  (HuggingFace 925, TorchHub 94, TensorHub 696) that add up to 1,715, not
-  the 1,645 total it also states. One of them is wrong. The slides quote
-  only the 1,645 total; check the per-hub numbers against the paper before
-  anyone quotes them.
-- The redesign doc sets no due date for the idea pitch. The "Your project
-  this week" slide lists the steps without dates; the instructor should
-  choose a deadline and say it aloud.
-- The syllabus docx still describes Session 1 as 50 lecture / 70 lab
-  minutes. The deck is now 75 lecture, 24 research, 38 demo. Bring the
-  docx in line once the instructor approves the new split.
-- A new lab demo notebook is needed for the helpdesk example
-  (`demos/module-01/extraction_demo.ipynb`), tested with a stubbed client
-  like Modules 4 and 5; the instructor still owns the live run.
+Findings from reading the Gorilla paper itself (all fixed in the deck, the
+lecture notes and the infographic):
+- TensorHub has 626 APIs (the paper's introduction says 696, a typo inside
+  the paper); 94 + 626 + 925 = 1,645.
+- 16,450 request-call pairs were generated; the paper says the released data
+  set has "over 11,000" and does not explain the difference.
+- The 20.43 and 10.75 point gaps are the **TorchHub** gaps, not averages over
+  all three hubs (the old slides, notes and infographic said "overall").
+- On HuggingFace the other models are only checked for the correct domain
+  name, Gorilla with full AST matching, so those numbers are not like for
+  like and are left off the slide.
+- The hook notebook's reference-agent cell has no saved output; its keyword
+  bot output is real.
+- A JSON Schema allows extra keys unless it sets `"additionalProperties":
+  false`; the slides say so and do not claim extra keys are rejected.
+
+Files added: `research/module-01/patil-2023-gorilla.pdf` (CC BY 4.0,
+downloaded from arXiv 2026-09-30), five cropped figures
+`assets/img/m01-gorilla-fig*.png`, `demos/module-01/extraction_demo.ipynb`,
+`scripts/pdf-text.swift`, `scripts/pdf-crop.swift`.
 
 ### 3. How to audit and rebuild a module (the §2c method)
 
@@ -170,6 +180,43 @@ Walk every slide and write findings under these headings, by `data-label`
 Adding slides is allowed (instructor, 2026-09-30). Split a crowded slide
 rather than shrinking text, and move cut detail into the speaker notes.
 
+### 3b. How to explain a paper (AGENTS.md §2c rules 10 and 11)
+
+The instructor found the first Gorilla slides impossible to follow. The fix,
+which every module's paper slides must follow, with Module 1's research dive
+as the working model:
+
+1. **Get the PDF and read it yourself.** Download to
+   `research/module-NN/<first-author>-<year>-<slug>.pdf` if the license
+   allows (arXiv shows it on the abstract page). Read the text:
+   `pdftotext -layout paper.pdf -` (Homebrew's poppler, installed on the
+   instructor's Mac) or, anywhere on macOS, `swift scripts/pdf-text.swift
+   paper.pdf 1 8`. Read the method and results, not only the abstract. Write
+   down inconsistencies inside the paper.
+2. **Find and crop its figures.** Render a page to look at it:
+   `swift scripts/pdf-crop.swift paper.pdf 4 0 0 1 1 page4.png 1.4`. Then crop
+   the figure (box in fractions from the top-left) at scale 3 into
+   `assets/img/m<NN>-<paper>-fig<N>-<what>.png`. On the slide use an `<img>`
+   with a full alt text, a caption naming paper, figure number and license,
+   and an "Open full size" link. A figure that carries the method or the main
+   result beats a redraw. Keep it as large as the slide allows: the text
+   inside a paper's figure is small.
+3. **Slide order:** paper card (what it is: paper, model, dataset or tool;
+   authors and affiliation; date; preprint or peer reviewed; title; links to
+   the local PDF, the original and the code; license; "five questions this
+   part answers"), then the limitation with a concrete example, the words the
+   paper uses (defined on the slide), the test or data, the method as an
+   animated `lu-flow` plus the authors' own figure, the results as a table
+   quoting the paper's numbers, what else they tested, the limits with a
+   critical read, and what it means for our course. Module 1's twelve
+   Gorilla slides are the template.
+4. **Check every number against the PDF's table or figure.** Quote a number
+   only if you can point to where it comes from. Prefer a real example from
+   the paper to an invented one; label any invented example as invented.
+5. **Linking:** the paper card links the local copy (`../research/...pdf`),
+   the arXiv or publisher page and the project page. The reading slide at the
+   end of the module links them again.
+
 ### 4. How to build a flow animation (lessons from the Module 1 prototypes)
 
 - Markup: copy "One LLM call, step by step" in `lectures/dsca-module-01.html`.
@@ -198,8 +245,18 @@ rather than shrinking text, and move cut detail into the speaker notes.
 - A node's label cannot change between steps. Use a label that is true at
   every step (for example "State {party_size, day, time}", not a value
   that changes).
-- Print shows the diagram's last step, but the caption shown is step 1;
-  write step 1's caption so it still reads sensibly under the full diagram.
+- Study mode and the printed handout show the finished diagram with **every**
+  step caption listed under it (built by `Walk.init`; fixed 2026-09-30). Still
+  put term definitions in a visible `Definition` callout, not only in a caption.
+- **Space:** with a two-line definition callout the walk frame is about 275px
+  tall; a four-line callout leaves about 245px. The audit's `flowClipped` check
+  reports a diagram taller than its frame (the frame hides the overflow, so
+  nothing else notices). `slide()`-style fix that worked: put
+  `style="--lu-s5:12px"` on the slide (gives back about 36px), or lower the
+  spec height, or shorten the callout.
+- Node text is about 13 units per character (mono) and 12 (sans) at the
+  diagram's scale; the audit's `flowText` check reports text wider than its box.
+  Keep every node inside the 1448-unit canvas (centre plus half width).
 
 ### 5. How to verify (every deck you touch, before calling it done)
 
@@ -237,6 +294,7 @@ rather than shrinking text, and move cut detail into the speaker notes.
 - More slides are fine if a concept needs them.
 - Clarity beats everything; write for a college student; every term gets definition, example and steps (AGENTS.md §2c rules 6 and 7).
 - Labs are instructor-led demos, no student challenge; students work offline (rule 8).
+- Every paper: read the PDF yourself, crop its own figures, keep a local copy, answer the five questions on the slides (rules 10 and 11, section 3b).
 
 ---
 
@@ -418,7 +476,7 @@ set for every module, on top of the mechanical authoring contract in
 
 | # | Title | Lecture notes | Paper | Graphics | Code |
 |---|---|---|---|---|---|
-| 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Research infographic done; §2c teaching-standard audit 2026-09-30 found gaps, two animated prototypes awaiting review | Not started |
+| 1 | Foundations and Modern Understanding | Predates lecture-notes rule; research-dive notes corrected 2026-09-30 | Done: PDF stored, figures cropped (Gorilla, arXiv:2305.15334) | Rebuilt 2026-09-30 to the §2c standard, awaiting instructor review | Instructor demo notebook tested against a stand-in model only |
 | 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Helping Customers in Distress, arXiv:2605.16268), see detail | Done, agent-built interactive infographic, see detail | Not started |
 | 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress; deck layout debt fixed 2026-09-30, awaiting review | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
@@ -560,7 +618,7 @@ and 2, not a rebuild.
   callout, both pointing to `../assets/infographics/module-01/gorilla.html`.
   Not embedded inline anywhere in the deck.
 
-### Teaching-standard audit, 2026-09-30 (AGENTS.md §2c): findings, prototypes awaiting review
+### Teaching-standard audit, 2026-09-30 (AGENTS.md §2c): findings (all addressed by the rebuild in section 2b)
 
 Run against the new §2c standard (visuals first, animated dataflow, plain
 English for non-native speakers, no missing prerequisites, more slides
