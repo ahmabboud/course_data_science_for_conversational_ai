@@ -32,7 +32,7 @@ and two Module 1 prototypes). Ask the instructor before pushing.
 
 **Waiting on the instructor (ask first, do not start without an answer):**
 
-- **A. Approve the animation style.** Prototypes: Module 1 slides "One LLM
+- **A. DECIDED 2026-09-30, approved by the instructor: use the Module 1 slide 6 "One LLM call, step by step" style (animated `.lu-flow` in a `.lu-walk`) and apply it to all the other lectures.** Not a question any more. Prototypes: Module 1 slides "One LLM
   call, step by step" and "Constrained decoding, token by token". If
   approved, that is the pattern for every module; if not, record what they
   want changed here and in `AGENTS.md` §7 before building more.
