@@ -85,6 +85,57 @@ and two Module 1 prototypes). Ask the instructor before pushing.
    §11 says it must); the handout prints 38 pages for Module 1's 35
    slides, so find the slides that spill onto a second page.
 
+### 2b. Module 1 rebuild in progress (started 2026-09-30, decisions A and B applied)
+
+The instructor approved the animation style and option C, and asked for
+clarity above all (AGENTS.md §2c rules 6 to 9). Module 1 is being rebuilt
+as a whole, about 51 slides, still 180 minutes:
+
+| Section | Min | What it holds |
+|---|---|---|
+| Opening | 2 | title |
+| Hook | 18 | setup 2, live two-bot demo 12, five stages 4 |
+| Lecture | 75 | five jobs; intent and entity; the old way (two trained models) and its labeled examples; one LLM call; tokens; JSON; JSON Schema and checking a reply; the real API call line by line; asking for JSON versus requiring it; constrained decoding; shape versus truth; function calling and structured output compared; old versus new; validation and fallback; the correction walkthrough; check question; providers; saving test sentences |
+| Research dive (Gorilla) | 24 | what an API call is; the problem; the test set (APIBench); AST grading; the method; results; limits |
+| Kickoff | 13 | what is done, team and paper, rubric |
+| Instructor demo | 38 | plan, helpdesk schema, test sentences, live run, fallback choice, decision note, likely bugs (instructor-led, no student challenge) |
+| Wrap | 10 | "Your project this week", reading, glossary, self-check |
+
+If this list is only partly done when you read it, the deck in
+`lectures/dsca-module-01.html` is the truth: compare it to this table,
+finish what is missing, and update this section. The deck is hand-edited
+HTML (there is no generator for this course), so edit it directly.
+
+Facts found while planning, to carry into the slides:
+
+- The hook notebook's real outputs: the keyword bot answers line 1 with
+  `Booked: {'party_size': '4', 'day': 'monday', 'time': '7pm'}` and line 2
+  with "Sorry, I didn't understand that. Could you start your booking
+  again?". The reference agent cell has **no saved output**: run it once
+  before class (the notebook asks for this) so there is a safety net.
+- The real structured-output call (from the notebook): a JSON Schema with
+  `type`, `properties` (each `["integer","null"]` or `["string","null"]`)
+  and `required`; `client.interactions.create(model=..., input=prompt,
+  response_format={"type":"text","mime_type":"application/json",
+  "schema":schema})`; `json.loads(interaction.output_text)`.
+- **A JSON Schema allows extra keys** unless it says
+  `"additionalProperties": false`. The slides must not claim an extra key
+  is rejected.
+- `research/module-01/lecture-notes.md` gives per-hub API counts
+  (HuggingFace 925, TorchHub 94, TensorHub 696) that add up to 1,715, not
+  the 1,645 total it also states. One of them is wrong. The slides quote
+  only the 1,645 total; check the per-hub numbers against the paper before
+  anyone quotes them.
+- The redesign doc sets no due date for the idea pitch. The "Your project
+  this week" slide lists the steps without dates; the instructor should
+  choose a deadline and say it aloud.
+- The syllabus docx still describes Session 1 as 50 lecture / 70 lab
+  minutes. The deck is now 75 lecture, 24 research, 38 demo. Bring the
+  docx in line once the instructor approves the new split.
+- A new lab demo notebook is needed for the helpdesk example
+  (`demos/module-01/extraction_demo.ipynb`), tested with a stubbed client
+  like Modules 4 and 5; the instructor still owns the live run.
+
 ### 3. How to audit and rebuild a module (the §2c method)
 
 Walk every slide and write findings under these headings, by `data-label`
