@@ -44,6 +44,21 @@ finished Module 1 rebuild is committed locally; check `git status` first.
   explained fully (AGENTS.md §2c rules 10 and 11). Bring the syllabus in line
   once they agree.
 - **Module 3 review** (its redrawn diagrams and three new slides).
+- **Attendance and participation points (undecided).** On 2026-09-30 the
+  instructor wanted 15 of the 100 points for attendance and participation in
+  labs and said they will decide later. A proposal was given in chat (85
+  project points = the current 100-point defense score times 0.85, plus 15:
+  2.5 per session, 1.5 attendance and 1.0 participation in that session's
+  demo, one excused absence as the syllabus already allows). Nothing was
+  changed. If they decide, update together: syllabus Section 10 and its
+  table, `module-06-defense/scoring-sheet.xlsx`, `PROJECT-REDESIGN.md`,
+  `DEFENSE-DAY.md`, and Module 1's slide "The rubric and what is due before
+  you defend" (it says 100 points, four criteria of 25). Also still to bring
+  in line in the syllabus: its "assumed knowledge" says students can already
+  call an LLM API and read JSON, and "no tokenizers, taggers or classical
+  classifiers appear anywhere" (Module 1 now teaches tokens and JSON and shows
+  the old two-model approach for contrast), and it says setup finishes before
+  Module 1 while the team template says to set up after picking a paper.
 - **Set a deadline for the idea pitch.** Nothing in the course documents sets
   one; the "Your project this week" slide lists steps without dates.
 
