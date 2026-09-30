@@ -70,40 +70,44 @@
 </section>
 
 <!-- ==================================================================== 03 -->
-<section class="slide" data-label="Hybrid search: keyword and vector, together" data-section="Lecture" data-minutes="8">
+<section class="slide" data-label="Hybrid search: keyword and vector, together" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">The default architecture, not an advanced option</div>
   <h2 class="lu-h1" style="max-width:36ch">Two very different ways to find the right passage, run together</h2>
-  <div class="lu-board" style="margin-top:var(--lu-s4)">
-    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
+  <div class="lu-board" style="height:320px;aspect-ratio:auto;flex:none">
+    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 221" preserveAspectRatio="none" aria-hidden="true">
       <defs><marker id="m3-arrow-hybrid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m3-arrow-hybrid)" d="M 260 130 L 620 230"/>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m3-arrow-hybrid)" d="M 260 290 L 620 250"/>
-      <text class="lu-edge-label" x="420" y="150">exact terms</text>
-      <text class="lu-edge-label" x="420" y="320">paraphrase, meaning</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m3-arrow-hybrid)" d="M 276 55 L 600 100"/>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m3-arrow-hybrid)" d="M 276 166 L 600 121"/>
+      <text class="lu-edge-label" x="380" y="62">exact terms</text>
+      <text class="lu-edge-label" x="330" y="192">paraphrase, meaning</text>
     </svg>
-    <button type="button" class="lu-node lu-node--class" style="left:18%;top:32%" data-term="Keyword search (BM25)" data-kind="Sparse"><template>Ranks documents by term overlap: term frequency against document length, no notion of meaning. Finds an exact order number, a product SKU, a rare identifier, every time, because it does not need to "understand" the query, only match its words.</template>Keyword search (BM25)</button>
-    <button type="button" class="lu-node lu-node--class" style="left:18%;top:72%" data-term="Vector search (dense)" data-kind="Dense"><template>Ranks documents by embedding similarity: two passages that mean the same thing land close together even with zero words in common. Finds a paraphrase or a question worded nothing like the source text, but can miss an exact identifier a keyword match would catch instantly.</template>Vector search (dense)</button>
-    <button type="button" class="lu-node lu-node--instance" style="left:70%;top:52%" data-term="Combined candidate set" data-kind="Merged"><template>Both ranked lists are kept, not just one. Neither method's blind spot is fatal, because the other method covers it. This combined set is what reciprocal rank fusion, next slide, turns into one ordering.</template>Combined candidate set</button>
+    <button type="button" class="lu-node lu-node--class" style="left:18%;top:25%" data-term="Keyword search (BM25)" data-kind="Sparse"><template>Ranks documents by term overlap: term frequency against document length, no notion of meaning. Finds an exact order number, a product SKU, a rare identifier, every time, because it does not need to "understand" the query, only match its words.</template>Keyword search (BM25)</button>
+    <button type="button" class="lu-node lu-node--class" style="left:18%;top:75%" data-term="Vector search (dense)" data-kind="Dense"><template>Ranks documents by embedding similarity: two passages that mean the same thing land close together even with zero words in common. Finds a paraphrase or a question worded nothing like the source text, but can miss an exact identifier a keyword match would catch instantly.</template>Vector search (dense)</button>
+    <button type="button" class="lu-node lu-node--instance" style="left:70%;top:50%" data-term="Combined candidate set" data-kind="Merged"><template>Both ranked lists are kept, not just one. Neither method's blind spot is fatal, because the other method covers it. This combined set is what reciprocal rank fusion, two slides on, turns into one ordering.</template>Combined candidate set</button>
   </div>
-  <p class="lu-caption" style="margin-top:var(--lu-s4)">Keyword search alone misses a paraphrase. Vector search alone misses an exact identifier. Run both, every time, and let fusion decide what actually floats to the top.</p>
-  <div class="lu-reveal" style="margin-top:var(--lu-s4)">
-    <button class="lu-reveal__btn" type="button">Under the hood: the actual scoring, and why vector search is approximate</button>
-    <div class="lu-reveal__panel" hidden>
+  <p class="lu-caption">Keyword search alone misses a paraphrase. Vector search alone misses an exact identifier. Run both, every time, and let fusion decide what actually floats to the top.</p>
+  <template data-notes><p>Five minutes. Open both nodes and name a concrete failure for each: BM25 alone on "the thing that broke my order" (no exact terms to match), vector search alone on "SKU-88204-B" (an identifier with no semantic content to embed meaningfully). This is why "default architecture, not an advanced option" is the framing, not a hedge. The next slide opens both lanes up, so keep this one about the failure modes. If there is time, run <code>demos/module-03/grounded_rag.py</code> live and show its step 1 versus step 2 output for the same effect.</p></template>
+</section>
+
+<!-- ==================================================================== 03b -->
+<section class="slide" data-label="Under the hood: what each lane actually computes" data-section="Lecture" data-minutes="3">
+  <div class="lu-eyebrow">Opening the two black boxes</div>
+  <h2 class="lu-h2">BM25 has a formula, and a vector index is approximate</h2>
       <div class="lu-code lu-code--sm" data-name="BM25 score, one term">
-<pre><code>score(term, doc) = IDF(term) * ( tf * (k1+1) ) / ( tf + k1 * (1 - b + b * doclen/avgdoclen) )
-<span class="tok-com"># tf saturates: a term's 10th occurrence adds far less than its 2nd did</span>
-<span class="tok-com"># k1 (about 1.2 to 2.0) sets how fast it saturates; b (about 0.75) penalises long documents</span></code></pre>
+<pre><code>score(t, d) = IDF(t) * tf*(k1+1) / (tf + k1*(1 - b + b*|d|/avgdl))
+<span class="tok-com"># tf saturates: a term's 10th occurrence adds far less than its 2nd</span>
+<span class="tok-com"># k1 (about 1.2 to 2.0) sets how fast; b (about 0.75) penalises long docs</span></code></pre>
       </div>
       <div class="lu-code lu-code--sm" data-name="dense similarity">
-<pre><code>similarity(q, d) = ( embed(q) . embed(d) ) / ( ||embed(q)|| * ||embed(d)|| )
-<span class="tok-com"># embed() is a bi-encoder: query and document are each encoded separately,</span>
-<span class="tok-com"># never seeing each other, which is exactly what lets every document's</span>
-<span class="tok-com"># vector be precomputed once, offline, before any query arrives</span></code></pre>
+<pre><code>sim(q, d) = embed(q) . embed(d) / (||embed(q)|| * ||embed(d)||)
+<span class="tok-com"># embed() is a bi-encoder: query and document encoded separately,</span>
+<span class="tok-com"># so every document vector is precomputed once, offline</span></code></pre>
       </div>
-      <p class="lu-sub">Neither index actually scans every document at query time once a corpus is large. A real vector index is an approximate nearest-neighbour (ANN) structure, commonly HNSW (a navigable graph built over the embedding space) or IVF (cluster the embeddings once, search only the nearest clusters at query time). Both trade a small, tunable amount of recall for query time closer to logarithmic in corpus size than the O(n) linear scan an exact search would need.</p>
+    <div class="lu-callout lu-callout--concept">
+      <span class="lu-callout__label">Not a linear scan</span>
+      <p class="lu-sub">A real vector index is an <b>approximate nearest-neighbour</b> (ANN) structure: HNSW (a navigable graph over the embedding space) or IVF (cluster once, search only the nearest clusters). Both trade a small, tunable amount of recall for query time far below the O(n) exact scan.</p>
     </div>
-  </div>
-  <template data-notes><p>Eight minutes. Open both nodes and name a concrete failure for each: BM25 alone on "the thing that broke my order" (no exact terms to match), vector search alone on "SKU-88204-B" (an identifier with no semantic content to embed meaningfully). This is why "default architecture, not an advanced option" is the framing, not a hedge. Open the reveal and do not skip it: a graduate student should leave knowing BM25 has an actual formula with tunable constants, that embeddings come from a bi-encoder (query and document never seeing each other, which is why they can be precomputed), and that "vector index" means an approximate structure like HNSW or IVF, not a linear scan. If there is time, run <code>demos/module-03/grounded_rag.py</code> live and show its step 1 versus step 2 output for the same effect.</p></template>
+  <template data-notes><p>Three minutes. Do not skip this slide: a graduate student should leave knowing BM25 has an actual formula with tunable constants, that embeddings come from a bi-encoder (query and document never seeing each other, which is why they can be precomputed), and that "vector index" means an approximate structure like HNSW or IVF, not a linear scan. HNSW and IVF query time is closer to logarithmic in corpus size than linear; the recall you give up is tunable (HNSW's <code>ef</code>, IVF's number of probed clusters). The bi-encoder point sets up the reranking cost comparison three slides on.</p></template>
 </section>
 
 <!-- ==================================================================== 04 -->
@@ -156,53 +160,57 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
 <!-- ==================================================================== 05 -->
 <section class="slide" data-label="Check: what hybrid search and RRF actually buy you" data-section="Lecture" data-minutes="3">
   <div class="lu-eyebrow">Check question</div>
-  <div class="lu-split lu-split--wide-left">
-    <div class="lu-mcq" data-qid="m3-q1" data-answer="b"
+    <div class="lu-mcq" data-qid="m3-q1" data-answer="a"
          data-label="What hybrid search plus RRF actually buys you"
-         data-fb-correct=" Correct: neither method's blind spot is fatal once the other one covers it, and RRF does that without a hand-tuned weight."
-         data-fb-wrong=" Weigh what actually changed: the retrieval mechanics of BM25 and vector search are each unchanged, only how their results get combined is new.">
-      <p class="lu-mcq__q">What does combining hybrid search with reciprocal rank fusion actually buy you, that a single retrieval method alone does not?</p>
+         data-fb-correct=" Neither method's blind spot is fatal once the other covers it, with no hand-tuned weight."
+         data-fb-wrong=" Only how the two result lists get combined changed, not either retrieval method.">
+      <p class="lu-mcq__q">What does hybrid search plus RRF buy you that one retrieval method alone does not?</p>
       <div class="lu-mcq__opts">
-        <button class="lu-mcq__opt" type="button" data-key="a">A larger context window for the LLM to read<span class="lu-mcq__why" hidden>Retrieval and fusion happen before the LLM ever sees anything; neither touches the model's context window size.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="b">Robustness across query types: exact-term and paraphrased queries both get surfaced, without hand-tuning which method to trust<span class="lu-mcq__why" hidden>Correct: that is the entire case for running both, merged by rank rather than by a tuned weight.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="c">It eliminates the need for a reranking pass afterward<span class="lu-mcq__why" hidden>The opposite: a bigger, more diverse candidate set from hybrid search is exactly what a reranker benefits from having to work with, next slide.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="d">A guaranteed higher score than any single-method baseline, on every query<span class="lu-mcq__why" hidden>Overclaims it: hybrid search improves robustness on average, it does not guarantee winning every individual query.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="a">Robustness across query types: exact-term and paraphrased queries both get surfaced, without hand-tuning which method to trust<span class="lu-mcq__why" hidden>Correct: that is the entire case for running both, merged by rank rather than by a tuned weight.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="b">It eliminates the need for a reranking pass afterward<span class="lu-mcq__why" hidden>The opposite: a bigger, more diverse candidate set from hybrid search is exactly what a reranker benefits from having to work with, next slide.</span></button>
+        <button class="lu-mcq__opt" type="button" data-key="c">A guaranteed higher score than any single-method baseline, on every query<span class="lu-mcq__why" hidden>Overclaims it: hybrid search improves robustness on average, it does not guarantee winning every individual query.</span></button>
       </div>
       <div class="lu-mcq__fb" hidden></div>
     </div>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">The idea behind the question</span>
-      <p class="lu-sub">Hybrid search is a robustness argument, not a raw-accuracy argument: it removes a whole class of query your pipeline would otherwise silently fail on.</p>
-    </div>
-  </div>
-  <template data-notes><p>Forty seconds, then reveal. Option d is the one that catches people, since "hybrid search works better" gets rounded up to "always wins," which the fusion mechanism does not promise. Distinguish clearly: robustness against a class of failure, not a guarantee on any one query.</p></template>
+  <template data-notes><p>Forty seconds, then reveal. A fourth option was cut for space, use it aloud if the room is quick: "a larger context window for the LLM to read" is wrong because retrieval and fusion happen before the LLM sees anything and never touch its context window. The idea behind the question, say it once the answer is up: hybrid search is a robustness argument, not a raw-accuracy argument, it removes a whole class of query your pipeline would otherwise silently fail on. Option c catches people because "hybrid search works better" gets rounded up to "always wins," which the fusion mechanism does not promise. Distinguish clearly: robustness against a class of failure, not a guarantee on any one query.</p></template>
 </section>
 
 <!-- ==================================================================== 06 -->
-<section class="slide slide--tint" data-label="Reranking: a second, more careful pass" data-section="Lecture" data-minutes="6">
+<section class="slide slide--tint" data-label="Reranking: a second, more careful pass" data-section="Lecture" data-minutes="4">
   <div class="lu-eyebrow">Fast and broad, then slow and precise</div>
   <h2 class="lu-h1" style="max-width:34ch">A second pass that actually reads the query against each candidate</h2>
-  <div class="lu-board" style="margin-top:var(--lu-s4)">
-    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 375" preserveAspectRatio="none" aria-hidden="true">
+  <div class="lu-board" style="height:320px;aspect-ratio:auto;flex:none">
+    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 221" preserveAspectRatio="none" aria-hidden="true">
       <defs><marker id="m3-arrow-rerank" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m3-arrow-rerank)" d="M 260 190 L 620 190"/>
-      <text class="lu-edge-label" x="440" y="170">top 20-50 candidates</text>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-green-700);marker-end:url(#m3-arrow-rerank)" d="M 780 190 L 940 190"/>
-      <text class="lu-edge-label" x="860" y="170" style="fill:var(--lu-green-700)">top 5</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m3-arrow-rerank)" d="M 230 110 L 468 110"/>
+      <text class="lu-edge-label" x="236" y="92">top 20-50 candidates</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-green-700);marker-end:url(#m3-arrow-rerank)" d="M 570 110 L 795 110"/>
+      <text class="lu-edge-label" x="655" y="92" style="fill:var(--lu-green-700)">top 5</text>
     </svg>
-    <button type="button" class="lu-node lu-node--class" style="left:18%;top:52%" data-term="Combined candidate set" data-kind="From fusion"><template>The RRF-merged list from hybrid search, wide but cheap to produce: fast lexical and vector lookups, no per-pair scoring yet.</template>Combined candidates</button>
-    <button type="button" class="lu-node lu-node--instance" style="left:60%;top:52%" data-term="Cross-encoder reranker" data-kind="Second pass"><template>Scores the query and each candidate passage together, jointly, in one forward pass, instead of comparing precomputed embeddings. Far more accurate at judging true relevance, and far more expensive per pair, which is exactly why it only runs on the already-narrowed candidate set, never the whole corpus.</template>Reranker</button>
-    <div class="lu-node" style="left:94%;top:52%">Top 5 to the LLM</div>
+    <button type="button" class="lu-node lu-node--class" style="left:14%;top:50%" data-term="Combined candidate set" data-kind="From fusion"><template>The RRF-merged list from hybrid search, wide but cheap to produce: fast lexical and vector lookups, no per-pair scoring yet.</template>Combined candidates</button>
+    <button type="button" class="lu-node lu-node--instance" style="left:52%;top:50%" data-term="Cross-encoder reranker" data-kind="Second pass"><template>Scores the query and each candidate passage together, jointly, in one forward pass, instead of comparing precomputed embeddings. Far more accurate at judging true relevance, and far more expensive per pair, which is exactly why it only runs on the already-narrowed candidate set, never the whole corpus.</template>Reranker</button>
+    <div class="lu-node" style="left:87%;top:50%">Top 5 to the LLM</div>
   </div>
-  <p class="lu-caption" style="margin-top:var(--lu-s4)">Retrieval is cheap and wide on purpose. Reranking is expensive and narrow on purpose. Running the expensive step over the whole corpus, instead of a few dozen candidates, is the mistake this two-stage split exists to prevent.</p>
-  <div class="lu-reveal" style="margin-top:var(--lu-s4)">
-    <button class="lu-reveal__btn" type="button">Why this is a genuinely different cost, in Big-O terms</button>
-    <div class="lu-reveal__panel" hidden>
-      <p class="lu-sub">Retrieval's bi-encoder embeds the query and every document separately, so each document's vector was already computed once, offline: query time is close to <b>O(1)</b> per document once an ANN index is in front of it. A cross-encoder reranker feeds the query and one candidate through the model together, jointly, so nothing about it can be precomputed ahead of the query: reranking n candidates costs <b>O(n)</b> full forward passes, paid entirely at query time. That is exactly why it only ever runs on the 20 to 50 candidates fusion already narrowed things to, running it over an entire corpus would multiply that O(n) cost by a corpus size in the thousands or millions.</p>
-      <p class="lu-sub">The reranker itself is typically trained with a learning-to-rank objective (a pairwise or contrastive loss over known relevant/irrelevant pairs), not the same objective the embedding model was trained with, which is part of why its judgment differs from, rather than merely repeats, the fusion ranking that fed it.</p>
-    </div>
-  </div>
-  <template data-notes><p>Six minutes. Open the reranker node and name the actual cost tradeoff: a cross-encoder scores a query-passage pair jointly, which is why it cannot run over a million-document corpus directly, it has to be handed a small, already-plausible shortlist first. Open the reveal and state the Big-O plainly, this is the kind of thing a graduate student should be able to say back, not just nod along to. That shortlist is exactly what hybrid search plus RRF produced on the last two slides. <code>demos/module-03/grounded_rag.py</code> reranks with one more Gemini call rather than a dedicated cross-encoder model, say so if asked why there is no separate reranker library, and note plainly that this substitutes a general LLM call for the purpose-trained learning-to-rank model the reveal describes, a real simplification made for the demo, not a claim that they are the same thing.</p></template>
+  <p class="lu-caption">Retrieval is cheap and wide on purpose. Reranking is expensive and narrow on purpose. Running the expensive step over the whole corpus, instead of a few dozen candidates, is the mistake this two-stage split exists to prevent.</p>
+  <template data-notes><p>Four minutes. Open the reranker node and name the actual cost tradeoff: a cross-encoder scores a query-passage pair jointly, which is why it cannot run over a million-document corpus directly, it has to be handed a small, already-plausible shortlist first. The next slide puts the two costs side by side. That shortlist is exactly what hybrid search plus RRF produced on the last two slides. <code>demos/module-03/grounded_rag.py</code> reranks with one more Gemini call rather than a dedicated cross-encoder model, say so if asked why there is no separate reranker library, and note plainly that this substitutes a general LLM call for the purpose-trained learning-to-rank model the reveal describes, a real simplification made for the demo, not a claim that they are the same thing.</p></template>
+</section>
+
+<!-- ==================================================================== 06a -->
+<section class="slide" data-label="Why reranking is a different cost, in Big-O terms" data-section="Lecture" data-minutes="2">
+  <div class="lu-eyebrow">Same goal, opposite cost structure</div>
+  <h2 class="lu-h2">A bi-encoder pays offline. A cross-encoder pays per query, per candidate.</h2>
+  <table class="lu-table">
+    <thead><tr><th></th><th>Bi-encoder (retrieval)</th><th>Cross-encoder (reranker)</th></tr></thead>
+    <tbody>
+      <tr><td>Input</td><td>Query and document encoded separately</td><td>Query and one candidate, together, in one pass</td></tr>
+      <tr><td>Precomputed offline</td><td>Every document vector</td><td>Nothing: it needs the query first</td></tr>
+      <tr><td>Query-time cost</td><td>One query embedding, then an ANN lookup</td><td><b>O(n)</b> full forward passes, n = candidates</td></tr>
+      <tr><td>Runs over</td><td>The whole corpus</td><td>The 20 to 50 fused candidates only</td></tr>
+      <tr><td>Trained with</td><td>An embedding-similarity objective</td><td>A learning-to-rank loss (pairwise or contrastive)</td></tr>
+    </tbody>
+  </table>
+  <p class="lu-caption">Run the cross-encoder over a million-document corpus and every query costs a million forward passes.</p>
+  <template data-notes><p>Two minutes. State the Big-O plainly, this is the kind of thing a graduate student should be able to say back, not just nod along to. Retrieval's per-document cost was paid once, offline; at query time only the query is embedded and the ANN index does the rest. The cross-encoder cannot precompute anything, because its input is the pair. The last row matters too: the reranker is trained with a different objective from the embedding model, which is part of why its judgment differs from, rather than merely repeats, the fusion ranking that fed it.</p></template>
 </section>
 
 <!-- ==================================================================== 06b -->
@@ -259,13 +267,13 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
 <section class="slide slide--tint" data-label="Citation and the refusal path: one branch, two endings" data-section="Lecture" data-minutes="5">
   <div class="lu-eyebrow">The last question before the agent speaks</div>
   <h2 class="lu-h1" style="max-width:34ch">Does the reranked context actually answer this, or not</h2>
-  <div class="lu-board" style="margin-top:var(--lu-s4)">
-    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 375" preserveAspectRatio="none" aria-hidden="true">
+  <div class="lu-board" style="height:340px;aspect-ratio:auto;flex:none">
+    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 235" preserveAspectRatio="none" aria-hidden="true">
       <defs><marker id="m3-arrow-cite" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-green-700);marker-end:url(#m3-arrow-cite)" d="M 260 190 L 660 100"/>
-      <text class="lu-edge-label" x="380" y="115" style="fill:var(--lu-green-700)">context covers it</text>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-red-700);stroke:var(--lu-red-700);marker-end:url(#m3-arrow-cite)" d="M 260 210 L 660 300"/>
-      <text class="lu-edge-label" x="380" y="290" style="fill:var(--lu-red-700)">context does not cover it</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-green-700);marker-end:url(#m3-arrow-cite)" d="M 291 114 L 641 66"/>
+      <text class="lu-edge-label" x="360" y="72" style="fill:var(--lu-green-700)">context covers it</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-red-700);stroke:var(--lu-red-700);marker-end:url(#m3-arrow-cite)" d="M 291 130 L 673 175"/>
+      <text class="lu-edge-label" x="330" y="192" style="fill:var(--lu-red-700)">context does not cover it</text>
     </svg>
     <button type="button" class="lu-node lu-node--class" style="left:22%;top:52%" data-term="Coverage check" data-kind="Decision"><template>Reads the top reranked passages and the question together and decides, before generating a final answer, whether the retrieved material actually addresses what was asked, not just whether it is topically related.</template>Coverage check</button>
     <button type="button" class="lu-node lu-node--instance" style="left:72%;top:25%" data-term="Answer with citation" data-kind="Grounded"><template>The answer names which passage(s) it drew from, by id or source span, so a reader can check the claim against the actual source, not just trust the model's word for it.</template>Answer + citation</button>
@@ -306,21 +314,21 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
 <section class="slide" data-label="The idea: skip retrieval, preload the cache" data-section="Research dive" data-minutes="3">
   <div class="lu-eyebrow">Cache-augmented generation (CAG)</div>
   <h2 class="lu-h1" style="max-width:34ch">Preload everything offline, so inference never has to retrieve at all</h2>
-  <div class="lu-board" style="margin-top:var(--lu-s4)">
-    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
+  <div class="lu-board" style="height:290px;aspect-ratio:auto;flex:none">
+    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
       <defs><marker id="m3-arrow-cag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-red-700);stroke:var(--lu-red-700);marker-end:url(#m3-arrow-cag)" d="M 260 130 L 620 130"/>
-      <text class="lu-edge-label" x="440" y="110" style="fill:var(--lu-red-700)">RAG: retrieve, then generate (both at inference)</text>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-3);stroke:var(--lu-ink-3);marker-end:url(#m3-arrow-cag)" d="M 260 280 L 470 280"/>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-green-700);marker-end:url(#m3-arrow-cag)" d="M 620 280 L 830 280"/>
-      <text class="lu-edge-label" x="365" y="260">offline, once</text>
-      <text class="lu-edge-label" x="725" y="260" style="fill:var(--lu-green-700)">at inference</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-red-700);stroke:var(--lu-red-700);marker-end:url(#m3-arrow-cag)" d="M 140 50 L 375 50"/>
+      <text class="lu-edge-label" x="550" y="56" style="fill:var(--lu-red-700)">RAG: retrieve + generate, per query</text>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-3);stroke:var(--lu-ink-3);marker-end:url(#m3-arrow-cag)" d="M 157 150 L 346 150"/>
+      <path class="lu-edge lu-edge--strong" style="color:var(--lu-green-700);marker-end:url(#m3-arrow-cag)" d="M 572 150 L 763 150"/>
+      <text class="lu-edge-label" x="175" y="136">offline, once</text>
+      <text class="lu-edge-label" x="600" y="136" style="fill:var(--lu-green-700)">at inference</text>
     </svg>
-    <div class="lu-node" style="left:12%;top:32%">Query</div>
-    <button type="button" class="lu-node lu-node--class" style="left:46%;top:32%" data-term="Real-time retrieval" data-kind="RAG"><template>Every single query triggers a fresh retrieval pass, hybrid search and reranking included, all inside the latency the user is waiting on.</template>Retrieve + generate</button>
-    <div class="lu-node" style="left:12%;top:70%">Documents</div>
-    <button type="button" class="lu-node lu-node--instance" style="left:46%;top:70%" data-term="Offline preloading" data-kind="CAG"><template>Once, ahead of time, the whole document collection is fed into the model and its key-value (KV) cache, the model's internal inference state for that text, is precomputed and saved. This happens on your own schedule, not inside a user's request.</template>Preload + precompute cache</button>
-    <button type="button" class="lu-node lu-node--class" style="left:80%;top:70%" data-term="Query only, at inference" data-kind="CAG"><template>At inference, the model loads the precomputed cache and processes only the incoming query against it, no retrieval step runs at all, because everything the model could need is already inside its cache.</template>Query only</button>
+    <div class="lu-node" style="left:10%;top:25%">Query</div>
+    <button type="button" class="lu-node lu-node--class" style="left:46%;top:25%" data-term="Real-time retrieval" data-kind="RAG"><template>Every single query triggers a fresh retrieval pass, hybrid search and reranking included, all inside the latency the user is waiting on.</template>Retrieve + generate</button>
+    <div class="lu-node" style="left:10%;top:75%">Documents</div>
+    <button type="button" class="lu-node lu-node--instance" style="left:46%;top:75%" data-term="Offline preloading" data-kind="CAG"><template>Once, ahead of time, the whole document collection is fed into the model and its key-value (KV) cache, the model's internal inference state for that text, is precomputed and saved. This happens on your own schedule, not inside a user's request.</template>Preload + precompute cache</button>
+    <button type="button" class="lu-node lu-node--class" style="left:82%;top:75%" data-term="Query only, at inference" data-kind="CAG"><template>At inference, the model loads the precomputed cache and processes only the incoming query against it, no retrieval step runs at all, because everything the model could need is already inside its cache.</template>Query only</button>
   </div>
   <div class="lu-callout" style="margin-top:var(--lu-s4)">
     <span class="lu-callout__label">Chan, Chen, Cheng &amp; Huang, WWW '25</span>
@@ -359,10 +367,10 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
 </section>
 
 <!-- ==================================================================== 13 -->
-<section class="slide" data-label="The experiment: two benchmarks, one long-context model" data-section="Research dive" data-minutes="5">
+<section class="slide" data-label="The experiment: two benchmarks, one long-context model" data-section="Research dive" data-minutes="3">
   <div class="lu-eyebrow">How the paper actually tested this</div>
   <h2 class="lu-h1" style="max-width:34ch">CAG against BM25 and dense RAG, on two QA benchmarks</h2>
-  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
+  <div class="lu-split lu-split--wide-left">
     <table class="lu-table">
       <thead><tr><th>Setup</th><th>Detail</th></tr></thead>
       <tbody>
@@ -373,18 +381,29 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
         <tr><td>Metric</td><td>BERTScore: semantic similarity between the generated answer and the ground-truth answer</td></tr>
       </tbody>
     </table>
-    <div class="lu-stack">
-      <div class="lu-callout">
-        <span class="lu-callout__label">Why two benchmarks</span>
-        <p class="lu-sub">SQuAD questions are answerable from one passage. HotPotQA questions need reasoning across multiple passages, a harder, more realistic test of whether preloading everything actually holds up.</p>
-      </div>
-      <div class="lu-callout lu-callout--concept">
-        <span class="lu-callout__label">A metric worth naming plainly</span>
-        <p class="lu-sub">BERTScore checks whether the generated answer resembles a reference answer: an end-task metric. It says nothing directly about whether retrieval itself found the right passage. The field's standard metrics for that separate question are Recall@k (is a relevant passage anywhere in the top k), MRR (how high the first relevant result ranks, averaged over queries), and nDCG (relevance credited more, discounted the further down the ranking it sits). This paper reports none of them, worth noticing when reading its retrieval numbers.</p>
-      </div>
+    <div class="lu-callout">
+      <span class="lu-callout__label">Why two benchmarks</span>
+      <p class="lu-sub">SQuAD questions are answerable from one passage. HotPotQA questions need reasoning across multiple passages, a harder, more realistic test of whether preloading everything actually holds up.</p>
     </div>
   </div>
-  <template data-notes><p>Five minutes. This is a real, run-once-before-today's-class check: every fact on this slide, the model, the GPU count, the two datasets, the baseline framework, is quoted from the paper's own experimental setup section, not reconstructed from memory. On the metrics callout: do not let "the paper didn't report Recall@k or nDCG" read as an accusation, it is a genuinely common and defensible scoping choice for a paper arguing an end-task point, the goal here is that students leave able to name what BERTScore does and does not tell you, not that they distrust the paper.</p></template>
+  <template data-notes><p>Three minutes. This is a real, run-once-before-today's-class check: every fact on this slide, the model, the GPU count, the two datasets, the baseline framework, is quoted from the paper's own experimental setup section, not reconstructed from memory. Point at the Metric row and hand straight to the next slide: which metric a paper chose decides which question its numbers can answer.</p></template>
+</section>
+
+<!-- ==================================================================== 13b -->
+<section class="slide" data-label="A metric worth naming: what BERTScore can and cannot tell you" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">Read the metric before you read the number</div>
+  <h2 class="lu-h2">BERTScore grades the answer. It never looks at the retrieval.</h2>
+  <table class="lu-table">
+    <thead><tr><th>Metric</th><th>The question it answers</th><th>How it is computed</th></tr></thead>
+    <tbody>
+      <tr><td><b>BERTScore</b> (this paper)</td><td>Does the answer resemble the reference answer?</td><td>Greedy token matching by cosine similarity of contextual embeddings, reported as F1</td></tr>
+      <tr><td>Recall@k</td><td>Is a relevant passage anywhere in the top k?</td><td>(relevant passages in the top k) / (all relevant passages)</td></tr>
+      <tr><td>MRR</td><td>How high does the first relevant passage rank?</td><td>Mean over queries of 1 / rank of first relevant</td></tr>
+      <tr><td>nDCG@k</td><td>Are the most relevant passages near the top?</td><td>Sum of rel(i) / log2(i + 1) over the top k, divided by the ideal ordering's score</td></tr>
+    </tbody>
+  </table>
+  <p class="lu-caption">The paper reports only the first row, so its numbers say nothing directly about retrieval quality.</p>
+  <template data-notes><p>Two minutes. Do not let "the paper didn't report Recall@k or nDCG" read as an accusation, it is a genuinely common and defensible scoping choice for a paper arguing an end-task point. The goal is that students leave able to name what BERTScore does and does not tell you, not that they distrust the paper. It also matters for their own project: a team whose extension changes the retriever should report Recall@k or MRR alongside any answer score, or it cannot show where its gain came from.</p></template>
 </section>
 
 <!-- ==================================================================== 14 -->
@@ -422,7 +441,7 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
 <section class="slide" data-label="The limits, and the applied question for your own team" data-section="Research dive" data-minutes="4">
   <div class="lu-eyebrow">What the paper itself says CAG cannot do, and one thing it does not say</div>
   <h2 class="lu-h2">A real limit, stated by the authors, and one they underplay</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
+  <div class="lu-split lu-split--wide-left">
     <div class="lu-stack">
       <div class="lu-callout">
         <span class="lu-callout__label">The paper's stated limitation</span>
@@ -430,7 +449,7 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
       </div>
       <div class="lu-callout">
         <span class="lu-callout__label">A tension the paper's own framing underplays</span>
-        <p class="lu-sub">"Retrieval latency at zero" describes the query, not the whole cost: the KV cache still has to be precomputed from the entire preloaded context, and that prefill compute, plus the cache's storage, scales with corpus size even though it happens offline. Separately, a longer context is not free at inference either: Liu et al.'s <a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noopener">"Lost in the Middle"</a> found models attend unevenly across a long context, favouring information near the start or end, and answer worse when the relevant fact sits in the middle. A bigger preloaded cache puts more of the answer in exactly that middle.</p>
+        <p class="lu-sub">"Retrieval latency at zero" describes the query, not the whole cost: precomputing the KV cache, and storing it, still scales with corpus size, just offline. And a long context is not free at inference: models answer worse when the relevant fact sits in the middle of it (Liu et al., <a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noopener">"Lost in the Middle"</a>).</p>
       </div>
     </div>
     <div class="lu-callout lu-callout--concept">
@@ -438,7 +457,7 @@ final order: [p2, p7, p9, p5, ...]</code></pre>
       <p class="lu-sub">Does the case for CAG over RAG hold for your team's own domain, and why or why not? Weigh the paper's own limitation and the tension above, not just the paper's headline claim. You will argue this directly at the end of today's session, against your own knowledge base.</p>
     </div>
   </div>
-  <template data-notes><p>Four minutes. This is the honest close of the close read: the paper does not claim CAG replaces RAG everywhere, only that it is a better fit once the knowledge base is small enough to fully preload. Land the added tension plainly, not as a takedown of the paper, a real paper with a real result, but as the kind of second look a graduate student should take of any single-paper claim: is the win coming from a genuinely different cost, or just from that cost getting moved somewhere the paper's own headline metric does not measure. Then move into the hands-on lab, which builds the RAG side of that argument.</p></template>
+  <template data-notes><p>Four minutes. This is the honest close of the close read: the paper does not claim CAG replaces RAG everywhere, only that it is a better fit once the knowledge base is small enough to fully preload. Land the added tension plainly, not as a takedown of the paper, a real paper with a real result, but as the kind of second look a graduate student should take of any single-paper claim: is the win coming from a genuinely different cost, or just from that cost getting moved somewhere the paper's own headline metric does not measure. Then move into the hands-on lab, which builds the RAG side of that argument. Detail cut from the slide for space, say it: the prefill cost is paid once per corpus version, so a knowledge base that changes daily pays it daily. Liu et al. found models attend unevenly across a long context, favouring information near the start or end, so a bigger preloaded cache puts more of the answer in exactly the middle where it is least likely to be used.</p></template>
 </section>
 
 <!-- ==================================================================== 16 -->
@@ -643,32 +662,31 @@ vector_hits = vector_index.search(query, top_k=20)</code></pre>
   <div class="lu-eyebrow">Decide out loud, with your partner, before you code</div>
   <div class="lu-mcq" data-qid="m3-q2" data-answer="b"
        data-label="What to do when reranked context only partially covers the question"
-       data-fb-correct=" Correct: naming exactly what is missing is more useful, and more honest, than a fluent answer built on a partial match."
-       data-fb-wrong=" Weigh what a partially-covering passage actually licenses the model to claim, against what a clean, specific refusal protects the user from.">
-    <p class="lu-mcq__q">Your reranked top passages mention the product the user asked about, but none of them actually addresses the specific detail in the question. What should the agent do?</p>
+       data-fb-correct=" Naming what is missing beats a fluent answer built on a partial match."
+       data-fb-wrong=" A partial match does not license the claim. A specific refusal is the honest option.">
+    <p class="lu-mcq__q">Your top passages mention the product the user asked about, but none addresses the specific detail asked. What should the agent do?</p>
     <div class="lu-mcq__opts">
-      <button class="lu-mcq__opt" type="button" data-key="a">Answer using the closest passage, and cite it anyway<span class="lu-mcq__why" hidden>This is exactly the failure mode citation and refusal exist to prevent: a citation on an answer the source does not actually support is worse than no citation, it looks verified when it is not.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="b">Refuse, and say specifically what information is missing<span class="lu-mcq__why" hidden>Correct: a specific refusal is more useful than a vague one, and both are better than an unsupported answer wearing a citation.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="c">Silently retry the whole pipeline until it finds something closer<span class="lu-mcq__why" hidden>Nothing about retrying with the same source material and the same query changes what is actually in the knowledge base; this risks looping indefinitely on a genuine gap.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="d">Answer without a citation, since nothing fits well enough to cite<span class="lu-mcq__why" hidden>This hides the real problem instead of surfacing it: an uncited answer is not more honest than a wrongly-cited one, it is just quieter about the same gap.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="a">Answer using the closest passage, and cite it anyway<span class="lu-mcq__why" hidden>A citation on an unsupported answer looks verified when it is not.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="b">Refuse, and say specifically what information is missing<span class="lu-mcq__why" hidden>A specific refusal is useful, and honest about the gap.</span></button>
+      <button class="lu-mcq__opt" type="button" data-key="c">Answer without a citation, since nothing fits well enough to cite<span class="lu-mcq__why" hidden>Quieter about the same gap, not more honest.</span></button>
     </div>
     <div class="lu-mcq__fb" hidden></div>
   </div>
-  <template data-notes><p>Five minutes. If a team pushes back with "but the user wants an answer," redirect: a specific refusal that names the missing detail is itself useful information, and it is the honest option once the coverage check has already run.</p></template>
+  <template data-notes><p>Five minutes. The long form of each rationale, for when you talk through the answers: (a) is exactly the failure mode citation and refusal exist to prevent, a citation on an answer the source does not support is worse than no citation, because it looks verified when it is not; (b) a specific refusal is more useful than a vague one, and both beat an unsupported answer wearing a citation; (c) an uncited answer hides the problem instead of surfacing it, it is not more honest than a wrongly cited one, just quieter about the same gap. A fourth option was cut from the slide for space, raise it if a team suggests it: "silently retry the whole pipeline until it finds something closer." Nothing about retrying with the same source material and the same query changes what is actually in the knowledge base, so it risks looping indefinitely on a genuine gap. If a team pushes back with "but the user wants an answer," redirect: a specific refusal that names the missing detail is itself useful information, and it is the honest option once the coverage check has already run.</p></template>
 </section>
 
 <!-- ==================================================================== 24 -->
 <section class="slide" data-label="Likely bugs, named in advance" data-section="Hands-on lab" data-minutes="7">
   <div class="lu-eyebrow">So you recognize them instead of debugging blind</div>
-  <h2 class="lu-h1" style="max-width:32ch">Four bugs that show up in almost every team's pipeline today</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
+  <h2 class="lu-h2">Four bugs that show up in almost every team's pipeline today</h2>
+  <div class="lu-split lu-split--wide-left">
     <table class="lu-table">
       <thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead>
       <tbody>
-        <tr><td>Vector search never changes the fused ranking</td><td>Embeddings computed with a mismatched model between indexing and query time, so similarity scores are meaningless</td></tr>
-        <tr><td>Citations point at the wrong passage</td><td>Source ids attached at indexing time were dropped somewhere before the final prompt, so the model is citing from memory, not from the actual context</td></tr>
+        <tr><td>Vector search never changes the fused ranking</td><td>Different embedding models at indexing and query time, so similarity scores are meaningless</td></tr>
+        <tr><td>Citations point at the wrong passage</td><td>Source ids were dropped before the final prompt, so the model cites from memory, not from the context</td></tr>
         <tr><td>Refusal path never fires, even on clearly uncovered questions</td><td>The coverage check prompt asks whether the context is "related," not whether it "answers," which almost anything passes</td></tr>
-        <tr><td>Chunk boundaries cut a fact the citation later points at</td><td>Chunking by fixed character count instead of structural boundary, see the lecture's chunking slide</td></tr>
+        <tr><td>Chunk boundaries cut a fact the citation later points at</td><td>Chunking by fixed character count instead of structural boundary</td></tr>
       </tbody>
     </table>
     <div class="lu-reveal">
@@ -676,7 +694,7 @@ vector_hits = vector_index.search(query, top_k=20)</code></pre>
       <div class="lu-reveal__panel" hidden><p>Print the source id and raw chunk text alongside every answer, before rendering anything to the user. If the cited id's actual text does not support the claim, it is the second bug. If refusal never triggers on an obviously uncovered test question, it is the third.</p></div>
     </div>
   </div>
-  <template data-notes><p>Seven minutes. The third bug is the most common and the least obvious: "related" and "answers" feel like the same instruction until a team tests with a question that is topically adjacent but genuinely uncovered, and watches the agent answer it anyway.</p></template>
+  <template data-notes><p>Seven minutes. The fourth row ties back to the lecture's chunking slide. The third bug is the most common and the least obvious: "related" and "answers" feel like the same instruction until a team tests with a question that is topically adjacent but genuinely uncovered, and watches the agent answer it anyway.</p></template>
 </section>
 
 <!-- ==================================================================== 25 -->

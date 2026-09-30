@@ -185,7 +185,7 @@ set for every module, on top of the mechanical authoring contract in
 |---|---|---|---|---|---|
 | 1 | Foundations and Modern Understanding | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Gorilla, arXiv:2305.15334), see detail | Done, agent-built interactive infographic, see detail | Not started |
 | 2 | Agentic Dialogue Management | Predates lecture-notes rule, slides came first; research-dive notes added 2026-09-17, see detail | Done (Helping Customers in Distress, arXiv:2605.16268), see detail | Done, agent-built interactive infographic, see detail | Not started |
-| 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress | In progress |
+| 3 | Grounded Generation | Not written (predates this rule, slides came first) | Done, see below | In progress; deck layout debt fixed 2026-09-30, awaiting review | In progress |
 | 4 | Memory | Done, see below | Done, see below | In progress | Done, see below |
 | 5 | Evaluation and Responsible Deployment | Done, see below | Done (five sources, not downloaded as PDFs), see below | 3 of 4 papers done, see below | Done, see below |
 
@@ -538,29 +538,81 @@ same pass as Module 1, 2026-09-16.
   slides; if a third one is added later this slide cannot absorb much more
   without cutting into the lab itself).
 
-### Known pre-existing issues, found while auditing 2026-09-15
+### Deck track: layout debt fixed 2026-09-30, awaiting instructor review
 
-Not introduced by this session's edits (re-confirmed after both
-infographic-slide insertions shifted numbering twice; slide numbers below
-are current as of this session's final state, 31 slides total). Not yet
-fixed:
+The overflow and stray-edge debt found on 2026-09-15 is fixed. Deck is now
+34 slides (was 31), 180 minutes, section budgets unchanged (Opening 2,
+Lecture 37, Research dive 22, Hands-on lab 86, Wrap 33). Not yet reviewed
+by the instructor; a redraw on this deck was rejected once before (see the
+Graphics track above), so get a look at the four redrawn boards before
+calling the deck done.
 
-- **Slide overflow** on slide 3 (hybrid search), 6 (reranking), 9 (citation
-  and refusal), 12 (the idea, CAG board, 351px), 15 (the experiment), 17
-  (the limits), and 26 (likely bugs). Content is clipped with no scrollbar
-  in at least one state (baseline or revealed). (Slide 5, the hybrid
-  search/RRF check question, has flickered in and out of this list between
-  audit runs on otherwise-unchanged content, worth a second look rather
-  than trusting either result alone.)
-- **Stray SVG edge endpoints** on slide 3 (41px off), slide 6 (138px off),
-  and slide 12 (four endpoints, 81 to 157px off): an edge in the board's
-  diagram does not actually reach a node.
+What changed, by `data-label` (slide numbers drift, labels do not):
 
-A future pass on this module should fix these before calling the deck done,
-per `AGENTS.md` §1 step 7. Slide 12 specifically is the original,
-unmodified "the idea" board (the redraw attempt above was reverted); its
-overflow and stray edges are old debt, not something introduced by
-reverting to it.
+- **Root cause of most of the overflow:** every `.lu-board` was
+  `width:100%` plus the default `aspect-ratio:16/7`, so it rendered 634px
+  tall inside a 652px slide body. The four boards ("Hybrid search",
+  "Reranking", "Citation and the refusal path", "The idea: skip
+  retrieval") now have an explicit height (290 to 340px),
+  `aspect-ratio:auto`, and `flex:none`. `flex:none` matters: without it
+  study mode's legend squashes a fixed-height board to a sliver instead
+  of clipping. Each board's viewBox now matches its rendered aspect ratio,
+  and every edge path was recomputed from the measured node boxes, so the
+  six stray endpoints are gone. "The idea" board's long RAG label was
+  shortened to "RAG: retrieve + generate, per query" and moved right of
+  its node.
+- **Three reveals became their own slides**, because their revealed
+  content could never fit under a diagram:
+  "Under the hood: what each lane actually computes" (new, after "Hybrid
+  search", BM25 and cosine formulas plus the HNSW/IVF callout; minutes
+  8 split 5 + 3), "Why reranking is a different cost, in Big-O terms"
+  (new, after "Reranking", a bi-encoder versus cross-encoder table;
+  6 split 4 + 2), and "A metric worth naming: what BERTScore can and
+  cannot tell you" (new, after "The experiment", a table of BERTScore,
+  Recall@k, MRR and nDCG@k with how each is computed; 5 split 3 + 2).
+  Nothing taught was dropped; see each new slide's speaker notes.
+- **Both MCQs cut to three options**, because the answered state (with
+  its feedback box, which `scripts/audit-deck.js` does not open)
+  overflowed by 130px (`m3-q1`) and 54px (`m3-q2`). `m3-q1` lost "a
+  larger context window" and its companion callout, and its correct answer
+  is now `a`. `m3-q2` lost "silently retry the pipeline", and its
+  rationales were shortened to one line. The cut options and the long
+  rationales are in each slide's speaker notes. The duplicated
+  "Correct. Correct:" feedback on `m3-q2` is fixed.
+- **"The limits"** and **"Likely bugs"**: wider left column
+  (`lu-split--wide-left`), shorter text, cut detail moved to notes.
+- `index.html` Module 3 card: 31 to 34 slides.
+
+Verified 2026-09-30, locally (`python3 -m http.server` plus the browser
+pane), cache-busted, `lu:` storage cleared:
+
+- `scripts/audit-deck.js`: zero failures for overflow (at rest and
+  revealed), hidden leaks, grid escapes, stray characters, collisions and
+  edges. `tinyText` still lists 8 elements, the same 8 as before these
+  edits: the title slide's lockup unit (19px) and the `<kbd>` shortcut
+  chips on the title and self-check slides (13px). These are styled in
+  shared `assets/lu.css` for every deck, not by this deck.
+- Clicked: every diagram node popover (11, none off-slide), every
+  walkthrough through every step with its Next button (six walkthroughs,
+  0px overflow at every step), the one remaining reveal, and every option
+  of both MCQs, each from a fresh unanswered load (all six grade correctly
+  and fit).
+- Handout printed to PDF with headless Chrome, with the deck's own study
+  mode switched on, the same state the Handout button produces. Changed
+  pages read back: nothing clipped.
+- Structural: tags balanced, 34 slides with 34 notes templates, no em or
+  en dashes, `data-qid`s unique.
+
+Still open on this deck:
+
+- **Study mode on screen** clips the bottom of the node legend on the four
+  board slides (171 to 279px). This is the known gap in `AGENTS.md` §8
+  (study mode does not scroll yet), not new debt; the handout, which is
+  the conforming alternative, prints them in full.
+- Not checked: presenter view (`P`) and the timer (`T`).
+- Found in passing, not fixed: Modules 1, 2, 4 and 5 each have one or two
+  `data-fb-correct` strings starting with "Correct", which the runtime
+  already prefixes, so students see "Correct. Correct:".
 
 ### Code track — in progress
 

@@ -102,6 +102,16 @@ Two measurement rules that cost real time:
 - **State.** A restored answer or an open reveal makes a slide taller. Clear
   the deck's `lu:` localStorage keys before measuring a baseline, and measure
   the revealed state separately. That is the state you teach in.
+- **An answered MCQ is taller than the audit's "revealed" state.** The audit
+  opens every `.lu-mcq__why` but not the `.lu-mcq__fb` feedback box, which
+  adds about 100px once a student answers. Click an option from a fresh load
+  and measure. Module 3 shipped two MCQs that passed the audit and overflowed
+  by 54px and 130px when answered.
+- **A default `.lu-board` is 634px tall** (full width at 16:7) in a 652px
+  slide body, so a board next to a heading and a caption always overflows.
+  Give it `height:<N>px;aspect-ratio:auto;flex:none` and a viewBox with the
+  same aspect ratio. Keep the `flex:none`: without it, study mode's legend
+  squashes the board instead of clipping.
 
 ## 3. Anatomy of a lecture file
 
