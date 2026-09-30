@@ -36,12 +36,16 @@ and two Module 1 prototypes). Ask the instructor before pushing.
   call, step by step" and "Constrained decoding, token by token". If
   approved, that is the pattern for every module; if not, record what they
   want changed here and in `AGENTS.md` §7 before building more.
-- **B. The outdated lab slides.** Module 1's lab slides (and the labs in
-  Modules 2 to 5) still teach the old one-shared-agent project ("Issue 1",
-  `agent/understanding.py`, "the same agent you defend in Module 6"). Ask:
-  reword them as general practice exercises (a pair writes a schema and
-  three test sentences for any domain, in a scratch notebook), or redesign
-  each lab around the team's own paper topic?
+- **B. DECIDED 2026-09-30, instructor chose option C, refined:** labs are
+  **instructor-led demos with no student challenge** (AGENTS.md §2c rule 8).
+  Students do project work offline; a closing slide per module lists the
+  project milestone (rule 9). The time that hands-on work used to take moves
+  into slides and explanation, and each module stays at 180 minutes unless
+  the instructor says otherwise. Also decided the same day: clarity beats
+  everything, every term and paper idea gets definition, example and
+  steps (rules 6 and 7). A lot of concepts in every module are introduced
+  with no prior explanation, for example BM25, term frequency and IDF in
+  Module 3, so every module needs this pass, not only Module 1.
 - **C. Module 3 review.** Its four redrawn diagrams and three new slides
   (see Module 3's "Deck track" below) are built and verified but not yet
   reviewed.
@@ -64,7 +68,7 @@ and two Module 1 prototypes). Ask the instructor before pushing.
    - Fix the six overflowing slides and `m1-q1`'s answered state (list in
      the Module 1 audit below); split slides rather than shrink them.
    - Plain-English pass on every slide's visible text and captions.
-   - Apply decision B to the lab slides.
+   - Rewrite the lab slides as explained instructor demos (decision B), ending with a "Your project this week" slide.
    - Rebalance `data-minutes` (keep 180 unless the instructor agrees
      otherwise) and update the slide count on `index.html`.
 2. **Run the same §2c audit on Modules 2, 3, 4, 5**, one at a time: write
@@ -180,6 +184,8 @@ rather than shrinking text, and move cut detail into the speaker notes.
   hand-position new `.lu-board` diagrams.
 - Students are not native English speakers; plain English always.
 - More slides are fine if a concept needs them.
+- Clarity beats everything; write for a college student; every term gets definition, example and steps (AGENTS.md §2c rules 6 and 7).
+- Labs are instructor-led demos, no student challenge; students work offline (rule 8).
 
 ---
 
