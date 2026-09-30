@@ -61,7 +61,7 @@ client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 # Own model variable, bare name, same Interactions-API convention Modules
 # 1-3 use, not Module 4's "models/"-prefixed Mem0 convention (see the PII
 # probe section below for why that pair is imported, not reused for this).
-GENERATION_MODEL = os.getenv("M05_GENERATION_MODEL", "gemini-3.6-flash")
+GENERATION_MODEL = os.getenv("M05_GENERATION_MODEL", "gemini-3.1-flash-lite")
 
 # Reuse Module 4's memory functions rather than re-deriving them: the
 # retry policy, the Gemini model-name pair Mem0 actually needs, and the

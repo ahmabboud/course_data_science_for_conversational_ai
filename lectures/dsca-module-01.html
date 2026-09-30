@@ -87,10 +87,10 @@
 <section class="slide slide--tint" data-label="Live demo: two bots" data-section="Hook" data-minutes="10">
   <div class="lu-eyebrow">Live demo · instructor runs the notebook</div>
   <h2 class="lu-h2">The same correction. Two very different results.</h2>
-  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 370, "nodes": [{"id": "a1", "label": "Line 2:\n\"make that Tuesday\"", "x": 190, "y": 70, "w": 300, "h": 84, "kind": "user"}, {"id": "a2", "label": "Keyword bot\n(reads only this line)", "x": 640, "y": 70, "w": 320, "h": 84, "kind": "code"}, {"id": "a3", "label": "Sorry, I didn't understand\nthat. Start again?", "x": 1130, "y": 70, "w": 360, "h": 84, "kind": "data"}, {"id": "b1", "label": "Line 2:\n\"make that Tuesday\"", "x": 190, "y": 215, "w": 300, "h": 84, "kind": "user"}, {"id": "b0", "label": "Saved booking\n4 people \u00b7 monday \u00b7 7pm", "x": 190, "y": 318, "w": 330, "h": 84, "kind": "data"}, {"id": "b2", "label": "LLM bot\n(reads line + booking)", "x": 640, "y": 266, "w": 320, "h": 96, "kind": "model"}, {"id": "b3", "label": "Booking kept and fixed\n4 people \u00b7 tuesday \u00b7 7pm", "x": 1130, "y": 266, "w": 360, "h": 84, "kind": "data"}], "edges": [{"id": "ea", "from": "a1", "to": "a2", "label": ""}, {"id": "eb", "from": "a2", "to": "a3", "label": ""}, {"id": "ec", "from": "b1", "to": "b2", "label": ""}, {"id": "ed", "from": "b0", "to": "b2", "label": ""}, {"id": "ee", "from": "b2", "to": "b3", "label": ""}], "steps": [{"show": ["a1", "a2", "a3", "b1", "b0", "b2", "b3", "ea", "eb", "ec", "ed", "ee"], "run": [], "set": {"a3": "impossible", "b3": "inferred"}}], "legend": false, "flags": {"impossible": "lost it", "inferred": "kept it"}}</script></div>
+  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 370, "nodes": [{"id": "a1", "label": "Line 2:\n\"make that Tuesday\"", "x": 190, "y": 70, "w": 300, "h": 84, "kind": "user"}, {"id": "a2", "label": "Keyword bot\n(reads only this line)", "x": 640, "y": 70, "w": 320, "h": 84, "kind": "code"}, {"id": "a3", "label": "Sorry, I didn't understand\nthat. Start again?", "x": 1130, "y": 70, "w": 360, "h": 84, "kind": "data"}, {"id": "b1", "label": "Line 2:\n\"make that Tuesday\"", "x": 190, "y": 215, "w": 300, "h": 84, "kind": "user"}, {"id": "b0", "label": "Saved booking\n4 people \u00b7 Monday \u00b7 7pm", "x": 190, "y": 318, "w": 330, "h": 84, "kind": "data"}, {"id": "b2", "label": "LLM bot\n(reads line + booking)", "x": 640, "y": 266, "w": 320, "h": 96, "kind": "model"}, {"id": "b3", "label": "Booking kept and fixed\n4 people \u00b7 Tuesday \u00b7 7pm", "x": 1130, "y": 266, "w": 360, "h": 84, "kind": "data"}], "edges": [{"id": "ea", "from": "a1", "to": "a2", "label": ""}, {"id": "eb", "from": "a2", "to": "a3", "label": ""}, {"id": "ec", "from": "b1", "to": "b2", "label": ""}, {"id": "ed", "from": "b0", "to": "b2", "label": ""}, {"id": "ee", "from": "b2", "to": "b3", "label": ""}], "steps": [{"show": ["a1", "a2", "a3", "b1", "b0", "b2", "b3", "ea", "eb", "ec", "ed", "ee"], "run": [], "set": {"a3": "impossible", "b3": "inferred"}}], "legend": false, "flags": {"impossible": "lost it", "inferred": "kept it"}}</script></div>
   <p class="lu-caption">The top bot has no memory, so line 2 means nothing to it. The bottom bot is given the saved booking together with line 2, so it can change only the day.</p>
-  <template data-notes><p>Twelve minutes, almost all of it in the notebook. Run the keyword bot cell first, it needs nothing. Its real output for line 1 is <code>Booked: {'party_size': '4', 'day': 'monday', 'time': '7pm'}</code> and for line 2 it says "Sorry, I didn't understand that. Could you start your booking again?".</p>
-    <p>Then run the LLM bot cell. The notebook has no saved output for that cell yet, so run it once before class and keep the result on screen as a safety net. If the connection holds, run it live.</p>
+  <template data-notes><p>Ten minutes, almost all of it in the notebook. Run the keyword bot cell first, it needs nothing. Its real output for line 1 is <code>Booked: {'party_size': '4', 'day': 'monday', 'time': '7pm'}</code> and for line 2 it says "Sorry, I didn't understand that. Could you start your booking again?".</p>
+    <p>Then run the LLM bot cell. The saved output (a real run on 30 September 2026, gemini-3.1-flash-lite) is <code>Got it: {'party_size': 4, 'day': 'Monday', 'time': '7pm'}</code> for line 1 and <code>Got it: {'party_size': 4, 'day': 'Tuesday', 'time': '7pm'}</code> for line 2, so only the day changed. It is on screen as a safety net. If the connection holds, run it live,.</p>
     <ul><li>Do not explain <em>how</em> the second bot works yet. The next hour does that, slowly. Just say: "by the end of today you will know exactly how this works."</li>
     <li>The bottom result on this slide is what the notebook should show. If the live result differs, say so honestly and use it as a discussion point.</li></ul></template>
 </section>
@@ -142,7 +142,7 @@
     <li data-state="muted"><span class="lu-pipeline__n">05</span><span class="lu-pipeline__t">Evaluate</span><span class="lu-pipeline__d">Test that it still works</span></li>
   </ul>
   <div style="margin-top:var(--lu-s2)"><table class="lu-table"><thead><tr><th>Job</th><th>What happens when the user says "Book me a table for 4 on Monday at 7pm"</th></tr></thead><tbody><tr><td><b>Understand</b></td><td>The program finds the goal (book a table) and the details (4 people, Monday, 7pm).</td></tr><tr><td>Decide</td><td>Is a table free? Is anything missing? If yes, ask. If not, go ahead.</td></tr><tr><td>Respond</td><td>It writes a reply from real information: "You are booked for Monday at 7pm."</td></tr><tr><td>Remember</td><td>Next week: "Same table as last Monday?"</td></tr><tr><td>Evaluate</td><td>Before we change the code, we run tests to check the first four jobs still work.</td></tr></tbody></table></div>
-  <template data-notes><p>Three minutes. Keep it short, this is only a map. The table reads from top to bottom like one conversation.</p>
+  <template data-notes><p>Two minutes. Keep it short, this is only a map. The table reads from top to bottom like one conversation.</p>
     <p>Say: this module is only row one. The reason it gets a whole module is that every later job depends on it. If the program misunderstands the sentence, nothing after it can be right.</p></template>
 </section>
 
@@ -342,7 +342,7 @@ Hope this helps!</code></pre></div>
   <div class="lu-eyebrow">Two features, one family of ideas</div>
   <h2 class="lu-h2">Structured output and function calling solve different jobs</h2>
   <table class="lu-table"><thead><tr><th></th><th>Structured output</th><th>Function calling</th></tr></thead><tbody><tr><td>What you ask for</td><td>One JSON object in a fixed shape</td><td>A choice between actions, plus the values that action needs</td></tr><tr><td>Good example</td><td>Update the booking state after each turn (today's demo)</td><td>Pick book_table or cancel_booking and fill in its values</td></tr><tr><td>Who acts on the result</td><td>Your code reads the JSON</td><td>Your code runs the chosen function</td></tr><tr><td>Old way it replaces</td><td>The entity tagger (find the details)</td><td>The intent classifier (find the goal)</td></tr><tr><td>Use it when</td><td>There is one job and you need the data</td><td>There are several possible actions</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s4)">Many real agents use both: function calling to choose what to do, and structured output for the data they keep.</p>
-  <template data-notes><p>Three minutes. Keep it to the table. The only sentence to remember: structured output = give me this shape; function calling = choose an action and fill in its values.</p>
+  <template data-notes><p>Two minutes. Keep it to the table. The only sentence to remember: structured output = give me this shape; function calling = choose an action and fill in its values.</p>
     <p>The "old way it replaces" row is a teaching shortcut. In practice one function call gives both the goal and the details, as the last slide showed.</p></template>
 </section>
 
@@ -351,7 +351,7 @@ Hope this helps!</code></pre></div>
   <div class="lu-eyebrow">What changed, and what did not</div>
   <h2 class="lu-h2">Old way and new way, compared</h2>
   <table class="lu-table"><thead><tr><th></th><th>Old way: two trained models</th><th>New way: one LLM call</th></tr></thead><tbody><tr><td>What you prepare</td><td>Hundreds of labeled sentences, two trained models</td><td>A schema and a short description of each field</td></tr><tr><td>Add a new intent</td><td>Collect examples, train both models again</td><td>Edit the schema</td></tr><tr><td>How it is graded</td><td>Part by part. 2 of 3 entities right counts as mostly right.</td><td>The whole object. One wrong field makes the turn wrong.</td></tr><tr><td>Typical failure</td><td>The two models disagree</td><td>Right shape, wrong value</td></tr><tr><td>What you still need</td><td>A plan for when it fails</td><td>A plan for when it fails</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Why the last row matters</span><p class="lu-sub">Grading the whole object is stricter. That is why the next slide, validation and a fallback, is not optional.</p></div>
-  <template data-notes><p>Three minutes. The third row is the one students miss: an old system could be "80% right" on a turn. With a schema-checked call, a turn is either right or wrong, so we need checks and a fallback.</p>
+  <template data-notes><p>Two minutes. The third row is the one students miss: an old system could be "80% right" on a turn. With a schema-checked call, a turn is either right or wrong, so we need checks and a fallback.</p>
     <p>"Dozens to hundreds of examples" (earlier slide) and the grading contrast are general patterns, not measurements of any one product.</p></template>
 </section>
 
@@ -409,10 +409,10 @@ User just said: <span class="tok-str">&quot;actually, make that Tuesday&quot;</s
 <section class="slide" data-label="One provider for the course" data-section="Lecture" data-minutes="2">
   <div class="lu-eyebrow">What you are actually calling</div>
   <h2 class="lu-h2">We use one provider, Gemini. The idea works on others too.</h2>
-  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><table class="lu-table"><thead><tr><th>Provider</th><th>Its feature for structured output</th><th>Used in this course?</th></tr></thead><tbody><tr><td>Google Gemini</td><td>A response format with a JSON schema</td><td>Yes, model <code>gemini-3.8-flash</code></td></tr><tr><td>OpenAI</td><td>Structured outputs and function calling</td><td>No</td></tr><tr><td>Anthropic</td><td>Tool use</td><td>No</td></tr></tbody></table>
-    <div class="lu-stack"><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Why Gemini</span><p class="lu-sub">Its free tier lets a whole class run the demos with no credit card. This is a practical choice. It is <b>not</b> a claim that Gemini is the best.</p></div><div class="lu-callout"><span class="lu-callout__label">Check before you rely on it</span><p class="lu-sub">Each provider names its features differently and gives different guarantees. Read the provider's own documentation for the exact details.</p></div></div>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><table class="lu-table"><thead><tr><th>Provider</th><th>Its feature for structured output</th><th>Used in this course?</th></tr></thead><tbody><tr><td>Google Gemini</td><td>A response format with a JSON schema</td><td>Yes, model <code>gemini-3.1-flash-lite</code></td></tr><tr><td>OpenAI</td><td>Structured outputs and function calling</td><td>No</td></tr><tr><td>Anthropic</td><td>Tool use</td><td>No</td></tr></tbody></table>
+    <div class="lu-stack"><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Why Gemini</span><p class="lu-sub">Its free tier needs no credit card, but it has request limits (on 30 September 2026 the API reported 20 requests a day for one model). The instructor's demos are planned to fit. A busy project may need a paid key. This is a practical choice, <b>not</b> a claim that Gemini is the best.</p></div><div class="lu-callout"><span class="lu-callout__label">Check before you rely on it</span><p class="lu-sub">Each provider names its features differently and gives different guarantees. Read the provider's own documentation for the exact details.</p></div></div>
   </div>
-  <template data-notes><p>Two minutes. Be honest that the choice is about cost and logistics for a class, not quality. The ideas from today (schema, validation, fallback) carry over to any provider, but the details of each feature differ, so never assume.</p>
+  <template data-notes><p>Two minutes. Be honest that the choice is about cost and logistics for a class, not quality. Be honest about the limit too: free tiers have request limits that differ by model and change. When the instructor tested the demos on 30 September 2026, gemini-3.8-flash answered "20 requests per day on Free Tier" and was slow and sometimes overloaded, so every demo now uses the cheapest model that works, gemini-3.1-flash-lite (USD 0.25 in and 1.50 out per million tokens; the cheaper gemini-2.5-flash-lite is refused for new users). The demos only show an idea, so a small model is enough. Check the provider's current limits before a session.</p>
     <p>One call on a small model is cheap and fast. The number to watch later is calls per test run, once Module 5's test harness exists.</p></template>
 </section>
 
@@ -625,7 +625,7 @@ User just said: <span class="tok-str">&quot;actually, make that Tuesday&quot;</s
     <li data-state="muted"><span class="lu-pipeline__n">05</span><span class="lu-pipeline__t">Defense</span><span class="lu-pipeline__d">Module 6</span></li>
   </ul>
   <div style="margin-top:var(--lu-s4)"><table class="lu-table"><thead><tr><th>Step</th><th>What you produce</th></tr></thead><tbody><tr><td><b>Idea pitch</b></td><td>One paragraph: which paper, which weakness of it you will work on, and your idea. The instructor approves it before real work starts.</td></tr><tr><td><b>Baseline</b></td><td>The paper's own method running on your computer, with at least one of its results reproduced.</td></tr><tr><td><b>Extension</b></td><td>Your own new idea, built and compared directly against the baseline.</td></tr><tr><td><b>Report and slides</b></td><td>A short paper-style report and a deck: a cover, a references slide, and at most 6 content slides.</td></tr></tbody></table></div>
-  <template data-notes><p>Three minutes. This is the same four GitHub issue templates the team repository already has: idea pitch, baseline reproduction, extension, report and slides. Point out that the path is one direction: you cannot fake step 3 without step 2.</p>
+  <template data-notes><p>Two minutes. This is the same four GitHub issue templates the team repository already has: idea pitch, baseline reproduction, extension, report and slides. Point out that the path is one direction: you cannot fake step 3 without step 2.</p>
     <p>Say clearly what the project is <em>not</em>: it is not building one agent across the whole course. Each team extends one paper.</p></template>
 </section>
 
@@ -647,7 +647,7 @@ User just said: <span class="tok-str">&quot;actually, make that Tuesday&quot;</s
         <li>Another team picks the same paper.</li>
         <li>You pick a paper taught in a lecture (for example tau-bench or Mem0).</li>
       </ul>
-      <p class="lu-caption">What counts is the extension you add. The course's paper list, with a working code repository and a cost note for each of the 13 papers, is in <code>research/PROJECT-PAPER-MENU.md</code>.</p>
+      <p class="lu-caption">What counts is the extension you add. The course's paper list (14 papers, 13 with public code, each with a cost note) is in <code>research/PROJECT-PAPER-MENU.md</code>.</p>
     </div>
   </div>
   <template data-notes><p>Five minutes. Circulate while teams choose. Pull up <code>research/PROJECT-PAPER-MENU.md</code> on the projector if a team is stuck.</p>
@@ -727,7 +727,7 @@ User just said: <span class="tok-str">&quot;actually, make that Tuesday&quot;</s
 <span class="tok-com"># Only one variable changes:</span>
 
 schema = helpdesk_schema        <span class="tok-com"># before: schema = booking_schema</span></code></pre></div></div></div></div>
-  <template data-notes><p>Six minutes, and this is the slide to slow down on. Step through once using the helpdesk domain, then say: the same five steps apply to whatever domain your project uses.</p>
+  <template data-notes><p>Five minutes, and this is the slide to slow down on. Step through once using the helpdesk domain, then say: the same five steps apply to whatever domain your project uses.</p>
     <p>Point at step 4: writing "use null if the user does not say" is one of the most useful habits. It gives the model a safe way out, so it does not guess.</p>
     <p>Check in the live run that the description actually changes behaviour for your model. Do not promise it beforehand.</p></template>
 </section>
@@ -736,8 +736,9 @@ schema = helpdesk_schema        <span class="tok-com"># before: schema = booking
 <section class="slide slide--tint" data-label="Step 3: choose test sentences" data-section="Instructor demo" data-minutes="4">
   <div class="lu-eyebrow">Three sentences, chosen to break different things</div>
   <h2 class="lu-h2">A good test set includes a sentence that is hard on purpose</h2>
-  <table class="lu-table"><thead><tr><th>Test sentence</th><th>What we expect</th><th>What it tests</th></tr></thead><tbody><tr><td>"The VPN is down for the whole office. Please fix it now."</td><td><code>outage</code>, <code>high</code>, <code>VPN</code></td><td>The easy case: everything is stated</td></tr><tr><td>"I cannot log in."</td><td><code>access</code>, urgency <code>null</code>, system <code>null</code></td><td>Missing details become null, not a guess</td></tr><tr><td>"It is not urgent, but the payroll system is down and nobody can be paid."</td><td>Unclear: the sentence disagrees with itself</td><td>The fallback you chose actually runs</td></tr></tbody></table><div class="lu-callout"><span class="lu-callout__label">Why not three easy sentences?</span><p class="lu-sub">Three easy sentences is one test said three ways. If none of them can fail, you have not found out whether your fallback works. The expected results here are what we <b>hope</b> for. The live run shows what the model really returns.</p></div>
-  <template data-notes><p>Five minutes. Read each sentence and ask the room what a program <em>should</em> do with it before showing the expected column.</p>
+  <table class="lu-table"><thead><tr><th>Test sentence</th><th>What we expect</th><th>What it tests</th></tr></thead><tbody><tr><td>"The VPN is down for the whole office. Please fix it now."</td><td><code>outage</code>, <code>high</code>, <code>VPN</code></td><td>The easy case: everything is stated</td></tr><tr><td>"I cannot log in."</td><td><code>access</code>, urgency <code>null</code>, system <code>null</code></td><td>Missing details become null, not a guess</td></tr><tr><td>"It is not urgent, but the payroll system is down and nobody can be paid."</td><td>Unclear: the sentence disagrees with itself</td><td>The fallback you chose actually runs</td></tr></tbody></table><div class="lu-callout"><span class="lu-callout__label">Why not three easy sentences?</span><p class="lu-sub">Three easy sentences is one test said three ways. If none of them can fail, you have not found out whether your fallback works. The expected results are what we <b>hope</b> for. In the instructor's test run on 30 September 2026 the model chose "low" for the third sentence and filed it: the reply was valid, so nothing flagged it.</p></div>
+  <template data-notes><p>Four minutes. Read each sentence and ask the room what a program <em>should</em> do with it before showing the expected column.</p>
+    <p>Real result to keep in mind (gemini-3.1-flash-lite, 30 September 2026): sentence 1 gave outage, high, VPN; sentence 2 gave access, null, null (the descriptions that say "use null if the user does not say" worked); sentence 3 gave outage, low, "payroll system", so the model silently trusted "not urgent". Without any description a first test on gemini-3.8-flash guessed urgency "Medium" for "I cannot log in." Run it live and show what you really get: models change.</p>
     <p>The third sentence has no single right answer. That is the point: it forces a decision about the fallback, which is step 5.</p></template>
 </section>
 
@@ -755,8 +756,8 @@ schema = helpdesk_schema        <span class="tok-com"># before: schema = booking
 <section class="slide" data-label="Step 5: choose what happens when it fails" data-section="Instructor demo" data-minutes="4">
   <div class="lu-eyebrow">When a reply is missing something or not usable</div>
   <h2 class="lu-h2">Three honest options, and no single right answer</h2>
-  <table class="lu-table"><thead><tr><th>Strategy</th><th>What the program does</th><th>What it costs</th><th>What it protects</th></tr></thead><tbody><tr><td>Ask a clarifying question</td><td>"How urgent is this: low, medium or high?"</td><td>One more turn for the user</td><td>Never acts on a guess</td></tr><tr><td>Use a safe default</td><td>Files the ticket as urgency = medium and moves on</td><td>A wrong guess is possible</td><td>The conversation keeps moving</td></tr><tr><td>Escalate or refuse</td><td>"I cannot file this. I am passing you to a person."</td><td>The worst experience of the three</td><td>Never fails silently</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">There is no course rule</span><p class="lu-sub">Your team chooses based on what your domain can tolerate getting wrong, and writes the reason down. Module 5 tests whether the choice held up.</p></div>
-  <template data-notes><p>Five minutes. If someone asks which is right, turn the question back: what does <em>your</em> domain tolerate? A restaurant that books the wrong day can fix it. A system that acts on a wrong guess about a payment may not be able to.</p></template>
+  <table class="lu-table"><thead><tr><th>Strategy</th><th>What the program does</th><th>What it costs</th><th>What it protects</th></tr></thead><tbody><tr><td>Ask a clarifying question</td><td>"How urgent is this: low, medium or high?"</td><td>One more turn for the user</td><td>Never acts on a guess</td></tr><tr><td>Use a safe default</td><td>Files the ticket as urgency = medium and moves on</td><td>A wrong guess is possible</td><td>The conversation keeps moving</td></tr><tr><td>Escalate or refuse</td><td>"I cannot file this. I am passing you to a person."</td><td>The worst experience of the three</td><td>Never fails silently</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">There is no course rule</span><p class="lu-sub">Your team chooses based on what your domain can tolerate getting wrong, and writes the reason down. Add a rule of your own for values that look wrong: the demo asks when an outage is marked "low". Module 5 tests whether the choice held up.</p></div>
+  <template data-notes><p>Four minutes. If someone asks which is right, turn the question back: what does <em>your</em> domain tolerate? A restaurant that books the wrong day can fix it. A system that acts on a wrong guess about a payment may not be able to.</p></template>
 </section>
 
 <!-- ================================================================== 50 -->
@@ -774,7 +775,7 @@ schema = helpdesk_schema        <span class="tok-com"># before: schema = booking
     </div>
     <div class="lu-mcq__fb" hidden></div>
   </div>
-  <template data-notes><p>Four minutes. Take a show of hands for each option before revealing. There is no universal answer; this scenario is written so that a wrong guess is costly on purpose. Use the discussion to ask pairs what their own project domain's version of this trade-off would be.</p></template>
+  <template data-notes><p>Three minutes. Take a show of hands for each option before revealing. There is no universal answer; this scenario is written so that a wrong guess is costly on purpose. Use the discussion to ask pairs what their own project domain's version of this trade-off would be.</p></template>
 </section>
 
 <!-- ================================================================== 51 -->
@@ -792,7 +793,7 @@ a technician to the wrong job, and that costs more than one extra turn.</code></
       <li>In Module 5 you will test whether the reason was right.</li>
     </ul>
   </div>
-  <template data-notes><p>Two minutes. A decision that only lives in someone's head cannot be reviewed or defended. Tell teams to put a note like this next to the code in their own repository, for example in a README section.</p></template>
+  <template data-notes><p>One minute. A decision that only lives in someone's head cannot be reviewed or defended. Tell teams to put a note like this next to the code in their own repository, for example in a README section.</p></template>
 </section>
 
 <!-- ================================================================== 52 -->
@@ -800,7 +801,7 @@ a technician to the wrong job, and that costs more than one extra turn.</code></
   <div class="lu-eyebrow">So you can recognize them later</div>
   <h2 class="lu-h2">Four problems that catch almost every team</h2>
   <table class="lu-table"><thead><tr><th>What you see</th><th>The usual cause</th></tr></thead><tbody><tr><td>A field is always null</td><td>The description is vague, so the model plays safe. Say exactly what to look for.</td></tr><tr><td>Fields go back to empty each turn</td><td>The current state was not sent in with the next call. See "One LLM call".</td></tr><tr><td>The call raises an error</td><td>The API key is missing or wrong. Run <code>python scripts/verify_setup.py</code> again.</td></tr><tr><td>No error, but the value is wrong</td><td>The shape is valid but the value is not. Add your own rule: a range or an allowed list.</td></tr></tbody></table>
-  <template data-notes><p>Four minutes. The first bug is the most common and the least obvious: a timid description makes every field null. The last row repeats the lesson from "shape is guaranteed, truth is not".</p></template>
+  <template data-notes><p>Three minutes. The first bug is the most common and the least obvious: a timid description makes every field null. The last row repeats the lesson from "shape is guaranteed, truth is not".</p></template>
 </section>
 
 <!-- ================================================================== 53 -->
@@ -815,7 +816,7 @@ a technician to the wrong job, and that costs more than one extra turn.</code></
       <li>After approval, start issue <b>"2: Baseline reproduction"</b>.</li>
     </ol><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">No class time for this</span><p class="lu-sub">You do this on your own time, on any connection that works. Steps 1 to 3 are quick. Step 4 is the big job of the next weeks.</p></div>
   </div>
-  <template data-notes><p>Four minutes. Decide and say a deadline for the idea pitch, nothing in the course documents sets one yet. Show the team template's README setup steps on screen if time allows.</p>
+  <template data-notes><p>Three minutes. Decide and say a deadline for the idea pitch, nothing in the course documents sets one yet. Show the team template's README setup steps on screen if time allows.</p>
     <p>Remind teams of the three team rules in the template's CONTRIBUTING.md: one branch per person, one teammate's approval per pull request, always commit under your own account.</p></template>
 </section>
 

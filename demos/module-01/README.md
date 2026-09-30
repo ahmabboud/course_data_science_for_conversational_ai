@@ -38,11 +38,16 @@ unsure), then shows the three fallback strategies by changing one variable
 Run it the same way as `hook_demo.ipynb` (see above), and run it once before
 class with a real connection, saving the output, as a safety net.
 
-**Test status (2026-09-30):** the notebook's own logic was run against a
-stand-in for the model (a fake `google.genai` client, `PYTHONPATH` trick as in
-Modules 4 and 5): the happy path, a reply that fails validation, and all three
-fallbacks behave as described. It has **not** been run against the live Gemini
-API, so the instructor still owns that check: confirm the model returns
-sensible values for the three sentences and that the `description` in each
-field actually changes what it does. The slides say "what we hope for", not a
-measured result, for exactly this reason.
+**Test status (2026-09-30):** both notebooks were run against the live Gemini API
+with no model override, on the course default `gemini-3.1-flash-lite` (the
+cheapest text model that works; see `../README.md`), and saved with their
+output (the install cell's output was cleared because it prints local paths).
+Real results for the three helpdesk sentences: VPN gave outage, high, VPN;
+"I cannot log in." gave access, null, null; the payroll sentence gave outage,
+low, "payroll system", which the schema accepts (valid shape, doubtful value),
+so the notebook adds a small rule of its own that asks when an outage is
+marked "low". The hook demo's reference agent kept 4 and 7pm and changed only
+the day. The deck says "what we hope for", because models and limits change:
+run the notebook once before each session and keep the output on screen as a
+safety net. Each call took about 5 to 7 seconds; the very first call of a
+session can take longer (a cold start took 37 seconds once).

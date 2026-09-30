@@ -83,7 +83,7 @@ def call_model(messages) -> dict:
         f"{message.type}: {message.content}" for message in messages
     )
     interaction = client.interactions.create(
-        model="gemini-3.8-flash",
+        model=os.getenv("GENERATION_MODEL", "gemini-3.1-flash-lite"),
         input=f"system: {SYSTEM_PROMPT}\n{transcript}",
         response_format={
             "type": "text",
@@ -163,4 +163,9 @@ if __name__ == "__main__":
             "route": None,
         }
     )
-    print(json.dumps(result["messages"], indent=2))
+    # The graph returns LangChain message objects, not plain dicts, so print
+    # each one as a role and its text instead of handing the list to json.dumps.
+    print(json.dumps(
+        [{"role": message.type, "content": message.content} for message in result["messages"]],
+        indent=2,
+    ))

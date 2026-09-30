@@ -27,9 +27,8 @@ drift behind the actual state of the repository.
 ### 2. Where to continue
 
 **State on 2026-09-30 (end of a long session):** everything described here was
-committed and pushed to GitHub (`origin/main`) at the end of the session, at the
-instructor's request. Run `git fetch` and `git status` first anyway, and ask
-before pushing anything new.
+committed and pushed to GitHub (`origin/main`) at the instructor's request. Run
+`git fetch` and `git status` first anyway, and ask before pushing anything new.
 
 **Waiting on the instructor:**
 
@@ -42,6 +41,37 @@ before pushing anything new.
   was rewritten to match, and its audience, setup and in-class-time wording was
   fixed (see "Grading and syllabus" below).
 - **Module 3 review** (its redrawn diagrams and three new slides).
+- **Model for the demos: DECIDED and applied 2026-09-30** (instructor: use the
+  cheapest model, test it, demonstration only, apply to all demos). Every demo
+  now defaults to **`gemini-3.1-flash-lite`** (`models/gemini-3.1-flash-lite`
+  for Mem0). How it was chosen: the pricing page lists `gemini-2.5-flash-lite`
+  cheapest (USD 0.10 in / 0.40 out per million tokens), but the API answers 404
+  "no longer available to new users", so the cheapest model that works is
+  `gemini-3.1-flash-lite` (0.25 / 1.50; 3.5 flash-lite is 0.30 / 2.50; 3.6 to
+  3.8 flash are 0.75 / 3.75). `gemini-3.8-flash` answered "20 requests per day on
+  Free Tier", took about 50 seconds for one structured call and once failed with
+  a 503. Tested live on the new default with no override: Module 1 both
+  notebooks (saved with output); Module 2 `raw_loop.py` and `graph.py` (answer
+  and escalate paths); Module 3 `grounded_rag.py` (cited answer and refusal);
+  Module 4 `memory_demo.py` (Mem0 extract, recall, delete); Module 5
+  `eval_harness.py` (regression with pass^k, bias probe, PII probe, scorecard).
+  Changed: `demos/.env.example`, the instructor's local `demos/.env` (model line
+  only, it is gitignored), six demo scripts (Module 2's two scripts now
+  read `GENERATION_MODEL` instead of a hard-coded name), both Module 1 notebooks,
+  `demos/README.md`, the Module 1 slides. Still open: the free tier's limits are
+  per model and change (check https://ai.dev/rate-limit), and the students'
+  own project demos are a separate question (their $20 cap).
+- **Bug found and fixed while testing:** Module 2's `graph.py` quick check
+  crashed printing LangChain message objects with `json.dumps`; it now prints
+  each message's role and text.
+- **New student-facing deck: `lectures/dsca-project-guide.html`** (26 slides, a
+  reference deck, not a timed session; linked from `index.html`). It replaces
+  the need for a Module 6 lecture deck: topics, the 14-paper menu (13 with
+  public code), choosing rules, the pitch, the repository from the template,
+  the four issues, the report, the slides, hand-in, defense format, grading
+  (Part A and B), expected questions, checklist. Built with
+  `scripts`-free authoring from a scratch builder, so edit the HTML directly.
+  The instructor's run-of-show and scoring workbook stay out of git.
 - **Set a deadline for the idea pitch.** Nothing in the course documents sets
   one; the "Your project this week" slide lists steps without dates.
 
@@ -78,21 +108,21 @@ before pushing anything new.
      3 had): Module 2 has 7 slides that overflow and 11 stray diagram
      endpoints; Module 4 has 8 and 3; Module 5 has 7, 2 and one stray
      character. Fix by splitting slides, and use `lu-flow` for diagrams.
-2. **Module 1 follow-ups after review:** run the instructor demo notebook
-   once with a live key (`demos/module-01/extraction_demo.ipynb` is tested
-   only against a stand-in for the model); run `hook_demo.ipynb` once so its
-   reference-agent cell has saved output; bring the syllabus docx in line.
+2. **Module 1 follow-ups: done 2026-09-30.** Both notebooks
+   (`demos/module-01/hook_demo.ipynb`, `extraction_demo.ipynb`) were run live and
+   saved with output; the syllabus is in line; presenter view and the timer were
+   checked and work. What is left is the model and quota decision below.
 3. **Other open items:** Module 3 `lecture-notes.md` was never written and
    `grounded_rag.py` has no tests; Module 5's PII-pipeline infographic is
    undecided; Modules 2, 4, 5 show "Correct. Correct:" in some MCQ feedback
    (Module 1 is fixed; the runtime already adds "Correct.", so drop it from
    `data-fb-correct`); `design-system.html` has no live `.lu-flow` example yet
    (AGENTS.md §11 says it must); the handout prints a few slides onto a
-   second page (Module 1: 60 pages for 57 slides), which is acceptable.
+   second page (Module 1: about 60 pages for 58 slides), which is acceptable.
 
 ### 2b. Module 1, rebuilt 2026-09-30 (awaiting review)
 
-Built from scratch against AGENTS.md §2c. 57 slides, 180 minutes:
+Built from scratch against AGENTS.md §2c. 58 slides, 180 minutes:
 
 | Section | Min | What it holds |
 |---|---|---|
@@ -100,7 +130,7 @@ Built from scratch against AGENTS.md §2c. 57 slides, 180 minutes:
 | Hook | 16 | setup, live two-bot demo (10), five stages |
 | Lecture | 75 | five jobs; intent and entity; the old way and its labeled examples; one LLM call; tokens; JSON; JSON Schema and checking a reply; the real API call line by line; asking versus requiring JSON; constrained decoding; shape versus truth; function calling; structured output versus function calling; old versus new; validation and fallback; the correction walkthrough; check question; providers; saving test sentences |
 | Research dive (Gorilla) | 33 | paper card; what an API call is; why it is hard; Figure 1 (the problem); APIBench; AST grading (Figure 4); the method step by step; Figure 3; documentation changes (Figure 6); results (Table 1); does giving documents help (Table 2); limits and a critical read |
-| Kickoff | 12 | the project in one picture, team and paper, rubric |
+| Kickoff | 12 | the project in one picture, team and paper, the rubric in two slides (Part A and Part B) |
 | Instructor demo | 32 | plan, helpdesk schema, test sentences, live run, fallback table, a check question, decision note, likely bugs |
 | Wrap | 10 | "Your project this week", reading, two glossary slides, self-check |
 
@@ -185,7 +215,9 @@ The instructor asked to keep Claude files and instructor-only files out of git.
 (`research/**/*notebooklm*`, `research/module-04/notebooklm-reference/`, which
 has known wrong numbers). Those files were **removed from tracking** and still
 sit in the instructor's iCloud folder, so a **fresh clone of the repo does not
-have them**. They remain in the git history of earlier commits. Deliberately
+have them**. They remain in the git history of earlier commits. Students see
+the project through `lectures/dsca-project-guide.html` (tracked), not through
+`module-06-defense/`. Deliberately
 **still tracked**: `AGENTS.md`, `PROGRESS.md`, `PROJECT-REDESIGN.md`,
 `PROMPT.md`, because they are the handoff between sessions and devices and a
 session that starts from a clone needs them; if the instructor wants them

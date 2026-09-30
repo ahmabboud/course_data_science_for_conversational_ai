@@ -60,7 +60,7 @@ def call_model(messages: list[dict]) -> dict:
     call_model: LangGraph does not change how the model is called."""
     transcript = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
     interaction = client.interactions.create(
-        model="gemini-3.8-flash",
+        model=os.getenv("GENERATION_MODEL", "gemini-3.1-flash-lite"),
         input=transcript,
         response_format={
             "type": "text",

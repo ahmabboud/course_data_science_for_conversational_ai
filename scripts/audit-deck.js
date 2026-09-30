@@ -30,7 +30,7 @@
   })();
   const canvasPx = (screenPx) => Math.round(screenPx / stageScale);
 
-  const report = { overflow: [], revealedOverflow: [], hiddenLeaks: [], gridEscapes: [], strayChars: [], deadSandboxes: [], tinyText: [], collisions: [], edges: [], flowText: [], flowLabels: [], flowCrossings: [], flowClipped: [] };
+  const report = { overflow: [], revealedOverflow: [], hiddenLeaks: [], gridEscapes: [], strayChars: [], deadSandboxes: [], tinyText: [], collisions: [], edges: [], flowText: [], flowLabels: [], flowCrossings: [], flowClipped: [], notesMinutes: [] };
 
   /* 1. OVERFLOW, content taller than the slide box is clipped with no
         scrollbar and no error. Students simply never see it. */
@@ -207,6 +207,17 @@
     });
   }
 
+  /* 11. SPEAKER-NOTE MINUTES. A note that opens "Three minutes." on a slide whose
+        data-minutes is 2 tells the instructor the wrong pace (this shipped after a
+        rebalance of minutes that did not touch the notes). */
+  const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16 };
+  slides.forEach((s, i) => {
+    const t = s.querySelector('template[data-notes]'); if (!t) return;
+    const m = t.innerHTML.replace(/<[^>]+>/g, ' ').trim().match(/^(\w+) minutes?\b/i);
+    const planned = +s.dataset.minutes;
+    if (m && NUM[m[1].toLowerCase()] && NUM[m[1].toLowerCase()] !== planned) report.notesMinutes.push({ slide: i + 1, label: s.dataset.label, notesSay: m[1], dataMinutes: planned });
+  });
+
   go(1);
   const fail = Object.values(report).some(v => v.length);
   console.log('%c=== DECK AUDIT ===', 'font-weight:bold');
@@ -226,6 +237,7 @@
   show('collisions', 'No diagram nodes overlap', 'Reposition, or make the board taller.');
   show('flowText', 'Flow node text fits its box', 'Make the node wider or taller, or shorten its label. Mono text is about 13 units per character.');
   show('flowClipped', 'Flow diagrams are not cut by their frame', 'Lower the spec height, shorten the definition box below it, or split the slide. The walk frame hides overflow, so this is invisible elsewhere.');
+  show('notesMinutes', 'Speaker notes agree with data-minutes', 'The first words of the notes (for example "Three minutes.") must match the slide\'s data-minutes.');
   show('flowLabels', 'Flow arrow labels do not sit on a box', 'Shorten the label, drop it (say it in the caption), or move the two nodes apart.');
   show('flowCrossings', 'Flow arrows do not pass through other nodes', 'Move the node, or use an elbow route with explicit sides.');
   show('edges', 'Every edge endpoint reaches a node', 'Compute path coords from node percentages: viewBox x = left% * (vbWidth/100), y = top% * (vbHeight/100).');

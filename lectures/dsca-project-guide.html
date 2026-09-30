@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" class="lu-deck-page">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Team Project: a guide · Data Science for Conversational AI</title>
+<meta name="description" content="Student guide to the team project of Data Science for Conversational AI, MSc, Lebanese University: topics, choosing a paper, the repository, what to hand in, the defense, and the grading.">
+<meta name="theme-color" content="#96122B">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/lu.css?v=1.3.2">
+</head>
+
+<body
+  data-deck-id="dsca-project"
+  data-course="Data Science for Conversational AI"
+  data-session="Team project"
+  data-duration="64"
+  data-app-root="../"
+  data-unit="Lebanese University · MSc">
+
+<a class="lu-skip" href="#slide-2">Skip to the first content slide</a>
+
+<div class="deck">
+<div class="deck__stage">
+
+<!-- ================================================================== 01 -->
+<section class="slide slide--night" data-chrome="none" data-label="Title" data-section="Opening" data-minutes="1">
+  <div class="slide__body" style="justify-content:space-between">
+    <div class="lu-row" style="justify-content:space-between;align-items:flex-start">
+      <div class="lu-lockup"><span class="lu-lockup__mark">LU</span><span class="lu-lockup__text"><span class="lu-lockup__name">Lebanese University</span><span class="lu-lockup__unit">Faculty of Sciences · MSc, Master of Research</span></span></div>
+      <div class="lu-tag lu-tag--red" style="background:transparent;color:#FF9AA7;border-color:#96122B">Reference deck · for every module</div>
+    </div>
+    <div class="lu-stack">
+      <div class="lu-eyebrow">Data Science for Conversational AI · Team project</div>
+      <h1 class="lu-display" style="max-width:24ch">The team project: a guide</h1>
+      <p class="lu-lead" style="max-width:46ch">The topics, how to choose a paper, your repository, what to hand in, the defense, and how you are graded. Come back to it any time.</p>
+    </div>
+    <div class="lu-row" style="justify-content:space-between;font-size:var(--lu-t-caption);color:var(--lu-on-night-2)">
+      <span>About an hour to read through · not a timed session</span>
+      <span>Press <kbd>&rarr;</kbd> to begin · <kbd>?</kbd> for shortcuts</span>
+    </div>
+  </div>
+  <template data-notes><p>This deck is a reference for students, not a timed lecture. Use it in the Module 1 kickoff for the parts you need (the picture, the topics, choosing a paper, the pitch), and again before Module 6 (the issues, the report, the slides, the defense, the grading). The minutes on each slide only say how long it takes to go through it once.</p></template>
+</section>
+
+<!-- ================================================================== 02 -->
+<section class="slide" data-label="The project in one picture" data-section="Guide" data-minutes="3" style="--lu-s5:12px">
+  <div class="lu-eyebrow">Start here</div>
+  <h2 class="lu-h2">Choose a paper, reproduce it, add your own idea, defend it</h2>
+  <div class="lu-walk" data-label="The project in one picture"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 200, "nodes": [{"id": "n0", "label": "1. Choose a topic\nand a paper", "x": 130, "y": 100, "w": 200, "h": 96, "kind": "user"}, {"id": "n1", "label": "2. Idea pitch\n(approved)", "x": 370, "y": 100, "w": 200, "h": 96, "kind": "code"}, {"id": "n2", "label": "3. Baseline", "x": 610, "y": 100, "w": 200, "h": 96, "kind": "tool"}, {"id": "n3", "label": "4. Extension", "x": 850, "y": 100, "w": 200, "h": 96, "kind": "model"}, {"id": "n4", "label": "5. Report\nand slides", "x": 1090, "y": 100, "w": 200, "h": 96, "kind": "data"}, {"id": "n5", "label": "6. Defense\nModule 6", "x": 1330, "y": 100, "w": 200, "h": 96, "kind": "user"}], "edges": [{"id": "e0", "from": "n0", "to": "n1", "label": ""}, {"id": "e1", "from": "n1", "to": "n2", "label": ""}, {"id": "e2", "from": "n2", "to": "n3", "label": ""}, {"id": "e3", "from": "n3", "to": "n4", "label": ""}, {"id": "e4", "from": "n4", "to": "n5", "label": ""}], "steps": [{"show": ["n0"], "run": [], "set": {"n0": "active"}}, {"show": ["n1", "e0"], "run": ["e0"], "set": {"n1": "active", "n0": "idle"}}, {"show": ["n2", "e1"], "run": ["e1"], "set": {"n2": "active", "n1": "idle"}}, {"show": ["n3", "e2"], "run": ["e2"], "set": {"n3": "active", "n2": "idle"}}, {"show": ["n4", "e3"], "run": ["e3"], "set": {"n4": "active", "n3": "idle"}}, {"show": ["n5", "e4"], "run": ["e4"], "set": {"n5": "active", "n4": "idle"}}], "legend": false}</script></div><div data-walk-step="1" data-caption-short="Choose" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; You form a team of two or three and choose one of five topics and one research paper."></div><div data-walk-step="2" data-caption-short="Pitch" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; You write a short &lt;b&gt;idea pitch&lt;/b&gt; about your own idea. The instructor approves it before real work starts." hidden></div><div data-walk-step="3" data-caption-short="Baseline" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; The &lt;b&gt;baseline&lt;/b&gt; is the paper&#x27;s own method, running on your computer, with at least one of its results reproduced." hidden></div><div data-walk-step="4" data-caption-short="Extension" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; The &lt;b&gt;extension&lt;/b&gt; is your own new idea, built on top of the baseline and compared with it." hidden></div><div data-walk-step="5" data-caption-short="Hand in" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; You write a short report and prepare slides. Your code, report and slides are handed in before Module 6." hidden></div><div data-walk-step="6" data-caption-short="Defend" data-caption="&lt;b&gt;Step 6.&lt;/b&gt; At the defense you present for 12 minutes and answer questions for 12 minutes." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definitions</span><p class="lu-sub"><b>Baseline</b>: the starting point you reproduce. <b>Extension</b>: your own improvement or test on top of it. <b>Defense</b>: the session (Module 6) where each team presents and answers questions.</p></div>
+  <template data-notes><p>Three minutes. Walk the six steps left to right. Stress the order: the extension cannot be trusted without the baseline, because you need a number to compare against. There is no shared agent for the whole class any more: each team extends one paper.</p></template>
+</section>
+
+<!-- ================================================================== 03 -->
+<section class="slide" data-label="Baseline and extension, with an example" data-section="Guide" data-minutes="3">
+  <div class="lu-eyebrow">What you actually produce</div>
+  <h2 class="lu-h2">First reproduce the paper's number, then try to improve on it</h2>
+  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 290, "nodes": [{"id": "paper", "label": "The paper\n(for example Gorilla)", "x": 185, "y": 70, "w": 300, "h": 84, "kind": "data"}, {"id": "base", "label": "Baseline\nthe authors' method", "x": 560, "y": 70, "w": 290, "h": 84, "kind": "code"}, {"id": "a", "label": "Your number A,\nnext to the paper's", "x": 960, "y": 70, "w": 300, "h": 84, "kind": "data"}, {"id": "ext", "label": "Extension\nyour own idea", "x": 560, "y": 215, "w": 290, "h": 84, "kind": "model"}, {"id": "b", "label": "Your number B", "x": 960, "y": 215, "w": 300, "h": 70, "kind": "data"}, {"id": "cmp", "label": "Comparison:\nis B better than A?", "x": 1310, "y": 140, "w": 250, "h": 90, "kind": "tool"}], "edges": [{"id": "e1", "from": "paper", "to": "base", "label": ""}, {"id": "e2", "from": "base", "to": "a", "label": ""}, {"id": "e3", "from": "base", "to": "ext", "label": "builds on"}, {"id": "e4", "from": "ext", "to": "b", "label": ""}, {"id": "e5", "from": "a", "to": "cmp", "label": ""}, {"id": "e6", "from": "b", "to": "cmp", "label": ""}], "steps": [{"show": ["paper", "base", "a", "ext", "b", "cmp", "e1", "e2", "e3", "e4", "e5", "e6"], "run": [], "set": {}}], "legend": false}</script></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">An example from the paper list</span><p class="lu-sub">For the Gorilla paper, a team could run the authors' released model on part of the test set (the baseline, number A). Then it could try an idea the paper leaves open, such as a new kind of API that the test set does not cover (the extension, number B). The comparison of B with A is the heart of the project. <b>Smoke test</b>: a small run that stands in for a full run. It is allowed if you can explain what a full run would need.</p></div>
+  <template data-notes><p>Three minutes. The Gorilla example comes from the paper menu, whose entry lists three open ideas: a new API category APIBench does not cover, an ablation on retriever quality, or a tighter hallucination check than AST matching alone. Teams are not limited to those.</p>
+    <p>Explain smoke test here, it comes up again on the rules and grading slides.</p></template>
+</section>
+
+<!-- ================================================================== 04 -->
+<section class="slide slide--tint" data-label="The five topics" data-section="Guide" data-minutes="3">
+  <div class="lu-eyebrow">One topic per team</div>
+  <h2 class="lu-h2">Pick one of five topics. Each matches one module.</h2>
+  <table class="lu-table"><thead><tr><th>Topic</th><th>Module</th><th>What it studies</th><th>Papers taught in that module</th></tr></thead><tbody><tr><td><b>Extraction</b></td><td>1</td><td>Turning a sentence into structured data: intent, entities, function calling</td><td>Gorilla</td></tr><tr><td><b>Dialogue</b></td><td>2</td><td>Agents over many turns: state, routing, escalation</td><td>Helping Customers in Distress</td></tr><tr><td><b>Grounding</b></td><td>3</td><td>Answers based on real sources: retrieval, citation, refusal</td><td>Cache-augmented generation ("Don't Do RAG")</td></tr><tr><td><b>Memory</b></td><td>4</td><td>What an agent remembers within and across sessions</td><td>Mem0, Zep, SeCom</td></tr><tr><td><b>Evaluation</b></td><td>5</td><td>Testing agents over whole conversations, bias and privacy checks</td><td>tau-bench, tau2-bench</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s3)">You are not limited to the taught papers. A paper taught in a module is a valid choice, and it may make your pitch easier to approve because the instructor already knows it.</p>
+  <template data-notes><p>Three minutes. Each team picks one topic and goes deep. You do not owe the course a working version of all five.</p>
+    <p>Source: PROJECT-REDESIGN.md and the syllabus Section 9.</p></template>
+</section>
+
+<!-- ================================================================== 05 -->
+<section class="slide" data-label="The paper menu: extraction and grounding" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">The paper menu · 1 of 4</div>
+  <h2 class="lu-h2">Extraction and grounding papers</h2>
+  <table class="lu-table"><thead><tr><th>Paper</th><th>What you would run</th><th>Cost and effort</th></tr></thead><tbody><tr><td><b>Extraction.</b> Gorilla, Patil et al., 2023, arXiv:2305.15334</td><td>The authors' released model on part of the test set (APIBench)</td><td>A laptop GPU or a free hosted notebook. No training.</td></tr><tr><td><b>Extraction.</b> ToolLLM / ToolBench, Qin et al., 2023, arXiv:2307.16789</td><td>A small subset of the queries, not the whole suite</td><td>Keep any GPT comparison under the cost limit.</td></tr><tr><td><b>Grounding.</b> Cache-augmented generation, Chan et al., 2024, arXiv:2412.15605</td><td>Preload a knowledge source into an open model</td><td>The cheapest on the menu. A personal computer.</td></tr><tr><td><b>Grounding.</b> Self-RAG, Asai et al., 2023, arXiv:2310.11511</td><td>The released 7B or 13B models</td><td>A 7B model on a consumer GPU or a free hosted notebook.</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s3)">14 papers on the menu, 13 with public code. Checked against arXiv and each repository on 17 September 2026. Full menu with code links: <a href="../research/PROJECT-PAPER-MENU.md" target="_blank" rel="noopener">research/PROJECT-PAPER-MENU.md</a>. You may also propose your own paper.</p>
+  <template data-notes><p>Two minutes. Read the bold topic word and one line per paper. Gorilla and the cache-augmented generation paper are taught in Modules 1 and 3. ToolLLM and Self-RAG are not taught, so a team choosing them is choosing a road the lectures do not cover.</p>
+    <p>Re-check a paper's repository before a team commits to it: the menu was checked on 17 September 2026 and projects change. The menu has 14 entries; 13 have public code.</p></template>
+</section>
+
+<!-- ================================================================== 06 -->
+<section class="slide slide--tint" data-label="The paper menu: dialogue" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">The paper menu · 2 of 4</div>
+  <h2 class="lu-h2">Dialogue papers</h2>
+  <table class="lu-table"><thead><tr><th>Paper</th><th>What you would run</th><th>Cost and effort</th></tr></thead><tbody><tr><td><b>Dialogue.</b> Helping Customers in Distress, Atreya et al., 2026, arXiv:2605.16268</td><td><b>No public code.</b> You build the baseline from the paper's own description</td><td>More work at the start.</td></tr><tr><td><b>Dialogue.</b> MultiWOZ, Budzianowski et al., 2018, arXiv:1810.00278</td><td>The dialogue-state tracking baseline</td><td>A laptop CPU. No API cost.</td></tr><tr><td><b>Dialogue.</b> ABCD, Chen et al., 2021, arXiv:2104.00783</td><td>An agent that follows company policy in a dialogue</td><td>A laptop or one modest GPU. No API cost.</td></tr></tbody></table><div class="lu-callout"><span class="lu-callout__label">Why the first one is marked</span><p class="lu-sub">It describes a real system at a bank, not an open-source release, and no code was found. It is still a valid choice, and it is the one taught in Module 2, but you would build the baseline yourself. The other two come with code.</p></div>
+  <template data-notes><p>Two minutes. "Helping Customers in Distress" is the only entry on the menu without public code. The menu file explains the search that found none.</p></template>
+</section>
+
+<!-- ================================================================== 07 -->
+<section class="slide" data-label="The paper menu: memory" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">The paper menu · 3 of 4</div>
+  <h2 class="lu-h2">Memory papers</h2>
+  <table class="lu-table"><thead><tr><th>Paper</th><th>What you would run</th><th>Cost and effort</th></tr></thead><tbody><tr><td><b>Memory.</b> Mem0, Chhikara et al., 2025, arXiv:2504.19413</td><td>The library plus an LLM key</td><td>A laptop. Cheap.</td></tr><tr><td><b>Memory.</b> Zep / Graphiti, Rasmussen et al., 2025, arXiv:2501.13956</td><td>A small memory graph, self-hosted with Docker</td><td>A personal computer and an LLM key.</td></tr><tr><td><b>Memory.</b> SeCom, Pan et al., 2025, arXiv:2502.05589</td><td>A subset of the LOCOMO or Long-MT-Bench+ tests</td><td>Embeddings and a modest number of LLM calls.</td></tr><tr><td><b>Memory.</b> MemGPT / Letta, Packer et al., 2023, arXiv:2310.08560</td><td>A self-hosted agent that manages its own memory. Not taught in class</td><td>An LLM key covers it.</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s3)">14 papers on the menu, 13 with public code. Checked against arXiv and each repository on 17 September 2026. Full menu with code links: <a href="../research/PROJECT-PAPER-MENU.md" target="_blank" rel="noopener">research/PROJECT-PAPER-MENU.md</a>. You may also propose your own paper.</p>
+  <template data-notes><p>Two minutes. Mem0, Zep and SeCom are the three papers taught in Module 4. MemGPT is included on purpose because it uses a different idea from all three.</p></template>
+</section>
+
+<!-- ================================================================== 08 -->
+<section class="slide slide--tint" data-label="The paper menu: evaluation" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">The paper menu · 4 of 4</div>
+  <h2 class="lu-h2">Evaluation papers</h2>
+  <table class="lu-table"><thead><tr><th>Paper</th><th>What you would run</th><th>Cost and effort</th></tr></thead><tbody><tr><td><b>Evaluation.</b> tau-bench, Yao et al., 2024, arXiv:2406.12045</td><td>A handful of tasks in one domain, with a cheaper model</td><td>Well under $20.</td></tr><tr><td><b>Evaluation.</b> tau2-bench, Barres et al., 2025, arXiv:2506.07982</td><td>The same idea, where the user can act too</td><td>Well under $20.</td></tr><tr><td><b>Evaluation.</b> AgentBench, Liu et al., 2023, arXiv:2308.03688</td><td>One lightweight environment of the eight</td><td>Avoid the heavy environments.</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Naming a paper is not an approved pitch</span><p class="lu-sub">The pitch step still applies to every team, whichever paper you choose. A paper with working code only means less of your time goes to setting up the baseline, so more goes to the part that is yours.</p></div>
+  <template data-notes><p>Two minutes. tau-bench and tau2-bench are the two papers taught in Module 5. AgentBench is the broader alternative.</p></template>
+</section>
+
+<!-- ================================================================== 09 -->
+<section class="slide" data-label="Choosing a paper: the rules" data-section="Guide" data-minutes="3">
+  <div class="lu-eyebrow">What is allowed, and the cost limit</div>
+  <h2 class="lu-h2">Five rules for choosing your paper</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)">
+    <ol class="lu-list lu-list--num">
+      <li><b>Team size:</b> two or three people.</li>
+      <li><b>One topic and one paper</b> for the whole project.</li>
+      <li><b>Cost limit:</b> it must run on a personal computer, or cost at most <b>$20</b> in API fees in total.</li>
+      <li><b>A smoke test is fine</b> instead of a full run, if you can explain what a full run would need.</li>
+      <li><b>Any paper on the menu, or your own,</b> with the instructor's approval of your pitch.</li>
+    </ol><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Two things that are not a problem</span><p class="lu-sub">Another team chooses the same paper. You choose a paper that was taught in a module. Neither is restricted or penalized. What counts is the extension you add.</p></div>
+  </div>
+  <template data-notes><p>Three minutes. The cost limit is a hard number on purpose, so a self-proposed paper can be checked with one question: does it fit this box, yes or no. Say the two things that are not a problem out loud, they come up every time.</p></template>
+</section>
+
+<!-- ================================================================== 10 -->
+<section class="slide" data-label="The idea pitch" data-section="Guide" data-minutes="4">
+  <div class="lu-eyebrow">Issue 1: one short piece of writing, approved before real work starts</div>
+  <h2 class="lu-h2">The idea pitch: what to write</h2>
+  <table class="lu-table"><thead><tr><th>Part</th><th>What to write</th><th>Example (invented for teaching)</th></tr></thead><tbody><tr><td><b>Topic and paper</b></td><td>Topic, paper (title, authors, year, link), and the code for the baseline</td><td>Extraction. Gorilla (2023). The authors' code.</td></tr><tr><td><b>The limitation</b></td><td>One specific weakness of the paper that you will target. Not "make it better"</td><td>The test set has only machine learning APIs.</td></tr><tr><td><b>Your idea</b></td><td>What you will build or change, and why it addresses that weakness</td><td>Test the model on a new kind of API and compare.</td></tr><tr><td><b>Related work</b></td><td>Did you look for a published follow-up? List what you found, even "nothing"</td><td>Searched: one related paper, it uses a different test set.</td></tr><tr><td><b>Cost check</b></td><td>Does it fit a personal computer or $20? Say now if a smoke test will be used</td><td>Smoke test on 50 requests. A full run needs more compute.</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s2)">Do not start real work until the instructor approves the pitch.</p>
+  <template data-notes><p>Four minutes. The instructor sets the deadline: decide and say it aloud, nothing in the course documents fixes one yet. The five parts come from the idea-pitch issue template in the team repository. The right-hand column is invented to show the level of detail, it is not an approved pitch.</p>
+    <p>Decide and say the pitch deadline aloud. Nothing in the course documents fixes one yet.</p></template>
+</section>
+
+<!-- ================================================================== 11 -->
+<section class="slide slide--tint" data-label="Two guardrails" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">Why the pitch and the report ask for honesty</div>
+  <h2 class="lu-h2">Two checks that keep the project honest</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s3)">
+    <div class="lu-card"><span class="lu-card__label">Before the work: the pitch approval</span>
+      <p class="lu-sub">The instructor reads your pitch to catch one thing: an idea that already exists as someone else's published follow-up paper. Finding that out after weeks of work is the worst time.</p></div>
+    <div class="lu-card"><span class="lu-card__label">After the work: related-work honesty</span>
+      <p class="lu-sub">Your report must list related follow-up work on the same paper and say how your extension is different. Saying nothing about it counts against you. If you found none, say so.</p></div>
+  </div>
+  <template data-notes><p>Two minutes. Both checks exist because an extension idea cannot simply be copied the way code can, but it can still turn out to be someone else's published idea.</p></template>
+</section>
+
+<!-- ================================================================== 12 -->
+<section class="slide" data-label="Your repository: five setup steps" data-section="Guide" data-minutes="4" style="--lu-s5:12px">
+  <div class="lu-eyebrow">Every team starts from the same template</div>
+  <h2 class="lu-h2">Create your team repository from the course template</h2>
+  <div class="lu-walk" data-label="Your repository"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 190, "nodes": [{"id": "r0", "label": "1. Use the\ntemplate", "x": 145, "y": 95, "w": 240, "h": 96, "kind": "code"}, {"id": "r1", "label": "2. Add your\ninstructor", "x": 435, "y": 95, "w": 240, "h": 96, "kind": "tool"}, {"id": "r2", "label": "3. Protect the\nmain branch", "x": 725, "y": 95, "w": 240, "h": 96, "kind": "code"}, {"id": "r3", "label": "4. Add your\nkey (.env)", "x": 1015, "y": 95, "w": 240, "h": 96, "kind": "tool"}, {"id": "r4", "label": "5. Run\nverify_setup", "x": 1305, "y": 95, "w": 240, "h": 96, "kind": "tool"}], "edges": [{"id": "x0", "from": "r0", "to": "r1", "label": ""}, {"id": "x1", "from": "r1", "to": "r2", "label": ""}, {"id": "x2", "from": "r2", "to": "r3", "label": ""}, {"id": "x3", "from": "r3", "to": "r4", "label": ""}], "steps": [{"show": ["r0"], "run": [], "set": {"r0": "active"}}, {"show": ["r1", "x0"], "run": ["x0"], "set": {"r1": "active", "r0": "idle"}}, {"show": ["r2", "x1"], "run": ["x1"], "set": {"r2": "active", "r1": "idle"}}, {"show": ["r3", "x2"], "run": ["x2"], "set": {"r3": "active", "r2": "idle"}}, {"show": ["r4", "x3"], "run": ["x3"], "set": {"r4": "active", "r3": "idle"}}], "legend": false}</script></div><div data-walk-step="1" data-caption-short="Use the template" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; On the template page on GitHub, click &lt;b&gt;Use this template&lt;/b&gt; (not fork, not clone) and create a &lt;b&gt;private&lt;/b&gt; repository for your team, for example team-alpha-gorilla-extension. Then clone it."></div><div data-walk-step="2" data-caption-short="Add your instructor" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; Add your instructor as a collaborator on the new repository, so your work can be reviewed and graded." hidden></div><div data-walk-step="3" data-caption-short="Protect the main branch" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; In the repository settings turn on branch protection for &lt;b&gt;main&lt;/b&gt;: a pull request is required, with at least one approval. This setting does not come with the template, so do it now." hidden></div><div data-walk-step="4" data-caption-short="Add your key" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; Copy &lt;code&gt;.env.example&lt;/code&gt; to &lt;code&gt;.env&lt;/code&gt; and add the API key your paper&#x27;s baseline needs. Never commit &lt;code&gt;.env&lt;/code&gt;." hidden></div><div data-walk-step="5" data-caption-short="Check the setup" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; Run &lt;code&gt;pip install -r requirements.txt&lt;/code&gt;, then &lt;code&gt;python scripts/verify_setup.py&lt;/code&gt;. Fix every FAIL before real work." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Yes, every team uses the template</span><p class="lu-sub">Each team works in <b>one private repository created from the course template</b>: <a href="https://github.com/ahmabboud/dsca-team-template" target="_blank" rel="noopener">github.com/ahmabboud/dsca-team-template</a>. It already has the folders, the four issue templates and the team rules. <b>Template</b>: a repository you copy as a starting point, with its own separate history.</p></div>
+  <template data-notes><p>Four minutes. Yes, the template is required, it is the workflow in syllabus Section 11. Show the GitHub page and the green "Use this template" button. The template repository is public, the repositories teams create from it should be private.</p>
+    <p>Do this on your own time after choosing a paper, not in class. The instructor's demonstrations need no setup from students.</p></template>
+</section>
+
+<!-- ================================================================== 13 -->
+<section class="slide" data-label="What is inside your repository" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">One folder for each part of the project</div>
+  <h2 class="lu-h2">Where each part of your project goes</h2>
+  <table class="lu-table"><thead><tr><th>Folder or file</th><th>What goes there</th></tr></thead><tbody><tr><td><code>baseline/</code></td><td>Your reproduction of the paper's method, with the exact commands to run it</td></tr><tr><td><code>extension/</code></td><td>Your own idea's code, kept clearly apart from the baseline</td></tr><tr><td><code>report/REPORT.md</code></td><td>The paper-style report, from the template</td></tr><tr><td><code>slides/</code></td><td>Your defense slides, as an exported file or a link</td></tr><tr><td><code>data/</code></td><td>Your own data, or notes on where it comes from</td></tr><tr><td><code>tests/</code> and <code>scripts/verify_setup.py</code></td><td>Checks that the setup works. Add real tests as you build</td></tr><tr><td><code>.github/ISSUE_TEMPLATE/</code> and <code>CONTRIBUTING.md</code></td><td>The four issues and the team rules</td></tr></tbody></table>
+  <template data-notes><p>Two minutes. Keeping the baseline and the extension in separate folders makes it obvious what is the paper's work and what is yours, which is exactly what the graders need to see.</p></template>
+</section>
+
+<!-- ================================================================== 14 -->
+<section class="slide slide--tint" data-label="How the team works together: three rules" data-section="Guide" data-minutes="3">
+  <div class="lu-eyebrow">Each rule solves a different problem</div>
+  <h2 class="lu-h2">Three team rules, and the problem each one solves</h2>
+  <table class="lu-table"><thead><tr><th>Rule</th><th>What it means</th><th>The problem it solves</th></tr></thead><tbody><tr><td><b>1. One branch and one pull request per person</b></td><td>Work on your own branch (for example alice/baseline-eval-loop). When ready, open a <b>pull request</b> into main yourself. Never commit straight to main.</td><td>Two people editing the same file at the same time.</td></tr><tr><td><b>2. Every pull request needs a teammate's approval</b></td><td>Another teammate reads the changes, runs them and asks questions before merging. A quick "looks good" is not a review.</td><td>Knowing who wrote what, for learning and for grading.</td></tr><tr><td><b>3. Always commit under your own GitHub account</b></td><td>Never share a login and never commit for someone else. If you worked as a pair, both of you push from your own branch.</td><td>Making rules 1 and 2 mean something.</td></tr></tbody></table><div class="lu-callout"><span class="lu-callout__label">Definitions</span><p class="lu-sub"><b>Branch</b>: your own copy of the work inside the repository. <b>Pull request</b>: a request to merge your branch into main, which a teammate can review.</p></div>
+  <template data-notes><p>Three minutes. These are the three rules in the team repository's CONTRIBUTING.md. The instructor can see every pull request's author and every review, and will use that history in the defense to ask each of you about a part a teammate built.</p></template>
+</section>
+
+<!-- ================================================================== 15 -->
+<section class="slide" data-label="The four issues" data-section="Guide" data-minutes="4">
+  <div class="lu-eyebrow">Four checkpoints in your repository, in order</div>
+  <h2 class="lu-h2">Four GitHub issues, four checkpoints</h2>
+  <table class="lu-table"><thead><tr><th>Issue</th><th>It is done when...</th></tr></thead><tbody><tr><td><b>1. Idea pitch</b></td><td>The instructor has approved it (a checkbox in the issue).</td></tr><tr><td><b>2. Baseline reproduction</b></td><td>The baseline runs end to end and the commands are in <code>baseline/README.md</code>. At least one of the paper's numbers is reproduced, with your number beside the paper's. A smoke test is explained. The cost limit is respected.</td></tr><tr><td><b>3. Extension</b></td><td>The extension runs end to end and is compared directly with the baseline. Results are credible, or a smoke test is stated plainly. The numbers are ready for the report. The cost limit is respected.</td></tr><tr><td><b>4. Report and slides</b></td><td>The report is complete, related work is cited, and any smoke test is stated. The slides follow the required structure. Both are handed in before Module 6.</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s3)">For each issue: assign it to the teammates who will work on it, write who does which part in its checklist, and link your pull requests to it (<code>Closes #number</code>).</p>
+  <template data-notes><p>Four minutes. The four issue templates are in the team repository under .github/ISSUE_TEMPLATE. The third acceptance item of the baseline issue and the last one of the report issue both ask for honesty about smoke tests.</p></template>
+</section>
+
+<!-- ================================================================== 16 -->
+<section class="slide" data-label="The report" data-section="Guide" data-minutes="3">
+  <div class="lu-eyebrow">A short paper about your own work</div>
+  <h2 class="lu-h2">The report has five sections</h2>
+  <table class="lu-table"><thead><tr><th>Section</th><th>What goes there</th></tr></thead><tbody><tr><td><b>Abstract</b></td><td>3 to 5 sentences: what the paper does, what limitation you targeted, what you built, the main result. Write it last.</td></tr><tr><td><b>1. The baseline paper</b></td><td>Its problem, its method (the real mechanism, not only its name) and its results with numbers.</td></tr><tr><td><b>2. Your extension</b></td><td>Why (the limitation), what you built (enough to reproduce it) and notes on running your code.</td></tr><tr><td><b>3. Results</b></td><td>Your reproduction next to the paper's numbers, your extension against the baseline, and an honest assessment of what worked and what did not.</td></tr><tr><td><b>4. Related work</b></td><td>Published follow-up work on the same paper, and how your extension differs. If none, say so.</td></tr><tr><td><b>5. Limits and full validation</b></td><td>If you used a smoke test, exactly what a full run would need: data, compute, time or cost.</td></tr></tbody></table>
+  <template data-notes><p>Three minutes. The sections are the ones in report/REPORT.md in the team template. Section 3.3 (honest assessment) exists so that a team does not show only the numbers that look good. Section 5 is not a penalty as long as it is honest.</p></template>
+</section>
+
+<!-- ================================================================== 17 -->
+<section class="slide" data-label="The defense slides" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">A hard limit, not a suggestion</div>
+  <h2 class="lu-h2">At most 8 slides: a cover, up to 6 content slides, and references</h2>
+  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 180, "nodes": [{"id": "s0", "label": "Cover", "x": 130, "y": 90, "w": 190, "h": 76, "kind": "user"}, {"id": "s1", "label": "1. Paper:\nthe problem", "x": 380, "y": 90, "w": 190, "h": 76, "kind": "data"}, {"id": "s2", "label": "2. Paper:\nthe solution", "x": 630, "y": 90, "w": 190, "h": 76, "kind": "data"}, {"id": "s3", "label": "3. Paper:\nthe results", "x": 880, "y": 90, "w": 190, "h": 76, "kind": "data"}, {"id": "s4", "label": "4. Your\nidea", "x": 1130, "y": 90, "w": 190, "h": 76, "kind": "model"}, {"id": "s5", "label": "5. Your\nresults", "x": 1380, "y": 90, "w": 190, "h": 76, "kind": "model"}], "edges": [{"id": "t0", "from": "s0", "to": "s1", "label": ""}, {"id": "t1", "from": "s1", "to": "s2", "label": ""}, {"id": "t2", "from": "s2", "to": "s3", "label": ""}, {"id": "t3", "from": "s3", "to": "s4", "label": ""}, {"id": "t4", "from": "s4", "to": "s5", "label": ""}], "steps": [{"show": ["s0", "s1", "s2", "s3", "s4", "s5", "t0", "t1", "t2", "t3", "t4"], "run": [], "set": {}}], "legend": false}</script></div><ul class="lu-list" style="margin-top:var(--lu-s4)">
+    <li><b>Cover:</b> team name, paper, topic. <b>Content (no more than 6):</b> the baseline paper's problem, solution and results, then your extension's idea and results, in that order.</li>
+    <li><b>References:</b> full citations for the paper and any related work in your report.</li>
+    <li>Numbers from your comparison belong on the slides. Long method text does not.</li>
+  </ul>
+  <template data-notes><p>Two minutes. The limit comes from the rubric and from slides/README.md in the team template. Fewer content slides is fine if the material fits. More is not allowed.</p></template>
+</section>
+
+<!-- ================================================================== 18 -->
+<section class="slide slide--tint" data-label="What to hand in, and when" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">Everything is handed in before the defense</div>
+  <h2 class="lu-h2">What to hand in, and when</h2>
+  <table class="lu-table"><thead><tr><th>What</th><th>When</th><th>Counts for</th></tr></thead><tbody><tr><td>Approved idea pitch</td><td>Early, before real work begins</td><td>A required step, no points of its own</td></tr><tr><td>Working repository: the baseline and your extension</td><td>Before Module 6</td><td>Part A of the grade</td></tr><tr><td>Paper-style report</td><td>Before Module 6</td><td>Part A of the grade</td></tr><tr><td>Defense slides (at most 8)</td><td>Before Module 6</td><td>Part A of the grade</td></tr><tr><td>The defense: 12 minutes presenting, 12 minutes of questions</td><td>Module 6</td><td>Part A of the grade</td></tr><tr><td>Being there and taking part</td><td>Every session</td><td>Part B of the grade</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s3)">Everything is handed in <b>before</b> Module 6, not brought on the day, so the instructor can read it and ask targeted questions. Your instructor will tell you how to submit (a link or a file).</p>
+  <template data-notes><p>Two minutes. Stress "not brought on the day". The defense-day scoring relies on the instructor having read the repository, report and slides beforehand.</p></template>
+</section>
+
+<!-- ================================================================== 19 -->
+<section class="slide" data-label="Defense day" data-section="Guide" data-minutes="3" style="--lu-s5:12px">
+  <div class="lu-eyebrow">Module 6</div>
+  <h2 class="lu-h2">The defense: 12 minutes to present, 12 minutes of questions</h2>
+  <div class="lu-walk" data-label="Defense day"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 220, "nodes": [{"id": "d0", "label": "Before Module 6:\nrepository, report\nand slides handed in", "x": 185, "y": 105, "w": 290, "h": 120, "kind": "data"}, {"id": "d1", "label": "12 minutes:\nyou present", "x": 600, "y": 105, "w": 230, "h": 96, "kind": "user"}, {"id": "d2", "label": "12 minutes:\nquestions", "x": 930, "y": 105, "w": 230, "h": 96, "kind": "tool"}, {"id": "d3", "label": "Scores and\nfeedback returned", "x": 1270, "y": 105, "w": 250, "h": 96, "kind": "code"}], "edges": [{"id": "y0", "from": "d0", "to": "d1", "label": ""}, {"id": "y1", "from": "d1", "to": "d2", "label": ""}, {"id": "y2", "from": "d2", "to": "d3", "label": ""}], "steps": [{"show": ["d0"], "run": [], "set": {"d0": "active"}}, {"show": ["d1", "y0"], "run": ["y0"], "set": {"d0": "idle", "d1": "active"}}, {"show": ["d2", "y1"], "run": ["y1"], "set": {"d1": "idle", "d2": "active"}}, {"show": ["d3", "y2"], "run": ["y2"], "set": {"d2": "idle", "d3": "active"}}], "legend": false}</script></div><div data-walk-step="1" data-caption-short="Before" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The instructor has already read your repository, report and slides. Nothing new is handed in on the day."></div><div data-walk-step="2" data-caption-short="You present" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; You present for 12 minutes: the paper&#x27;s problem, solution and results, then your extension&#x27;s idea and results." hidden></div><div data-walk-step="3" data-caption-short="Questions" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; Then 12 minutes of questions. &lt;b&gt;Any teammate can be asked about any part&lt;/b&gt;: the paper, the extension or the code." hidden></div><div data-walk-step="4" data-caption-short="Scores" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; The instructor scores each team against the rubric. Scores and feedback are returned at the end of the session." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Good to know</span><p class="lu-sub">Module 6 is 180 minutes, and the instructor may extend it by up to one hour if there are many teams. No team's time is shortened to fit. If you plan a live demo, check that it already works before your slot.</p></div>
+  <template data-notes><p>Three minutes. The format comes from the syllabus Module 6 entry. The instructor's own schedule sheet and scoring sheet are not shared with students, so do not promise specific slot times here: say they will be announced.</p></template>
+</section>
+
+<!-- ================================================================== 20 -->
+<section class="slide" data-label="How you are graded, part A: the defense" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">85 of the 100 points</div>
+  <h2 class="lu-h2">Part A: what each line of the project rubric asks</h2>
+  <table class="lu-table"><thead><tr><th>Criterion</th><th>Score</th><th>The question the graders ask</th><th>Full marks look like</th></tr></thead><tbody><tr><td><b>Code and reproduction quality</b></td><td>25</td><td>Does it run, and is it correct?</td><td>The paper's method runs on your computer, and your own extension is really built and works.</td></tr><tr><td><b>Understanding of the research</b></td><td>25</td><td>Do you understand the paper?</td><td>You explain the paper's problem, method and results, and answer questions about all of it, not only your own part.</td></tr><tr><td><b>Motivation and value</b></td><td>25</td><td>Why is your idea worth doing?</td><td>It fixes a real, specific weakness of the paper and is useful, not new only for the sake of being new.</td></tr><tr><td><b>Result quality</b></td><td>25</td><td>Did it actually work?</td><td>A real comparison with the baseline and believable results. A small test run is fine if you say what a full run would need.</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s3)">Each line is scored out of 25 (100 in all). The total is multiplied by <b>0.85</b>, which gives the 85 points of Part A. The defense score belongs to the team.</p>
+  <template data-notes><p>Two minutes. Same content as the rubric slide in Module 1 and the syllabus Section 9.</p></template>
+</section>
+
+<!-- ================================================================== 21 -->
+<section class="slide slide--tint" data-label="How you are graded, part B: attendance and participation" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">15 of the 100 points</div>
+  <h2 class="lu-h2">Part B: 2.5 points for each of the 6 sessions</h2>
+  <table class="lu-table"><thead><tr><th>What</th><th>Points</th><th>How it is scored</th></tr></thead><tbody><tr><td><b>Attendance</b></td><td>1.5 a session</td><td>You are there and you stay for the session.</td></tr><tr><td><b>Participation</b></td><td>1.0 a session</td><td>1 = you asked a question, answered one, or joined the discussion at least once. 0.5 = you joined only when asked directly. 0 = no contribution.</td></tr><tr><td><b>One excused absence</b></td><td>No loss</td><td>You may miss one module. It keeps its 2.5 points if you finish the missed project work before the next module. Any other absence loses that session's points.</td></tr></tbody></table><p class="lu-caption" style="margin-top:var(--lu-s3)">Labs are demonstrations run by the instructor, so participation means taking part in the demonstration and the discussion. <b>Final grade = 0.85 x defense score + Part B points.</b> Example: 88 at the defense and 13 for Part B gives 74.8 + 13 = 87.8. Part B is yours alone, not the team's.</p>
+  <template data-notes><p>Two minutes. Same content as the Part B slide in Module 1 and the syllabus Sections 9 to 11.</p></template>
+</section>
+
+<!-- ================================================================== 22 -->
+<section class="slide" data-label="Questions you can expect" data-section="Guide" data-minutes="3">
+  <div class="lu-eyebrow">Prepare every teammate for every part</div>
+  <h2 class="lu-h2">Any teammate can be asked about any part</h2>
+  <table class="lu-table"><thead><tr><th>About...</th><th>Examples of questions (invented to show the style)</th></tr></thead><tbody><tr><td><b>The paper</b></td><td>What problem does the paper solve? How does its method work, step by step? What do its results show, and what do they not show?</td></tr><tr><td><b>Your extension</b></td><td>Which weakness of the paper does it target? Why is that worth fixing? What did you change, and why that?</td></tr><tr><td><b>The code</b></td><td>Show me where in the code this step happens. What happens if this input is empty? How did you get this number?</td></tr><tr><td><b>Your results</b></td><td>How did you compare with the baseline? Was it a full run or a smoke test? What would change at full size?</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">How to prepare</span><p class="lu-sub">Do not split the project into "my part" and "your part". Each of you should be able to explain the paper, the extension and the code. Practice by asking each other these questions, and read each other's pull requests properly.</p></div>
+  <template data-notes><p>Three minutes. The questions are examples written for this guide, not a list the instructor will use. They follow the four rubric lines. The instructor can see every pull request and review, so a teammate may be asked about a part someone else built.</p></template>
+</section>
+
+<!-- ================================================================== 23 -->
+<section class="slide slide--tint" data-label="A checklist before Module 6" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">Tick every line before you hand in</div>
+  <h2 class="lu-h2">Checklist: are you ready to defend?</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s3)">
+    <ul class="lu-list lu-list--check">
+      <li>The pitch is approved, and the report says if the idea changed.</li>
+      <li>The baseline runs, with the commands in <code>baseline/README.md</code>.</li>
+      <li>Your number is next to the paper's number.</li>
+      <li>The extension runs and is compared with the baseline.</li>
+      <li>Any smoke test is stated, with what a full run would need.</li>
+    </ul>
+    <ul class="lu-list lu-list--check">
+      <li>The report is complete and cites related work.</li>
+      <li>The slides: a cover, at most 6 content slides, references.</li>
+      <li>The cost stayed under $20, or it ran on a personal computer.</li>
+      <li>Everything is handed in before Module 6.</li>
+      <li>Each teammate can answer about the paper, the extension and the code.</li>
+    </ul>
+  </div>
+  <template data-notes><p>Two minutes. Every line maps to an acceptance item of one of the four issues or to a rubric line.</p></template>
+</section>
+
+<!-- ================================================================== 24 -->
+<section class="slide" data-label="Where to find everything" data-section="Guide" data-minutes="1">
+  <div class="lu-eyebrow">Links</div>
+  <h2 class="lu-h2">Where to find everything</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)">
+    <ul class="lu-list">
+      <li>The team template: <a href="https://github.com/ahmabboud/dsca-team-template" target="_blank" rel="noopener">github.com/ahmabboud/dsca-team-template</a></li>
+      <li>The paper menu with code links: <a href="../research/PROJECT-PAPER-MENU.md" target="_blank" rel="noopener">research/PROJECT-PAPER-MENU.md</a></li>
+      <li>The team rules: <code>CONTRIBUTING.md</code> in your repository</li>
+      <li>The setup steps: <code>README.md</code> in your repository</li>
+      <li>The four issues: <b>Issues, New issue</b> in your repository</li>
+      <li>The report and slides templates: <code>report/REPORT.md</code> and <code>slides/README.md</code></li>
+    </ul><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Stuck?</span><p class="lu-sub">Say so early, in your team channel or at the start of the next session. Do not wait until the week of the defense.</p></div>
+  </div>
+  <template data-notes><p>One minute.</p></template>
+</section>
+
+<!-- ================================================================== 25 -->
+<section class="slide" data-label="Words used in the project" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">A reminder of the project words</div>
+  <h2 class="lu-h2">Words used in the project</h2>
+  <div class="lu-split"><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Baseline</td><td>The paper's own method, reproduced by you</td></tr><tr><td>Extension</td><td>Your own idea, built on the baseline</td></tr><tr><td>Smoke test</td><td>A small run that stands in for a full run</td></tr><tr><td>Benchmark</td><td>A fixed test many methods can take</td></tr><tr><td>Preprint</td><td>A paper shared before formal review</td></tr></tbody></table><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Related work</td><td>Other papers on the same topic</td></tr><tr><td>Template</td><td>A repository you copy as a start</td></tr><tr><td>Branch</td><td>Your own copy of the work</td></tr><tr><td>Pull request</td><td>A request to merge, with a review</td></tr><tr><td>Defense</td><td>The Module 6 presentation and questions</td></tr></tbody></table></div>
+  <template data-notes><p>Two minutes. Ask two students to explain one word each in their own words.</p></template>
+</section>
+
+<!-- ================================================================== 26 -->
+<section class="slide" data-label="Self-check" data-section="Guide" data-minutes="2">
+  <div class="lu-eyebrow">Self-check</div>
+  <div class="lu-split lu-split--wide-left">
+    <div class="lu-stack">
+      <div class="lu-mcq" data-qid="proj-q1" data-answer="b"
+           data-label="The cost limit for the project"
+           data-fb-correct=" A personal computer, or $20 in API fees in total."
+           data-fb-wrong=" The limit is a personal computer, or $20 in total.">
+        <p class="lu-mcq__q">What is the cost limit for the project?</p>
+        <div class="lu-mcq__opts">
+          <button class="lu-mcq__opt" type="button" data-key="a">No limit if the results are good<span class="lu-mcq__why" hidden>There is a fixed limit.</span></button>
+          <button class="lu-mcq__opt" type="button" data-key="b">A personal computer, or $20 in API fees in total<span class="lu-mcq__why" hidden>Yes. A smoke test is fine if you explain a full run.</span></button>
+          <button class="lu-mcq__opt" type="button" data-key="c">$20 per teammate per module<span class="lu-mcq__why" hidden>It is $20 in total for the project.</span></button>
+        </div>
+        <div class="lu-mcq__fb" hidden></div>
+      </div>
+    </div>
+    <div class="lu-stack"><div data-score></div>
+      <p class="lu-caption">Press <kbd>S</kbd> for study mode. Your answers stay in this browser only.</p></div>
+  </div>
+  <template data-notes><p>Two minutes. One question is enough for a reference deck. Add more of your own if you use it in class.</p></template>
+</section>
+
+</div><!-- /stage -->
+</div><!-- /deck -->
+
+<script src="../assets/sparql-lite.js?v=1.1.0"></script>
+<script src="../assets/lu-deck.js?v=1.3.0" defer></script>
+<script src="../assets/lu-flow.js?v=1.2.2" defer></script>
+</body>
+</html>

@@ -69,14 +69,23 @@ only adds the steps specific to running that one demo.
    This installs everything every module's demo needs, not just the one you
    are about to run.
 3. Get a Gemini key: go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey),
-   sign in with a Google account, click "Create API key." No card, no
-   purchase, the free tier is enough for every module's demos.
+   sign in with a Google account, click "Create API key." No card and no
+   purchase is needed. **The free tier has request limits, and they are per
+   model.** Every demo therefore runs on the cheapest Gemini text model that
+   works for it, `gemini-3.1-flash-lite` (chosen and tested on 30 September
+   2026: USD 0.25 in and 1.50 out per million tokens, free tier available).
+   The demos only show an idea, they do not need a strong model.
+   `gemini-2.5-flash-lite` is cheaper on paper, but the API refuses it for new
+   users (404). The bigger `gemini-3.8-flash` answered "20 requests per day on
+   Free Tier" that day and was slow and sometimes overloaded. If a demo stalls
+   or returns a 429, check the limits at https://ai.dev/rate-limit first.
 4. `cp .env.example .env`, then paste the key in as `GOOGLE_API_KEY`. This
    is the instructor's own key, separate from any team's key in their own
    project repository, and every module's demo reads it from `demos/.env`.
    Leave `GENERATION_MODEL`, `MEM0_GENERATION_MODEL`, and
    `MEM0_EMBEDDING_MODEL` at their defaults unless a model gets retired:
-   `GENERATION_MODEL` is Modules 1-3's own bare-name model string, and the
+   `GENERATION_MODEL` is the bare-name model string (Modules 1 and 2;
+   Modules 3 and 5 have their own `M03_` and `M05_` copies), and the
    `MEM0_`-prefixed pair is Module 4's, in Mem0's own "models/"-prefixed
    format, see `module-04/README.md` for why the two are not interchangeable.
 5. Confirm each module's demo runs end to end once, then save its output

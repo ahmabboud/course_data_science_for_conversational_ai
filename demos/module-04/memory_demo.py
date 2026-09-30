@@ -90,7 +90,7 @@ logging.getLogger("google.genai").setLevel(logging.ERROR)
 # the configured Gemini account and work with Mem0's Gemini integration.
 # Named MEM0_-prefixed, not the plain GENERATION_MODEL Modules 1-3 use: see
 # this file's own module docstring for why the two must not share one name.
-GENERATION_MODEL = os.getenv("MEM0_GENERATION_MODEL", "models/gemini-3.6-flash")
+GENERATION_MODEL = os.getenv("MEM0_GENERATION_MODEL", "models/gemini-3.1-flash-lite")
 # Gemini's supported embedding model. Read from demos/.env so an instructor
 # can update it without editing the demo; retain this value as a safe default
 # for a newly copied .env file.

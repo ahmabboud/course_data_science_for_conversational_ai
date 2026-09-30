@@ -47,7 +47,7 @@ client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 # Keep Module 3 independent from the shared model used by other demos. The
 # default is a currently supported Flash model; override it in demos/.env
 # only if a later model change requires it.
-GENERATION_MODEL = os.getenv("M03_GENERATION_MODEL", "gemini-3.6-flash")
+GENERATION_MODEL = os.getenv("M03_GENERATION_MODEL", "gemini-3.1-flash-lite")
 EMBEDDING_MODEL = "gemini-embedding-001"
 
 # The fake knowledge base. Six short entries, each with a stable source_id,
