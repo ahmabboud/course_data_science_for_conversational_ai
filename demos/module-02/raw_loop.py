@@ -1,8 +1,7 @@
 """Module 2: the raw agent loop, with nothing hidden.
 
-Used in lectures/dsca-module-02.html, slide 3 ("The raw agent loop, with
-nothing hidden") and slide 12 ("Walkthrough: the raw loop, one call at a
-time"). Run directly, no LangGraph, no CLI:
+Used in lectures/dsca-module-02.html, the instructor-demo slides whose
+labels start with "raw_loop.py". Run directly, no LangGraph, no CLI:
 
     python raw_loop.py
 

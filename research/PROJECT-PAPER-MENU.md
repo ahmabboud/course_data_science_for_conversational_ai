@@ -45,7 +45,7 @@ scale than Gorilla's.
 ## Dialogue (Module 2)
 
 ### Helping Customers in Distress, taught in this module's own research dive
-Atreya, Wanger, Batra, Hankache, Iglesias Jr, Sinclair, Pelosio, McMillan,
+Atreya, Wagner, Batra, Hankache, Iglesias Jr, Sinclair, Pelosio, McMillan,
 Cowan and Khraishi (2026), arXiv:2605.16268.
 **No public repository found.** This is a real production deployment at a
 bank, not an open-source release; nothing on arXiv, the authors' pages, or

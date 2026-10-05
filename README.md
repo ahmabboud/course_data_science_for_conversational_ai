@@ -47,11 +47,21 @@ Presenter view on a second screen with speaker notes, elapsed time and pacing ag
 
 ## Run it locally
 
-Open any HTML file directly in a browser. Everything works from `file://` except the offline service worker, which needs `http`:
+You need Python 3 and a current browser (Chrome, Edge, Firefox or Safari). Nothing else: there is no build step and nothing to install.
 
-```
-python3 -m http.server 8000
-```
+1. Open a terminal in the folder that contains `index.html` (the root of this repository).
+2. Start a local web server:
+
+   ```
+   python3 -m http.server 8000
+   ```
+
+3. Open <http://localhost:8000/> in your browser. The index links to every module. You can also go straight to a deck, for example <http://localhost:8000/lectures/dsca-module-01.html>.
+4. Stop the server with `Ctrl+C` in the terminal.
+
+If port 8000 is already in use, pick another one (`python3 -m http.server 8080`) and change the number in the address. On Windows, use `py -m http.server 8000` if `python3` is not found.
+
+Opening an HTML file directly in the browser (`file://`) also works, except for the offline service worker, which needs `http`. Press `?` inside a deck for the keyboard shortcuts, `P` for the presenter view and `S` for study mode. If a slide looks out of date after the files changed, hard-reload the page.
 
 ## Deploy
 

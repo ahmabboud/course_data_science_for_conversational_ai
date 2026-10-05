@@ -122,7 +122,7 @@ committed and pushed to GitHub (`origin/main`) at the instructor's request. Run
 
 ### 2b. Module 1, rebuilt 2026-09-30 (awaiting review)
 
-Built from scratch against AGENTS.md §2c. 58 slides, 180 minutes:
+Built from scratch against AGENTS.md §2c. 60 slides, 180 minutes (includes a two-slide side note on Jev, TypeSafe AI, Sept 2026, after "Validation and fallback"; claims there are vendor-only and labelled so):
 
 | Section | Min | What it holds |
 |---|---|---|
@@ -955,6 +955,71 @@ times). The paper's numbers were **not** verified: nobody has read its PDF yet.
   in the demo. Cut them, teach them briefly as background, or add them to the
   demo code (the demo then needs a small MCP server or a clearly labelled
   stand-in).
+
+### Paper read from the PDF, 2026-09-30 (arXiv:2605.16268v2): findings
+
+Local copy: `research/module-02/atreya-2026-helping-customers-in-distress.pdf`
+(5 pages, CC BY 4.0). Figure 1 cropped to `assets/img/m02-atreya-fig1-framework.png`
+(918 x 594, the raster the paper embeds; it is the only figure). Read in full by hand.
+
+- **What it is:** a 5-page workshop paper, "Accepted at the 2nd Workshop on Advances
+  in Financial AI (ICLR 2026)", NatWest AI Research, v2 dated 23 Sep 2026. Not a
+  full conference paper. The old notes said only "cs.HC preprint".
+- **Author spelling:** the second author is **Stefan Sylvius Wagner** (the old notes and
+  the menu file wrote "Wanger"). Ten authors: Atreya, Wagner, Batra, Hankache,
+  Iglesias Jr, Sinclair, Pelosio, McMillan, Cowan, Khraishi.
+- **Method (Sections 2.1 to 2.4):** Triage Agent = prompted third-party LLMs (Claude,
+  Gemini, GPT), **no fine-tuning**; it converses and classifies into Fraud, Scam,
+  Dispute or **Inconclusive**. A prompt manager assembles sub-prompts: Role,
+  Instructions, Workflow, Don'ts (Figure 1 also shows Guidelines and Classification
+  Notes). A separate LLM "digression" (handoff) agent ends the chat and points the
+  customer to a phone line or team when the customer wants to stop or a vulnerability
+  sign appears. Input guardrails: AWS Bedrock filtering plus custom controls (block
+  unauthorised product requests, probing of internal processes, non-English). Output
+  guardrails check answers against good and bad example responses. Red-teaming:
+  chat-history injection, code manipulation, non-English prompts, attempts to extract
+  internal reasoning. **Digital twins** = LLM customer agents (OpenAI Agent SDK)
+  whose system prompt is built from a historical telephony transcript plus customer
+  attributes plus transaction details. SMEs rated 10 yes/no criteria over 3 rounds.
+  GPT-4.1 was the LLM judge.
+- **Numbers, checked against the PDF:** Table 1 (relative gain over the legacy IVR,
+  synthetic customers, about 3,000 transcript-based cases): Claude Sonnet 3 +20.0
+  [16.0, 23.8]; Gemini-1.5-Pro +28.4 [24.8, 31.4]; GPT 4.1-mini +21.3 [17.5, 25.9];
+  GPT 4.1 +27.7 [26.5, 33.2]; GPT 5 +30.6 [27.1, 33.9] (GPT 5 called "preliminary").
+  SME rounds: +16.0% average. Metrics above "75 to 80%": compliance, satisfaction,
+  summary. Human versus LLM-judge agreement: 79 to 92% on objective criteria
+  (compliance, factuality, relevance, summary), about 60% on empathy and
+  frustration. Handoff precision and recall both above 90%. Input guardrails above
+  98% (prompt injection, hate speech); output guardrails above 95% (hallucinated
+  content, "across both GPT-4.1 variants").
+- **Inconsistencies and gaps inside the paper (all worth teaching):**
+  1. The baseline accuracy is **never stated**, so "+30.6%" cannot be turned into
+     an accuracy. Table 1 says "relative", the abstract says "30.6% increase in
+     classification accuracy". Relative percent or percentage points is not defined.
+  2. Agreement is "79 to 92%" in Section 3 but "76 to 92%" in the Conclusion.
+  3. Guardrails are "over 98%" and "exceeding 95%" in Section 3 but "96 to 98%" in
+     the Conclusion.
+  4. No sample size for the SME rounds, the number of SMEs, the handoff test set,
+     or the guardrail test set ("thousands of attack prompts").
+  5. The abstract and Conclusion claim "faster and more efficient resolution"; no
+     time or cost measurement is reported anywhere.
+  6. GPT-4.1 is both a tested triage model and the judge (possible self-preference
+     bias); the paper does not discuss it.
+  7. The "legacy IVR" baseline is compared on synthetic customers built from the
+     same historical cases, and the paper does not say how legacy accuracy was measured.
+  8. Contributions call the agent "deployed", the Conclusion says "readiness for
+     deployment". No code, prompts or data are released, so it cannot be reproduced
+     as it stands (the menu already flags that Dialogue's taught paper has no repo).
+- **What the old deck got wrong or invented:** it calls the paper "a router plus
+  escalation, exactly this module's shape" and says the agent "hands off to a person
+  for anything ambiguous". In the paper, ambiguity is the class **Inconclusive**,
+  and a separate handoff agent fires only for wanting to stop or vulnerability
+  signs. It also merged the two guardrail numbers into "96 to 98% (injection,
+  hallucination)", and spelled an author wrongly. It never gave the venue, the
+  baseline problem, or Figure 1.
+- **Decision 2026-09-30 (instructor):** MCP and chain-of-thought are **taught briefly
+  as background** (not cut, not added to the demo code). The slides must say plainly
+  that the demo does not use them.
 
 ## Module 3, Grounded Generation, detail
 

@@ -1,12 +1,11 @@
 """Module 2: the same order-status agent, rebuilt on LangGraph.
 
-Used in lectures/dsca-module-02.html, slide 5 ("LangGraph: nodes, edges,
-and state as one object") and slide 9 ("The one multi-agent pattern this
-course teaches: routing and escalation"). Run this with `langgraph dev`
-from this folder (see ../README.md for setup) to open LangGraph Studio and
-step through the exact graph those two slides' boards describe: an agent
-node that decides, a tool node that runs the real lookup and loops back,
-and an escalate node for anything out of scope.
+Used in lectures/dsca-module-02.html, the instructor-demo slides whose
+labels start with "graph.py". Run this with `langgraph dev` from this
+folder (see ../README.md for setup) to open LangGraph Studio and step
+through the graph the lecture draws: an agent node that decides, a tool
+node that runs the lookup and loops back, and an escalate node for anything
+out of scope.
 
 The point of this file is that nothing about calling the model changed
 from raw_loop.py in this same folder: it is the same client.interactions.create
@@ -67,6 +66,7 @@ class AgentState(MessagesState):
 
     order_id: Optional[str]
     route: Optional[str]
+    reason: Optional[str]
 
 
 def get_order_status(order_id: str) -> str:
@@ -104,6 +104,7 @@ def agent_node(state: AgentState) -> dict:
         "messages": [note],
         "order_id": decision.get("order_id") or state.get("order_id"),
         "route": decision["action"],
+        "reason": decision.get("reason"),
     }
 
 
@@ -121,11 +122,13 @@ def tool_node(state: AgentState) -> dict:
 
 
 def escalate_node(state: AgentState) -> dict:
-    """Terminal node: the turn is flagged for a person instead of answered
-    automatically. This is the clean failure from slide 9, not a bug."""
+    """Terminal node: the turn is flagged for a person. The model's own
+    message to the customer is already in the history; this node adds the
+    hand-off note and keeps the model's reason so a person can read it."""
+    reason = state.get("reason") or "no reason given"
     return {
         "messages": [
-            AIMessage(content="Escalated to a human. No automatic reply was sent.")
+            AIMessage(content=f"Escalated to a human. Reason recorded: {reason}")
         ]
     }
 
@@ -161,6 +164,7 @@ if __name__ == "__main__":
             ],
             "order_id": None,
             "route": None,
+            "reason": None,
         }
     )
     # The graph returns LangChain message objects, not plain dicts, so print

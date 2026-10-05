@@ -174,7 +174,7 @@
         <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 375" preserveAspectRatio="none" aria-hidden="true">
           <defs><marker id="m2-arrow-mcp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
           <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m2-arrow-mcp)" d="M 260 190 L 700 190"/>
-          <text class="lu-edge-label" x="480" y="170">discover, call, get typed results</text>
+          <text class="lu-edge-label" text-anchor="middle"><tspan x="480" y="146">discover, call,</tspan><tspan x="480" y="170">get typed results</tspan></text>
         </svg>
         <button type="button" class="lu-node lu-node--class" style="left:22%;top:50%" data-term="Agent, as MCP client" data-kind="MCP"><template>Your agent node does not hardcode which tools exist or how to call each one. It asks the MCP server what is available, in a standard shape, the same way regardless of which tool server it is talking to.</template>Agent (client)</button>
         <button type="button" class="lu-node lu-node--instance" style="left:72%;top:50%" data-term="Tool server" data-kind="MCP"><template>Exposes tools behind one standard interface. Swap which server you point at, and your agent code calling it does not change, only what tools it discovers does.</template>Tool server</button>
@@ -268,11 +268,25 @@ reasoning: <span class="tok-str">"user wants order status, not a change"</span><
       </div>
     </div>
   </div>
-  <div class="lu-callout" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">Why not skip straight to the tool call</span>
-    <p class="lu-sub">The alternative is asking the model to emit a tool call directly, no reasoning field at all, which is cheaper (one shorter generation, not a reasoning trace plus a call) and works fine when only one tool could possibly apply. It gets measurably less reliable exactly where this walkthrough's example lives: several similar tools available and the right one depends on a distinction the request only implies (a status check versus a change). Forcing the intermediate "what is this request actually asking for" step before the tool choice is what chain-of-thought prompting buys here, at the cost of a longer, more expensive call every time, not just when it is needed.</p>
+  <div class="lu-split" style="margin-top:var(--lu-s4)">
+    <div class="lu-card lu-card--flat">
+      <span class="lu-card__label">Why not skip straight to the tool call?</span>
+      <ul class="lu-list lu-list--tight">
+        <li><b>Cheaper:</b> one short generation, no reasoning trace</li>
+        <li><b>Fine</b> when only one tool could apply</li>
+        <li><b>Less reliable</b> when similar tools differ by a hint (status check or change?)</li>
+      </ul>
+    </div>
+    <div class="lu-card">
+      <span class="lu-card__label">What reasoning first adds</span>
+      <ul class="lu-list lu-list--tight">
+        <li>A "what is this asking for?" step before the choice</li>
+        <li><b>Better picks</b> among similar tools</li>
+        <li><b>Cost:</b> a longer call every time, so use it where tools are ambiguous</li>
+      </ul>
+    </div>
   </div>
-  <template data-notes><p>Four minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today. If a team pushes back that this doubles their token cost for every tool call, that trade is exactly the point of the callout: pay it where tools are genuinely ambiguous, skip it where a request obviously has only one possible tool.</p></template>
+  <template data-notes><p>Four minutes. Step through all four. The point is not "the model reasons," it is that the reasoning is a visible, loggable artifact you can inspect when tool selection goes wrong, which it will, in the lab today. If a team pushes back that this doubles their token cost for every tool call, that trade is exactly the point of the two cards: pay it where tools are genuinely ambiguous, skip it where a request obviously has only one possible tool.</p></template>
 </section>
 
 <!-- ==================================================================== 10 -->
