@@ -1,9 +1,8 @@
 # Module 3 demo: hybrid search, reranking, citation, and refusal
 
-Used in `lectures/dsca-module-03.html`: slide 3 (hybrid search), slide 4
-(reciprocal rank fusion), slide 6 (reranking), and slide 8 (citation and
-the refusal path) in the Lecture section, and slides 18, 19, 21, and 22
-(the matching build walkthroughs) in the Hands-on lab. One script,
+Used in `lectures/dsca-module-03.html`: the live demo in the Hook, the lecture
+slides that compute BM25, cosine and RRF scores from this demo's real numbers,
+and Part 3 ("Watch it built"), whose slides start with "grounded_rag.py". One script,
 `grounded_rag.py`, builds a small fake FAQ knowledge base and runs the
 whole pipeline the lecture describes against it.
 
