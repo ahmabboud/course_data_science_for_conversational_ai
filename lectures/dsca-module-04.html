@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Memory · Data Science for Conversational AI, Module 4</title>
-<meta name="description" content="Module 4 of Data Science for Conversational AI, MSc, Lebanese University. Session versus persistent memory, the extract-and-update pattern (Mem0) and the temporal-knowledge-graph pattern (Zep/Graphiti), compaction with SeCom as a comparison, and what remembering a user costs in privacy risk.">
+<meta name="description" content="Module 4 of Data Science for Conversational AI, MSc, Lebanese University. Session and persistent memory, Mem0 and Zep, compaction, the privacy cost of remembering, the Mem0 research paper and an instructor demo.">
 <meta name="theme-color" content="#96122B">
 <link rel="manifest" href="../manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,541 +42,404 @@
 
     <div class="lu-stack">
       <div class="lu-eyebrow">Data Science for Conversational AI · Module 4 of 6</div>
-      <h1 class="lu-display" style="max-width:26ch">Memory</h1>
-      <p class="lu-lead" style="max-width:46ch">Let the agent remember, across turns and across separate sessions, without quietly becoming a privacy liability.</p>
+      <h1 class="lu-display" style="max-width:24ch">Memory</h1>
+      <p class="lu-lead" style="max-width:46ch">How an agent remembers a person across separate sessions, keeps a long conversation short, and does not become a privacy problem.</p>
     </div>
 
     <div class="lu-row" style="justify-content:space-between;font-size:var(--lu-t-caption);color:var(--lu-on-night-2)">
-      <span>180 minutes · 50 lecture · 100 hands-on lab · 30 discussion and wrap</span>
+      <span>180 minutes · 14 hook · 68 lecture · 37 research paper · 41 demo · 18 wrap-up · 2 opening</span>
       <span>Press <kbd>&rarr;</kbd> to begin · <kbd>?</kbd> for shortcuts</span>
     </div>
   </div>
   <template data-notes>
-    <p>First ninety seconds: Module 3 gave every team an agent that answers from a real source, cites it, and refuses when the source does not cover a question. That agent still has one embarrassing gap: it forgets the user the instant the session ends. Today it stops doing that, on purpose, and we spend real time on what that costs.</p>
-    <ul>
-      <li>Confirm out loud that Issue 3 is merged for every team. A team without working citation and refusal has nothing stable to attach persistent memory to today.</li>
-    </ul>
+    <p>First two minutes. Last week the agent learned to answer from a source and to refuse when the source is silent. Today it learns to remember a person. That sounds simple, and it hides three hard questions: where does a fact live, how does it change, and what does it cost to keep it.</p>
+    <p>Same promise as before: no word is used before I explain it, and nobody codes in class. I run the demos. Your own project work happens between sessions.</p>
   </template>
 </section>
-
 <!-- ==================================================================== 02 -->
-<section class="slide slide--night" data-chrome="none" data-label="Part 1 · Memory that survives the session" data-section="Lecture" data-minutes="1">
-  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
-    <div class="lu-eyebrow">Part one of two · 50 minutes</div>
-    <h2 class="lu-display-xl" style="max-width:24ch">Memory that survives the session</h2>
-    <p class="lu-lead" style="max-width:42ch">Two ways to persist a fact, a third way to keep a conversation from overflowing, and what it all costs in privacy risk.</p>
-  </div>
-  <template data-notes><p>Ten seconds. Say "today the agent keeps a self, not just a transcript, and that self has to be managed on purpose" and move on.</p></template>
+<section class="slide" data-label="Where Module 3 stopped" data-section="Hook" data-minutes="3">
+  <div class="lu-eyebrow">What the agent still cannot do</div>
+  <h2 class="lu-h2">Every new session, the agent meets the user for the first time</h2>
+  <div class="lu-walk" data-label="The agent that forgets"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 215, "nodes": [{"id": "a", "label": "Session 1\n\"I'm based in\nBeirut\"", "x": 135, "y": 108, "w": 240, "h": 100, "kind": "user"}, {"id": "b", "label": "The agent replies.\nThe list holds\nthe fact", "x": 425, "y": 108, "w": 250, "h": 100, "kind": "model"}, {"id": "c", "label": "Session 1 ends.\nThe list is\nthrown away", "x": 715, "y": 108, "w": 250, "h": 100, "kind": "code"}, {"id": "d", "label": "Session 2, next week\n\"Where do I live?\"", "x": 1005, "y": 108, "w": 260, "h": 100, "kind": "user"}, {"id": "e", "label": "\"I do not\nknow.\"", "x": 1320, "y": 108, "w": 200, "h": 100, "kind": "data"}], "edges": [{"id": "e1", "from": "a", "to": "b", "label": ""}, {"id": "e2", "from": "b", "to": "c", "label": ""}, {"id": "e3", "from": "c", "to": "d", "label": ""}, {"id": "e4", "from": "d", "to": "e", "label": ""}], "steps": [{"show": ["a"], "run": [], "set": {"a": "active"}}, {"show": ["b", "e1"], "run": ["e1"], "set": {"a": "idle", "b": "active"}}, {"show": ["c", "e2"], "run": ["e2"], "set": {"b": "idle", "c": "impossible"}}, {"show": ["d", "e", "e3", "e4"], "run": ["e3", "e4"], "set": {"c": "idle", "e": "impossible"}}], "legend": false, "flags": {"impossible": "lost"}}</script></div><div data-walk-step="1" data-caption-short="A fact is stated" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; In the first session the user tells the agent where they live."></div><div data-walk-step="2" data-caption-short="The list remembers it" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; Inside the session the agent is fine. The fact is in the message list from Module 2." hidden></div><div data-walk-step="3" data-caption-short="The session ends" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; The program stops. The message list lived inside it, so the list is gone." hidden></div><div data-walk-step="4" data-caption-short="A week later" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; A new session starts with an empty list. The agent has never heard of this user, even though the user told it everything last week." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">The gap</span><p class="lu-sub">The message list is <b>session memory</b>: it lives only as long as the program runs. Today is about the memory that does not.</p></div>
+  <template data-notes><p>Three minutes. Say it in one breath: the agent is perfect inside one session and a stranger in the next. That is not a bug in last week's agent. It is how the message list works.</p><p>Ask the room for one example from their own project where forgetting between sessions would hurt a real user.</p></template>
 </section>
-
 <!-- ==================================================================== 03 -->
-<section class="slide" data-label="The problem: a new session starts blank" data-section="Lecture" data-minutes="4">
-  <div class="lu-eyebrow">What Module 3's agent still cannot do</div>
-  <h2 class="lu-h1" style="max-width:36ch">Every new session, the agent meets the user for the first time</h2>
-  <div class="lu-board" style="margin-top:var(--lu-s4)">
-    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
-      <defs><marker id="m4-arrow-problem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m4-arrow-problem)" d="M 260 130 L 620 130"/>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-red-700);stroke:var(--lu-red-700);marker-end:url(#m4-arrow-problem)" d="M 260 290 L 620 290"/>
-      <text class="lu-edge-label" x="440" y="110">same session, later turn</text>
-      <text class="lu-edge-label" x="440" y="270" style="fill:var(--lu-red-700)">new session, next day</text>
-    </svg>
-    <div class="lu-node" style="left:12%;top:32%">Session 1, turn 1</div>
-    <button type="button" class="lu-node lu-node--instance" style="left:70%;top:32%" data-term="Session memory" data-kind="Already have this"><template>The message list already passed to the model this turn, everything from Module 2's state graph onward. It works perfectly inside one open session, that was never the gap.</template>Session 1, later turn: recalls fine</button>
-    <div class="lu-node" style="left:12%;top:72%">Session 1 ends</div>
-    <button type="button" class="lu-node" style="left:70%;top:72%;border-color:var(--lu-red-700);background:var(--lu-red-050)" data-term="Persistent memory" data-kind="The actual gap"><template>Nothing about the message-list model carries anything past the process, or the conversation, ending. A returning user is, to the agent, indistinguishable from a stranger, unless something was written down somewhere that survives independently of any one session.</template>Session 2, next week: blank slate</button>
-  </div>
-  <p class="lu-caption" style="margin-top:var(--lu-s4)">Session memory (the message list) is not the gap. Persistent, cross-session memory is: nothing written today is available to a session that has not even started yet.</p>
-  <template data-notes><p>Four minutes. Be precise about what already works: within one open session, the agent already "remembers" everything, that is just the message list. The actual, new problem today is a fact surviving the session boundary itself. This is the exact rubric bar from the syllabus: recall a specific user across two genuinely separate sessions, not just within a long single conversation.</p></template>
+<section class="slide" data-label="Live demo: stop the program, ask again" data-section="Hook" data-minutes="8">
+  <div class="lu-eyebrow">Watch first. Then we learn how it works.</div>
+  <h2 class="lu-h2">One script, four parts</h2>
+  <table class="lu-table"><thead><tr><th>Part of the demo</th><th>What I run</th><th>What to watch</th></tr></thead><tbody><tr><td>1 Remember a fact</td><td>"I'm based in Beirut", then "I just moved to Paris"</td><td>How many facts are stored?</td></tr><tr><td>2 A new session</td><td>A fresh memory object asks where the user lives</td><td>It finds Paris, with no help.</td></tr><tr><td>3 A long chat</td><td>25 turns cut to a budget of 20</td><td>The oldest turns become one summary.</td></tr><tr><td>4 Forget me</td><td>Delete everything for this user</td><td>Both checks show zero.</td></tr></tbody><caption>Real script: demos/module-04/memory_demo.py, with the Mem0 library and the model gemini-3.1-flash-lite.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">A question to hold</span><p class="lu-sub">Guess before I run it: after the second sentence, how many facts about where the user lives are stored? One or two?</p></div>
+  <template data-notes><p>Eight minutes. I run the whole script once and read the output aloud, part by part. I do not explain the code yet: that comes in Part 3.</p><p>The surprise is in part 1: the library stores both statements. Many students expect it to notice that Paris replaces Beirut by itself. Take a few guesses before I run it.</p><p>If the connection fails, the real outputs are on the demo slides later in this deck, and I use those.</p></template>
 </section>
-
 <!-- ==================================================================== 04 -->
-<section class="slide slide--tint" data-label="Two ways to persist a fact" data-section="Lecture" data-minutes="4">
-  <div class="lu-eyebrow">Today's two working examples</div>
-  <h2 class="lu-h1" style="max-width:34ch">Two different answers to "where does a fact live once the session ends"</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">Extract, then update a flat list</span>
-      <p class="lu-sub">Pull facts out of each turn, compare each one to what is already stored, and issue one instruction: add it, fix an existing fact, drop a contradicted one, or do nothing. <b>Mem0</b> is today's worked example.</p>
-    </div>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">Build a graph that carries time</span>
-      <p class="lu-sub">Represent facts as edges between entities, each edge stamped with when it became true and when, if ever, it stopped being true. <b>Zep</b>, via its graph engine <b>Graphiti</b>, is today's worked example.</p>
-    </div>
-  </div>
-  <p class="lu-caption" style="margin-top:var(--lu-s4)">Both reject the same naive option: just re-feeding the entire conversation history back to the model every session, which is exactly what Module 3's cache-augmented generation question already showed does not scale past a small, stable knowledge base.</p>
-  <template data-notes><p>Four minutes. Name both tools once, plainly, before going deep on either: Mem0 (extract-and-update) and Zep/Graphiti (temporal graph) are the syllabus's own named working examples. Today's lab wires in Mem0 specifically; the lecture still covers Zep's approach in real depth, because understanding the alternative is what lets a team argue their choice was a real decision, not a default.</p></template>
+<section class="slide" data-label="Today in one picture" data-section="Hook" data-minutes="3">
+  <div class="lu-eyebrow">Where we are going</div>
+  <h2 class="lu-h2">Five ideas about memory</h2>
+  <div class="lu-walk" data-label="Plan of the module"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 190, "nodes": [{"id": "n1", "label": "1 Where facts\nlive", "x": 140, "y": 95, "w": 250, "h": 100, "kind": "code"}, {"id": "n2", "label": "2 Extract\nand update", "x": 430, "y": 95, "w": 250, "h": 100, "kind": "model"}, {"id": "n3", "label": "3 Facts with\na timeline", "x": 720, "y": 95, "w": 250, "h": 100, "kind": "tool"}, {"id": "n4", "label": "4 Keep a long\nchat short", "x": 1010, "y": 95, "w": 250, "h": 100, "kind": "model"}, {"id": "n5", "label": "5 What it costs\nin privacy", "x": 1300, "y": 95, "w": 250, "h": 100, "kind": "user"}], "edges": [{"id": "a", "from": "n1", "to": "n2", "label": ""}, {"id": "b", "from": "n2", "to": "n3", "label": ""}, {"id": "c", "from": "n3", "to": "n4", "label": ""}, {"id": "d", "from": "n4", "to": "n5", "label": ""}], "steps": [{"show": ["n1"], "run": [], "set": {"n1": "active"}}, {"show": ["n2", "a"], "run": ["a"], "set": {"n1": "idle", "n2": "active"}}, {"show": ["n3", "b"], "run": ["b"], "set": {"n2": "idle", "n3": "active"}}, {"show": ["n4", "c"], "run": ["c"], "set": {"n3": "idle", "n4": "active"}}, {"show": ["n5", "d"], "run": ["d"], "set": {"n4": "idle", "n5": "active"}}], "legend": false}</script></div><div data-walk-step="1" data-caption-short="Where facts live" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; Session memory versus persistent memory, and why sending the whole history every time does not work."></div><div data-walk-step="2" data-caption-short="Extract and update" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; The first answer, used by &lt;b&gt;Mem0&lt;/b&gt;: pull short facts out of the chat and keep one clean list." hidden></div><div data-walk-step="3" data-caption-short="A timeline" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; The second answer, used by &lt;b&gt;Zep&lt;/b&gt;: store facts as a graph and write down when each one was true." hidden></div><div data-walk-step="4" data-caption-short="A short chat" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; Separate problem: a conversation that never ends must still fit in the model&#x27;s window. This is &lt;b&gt;compaction&lt;/b&gt;." hidden></div><div data-walk-step="5" data-caption-short="The privacy cost" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; A memory is a record about a person. We end with what that costs, and a preview of Module 5." hidden></div></div></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">Then</span><p class="lu-sub">After the lecture we read the Mem0 paper closely. Then I run the demo again and explain every part.</p></div>
+  <template data-notes><p>Three minutes. Walk the five boxes and do not explain any of them yet.</p><p>Syllabus match: the lecture covers session versus persistent memory, the two patterns with Mem0 and Zep as working examples, compaction, and the privacy cost. SeCom is the assigned reading for compaction.</p></template>
 </section>
-
 <!-- ==================================================================== 05 -->
-<section class="slide" data-label="Extract-and-update: Mem0's mechanism" data-section="Lecture" data-minutes="7">
-  <div class="lu-eyebrow">Mem0: a flat memory bank, kept clean</div>
-  <h2 class="lu-h1" style="max-width:36ch">Every new fact gets compared to what you already know</h2>
-  <div class="lu-walk" data-label="Mem0's extract-and-update walkthrough">
-    <div class="lu-walk__view">
-      <div data-walk-step="1" data-caption-short="Extract candidate facts"
-           data-caption="<b>Step 1.</b> An LLM reads the new exchange and pulls out salient facts as short, atomic statements, not the raw turn itself.">
-        <div class="lu-code lu-code--sm" data-name="extraction">
-<pre><code>turn: <span class="tok-str">"I just moved from Beirut to Paris for work."</span>
-<span class="tok-com"># extracted candidate: {"text": "lives in Paris", "entity": "user"}</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="2" data-caption-short="Compare to existing memory" hidden
-           data-caption="<b>Step 2.</b> The candidate is compared against the memory bank by embedding similarity, not exact string match, so a paraphrase of an existing fact is still recognised as the same fact.">
-        <div class="lu-code lu-code--sm" data-name="comparison">
-<pre><code>existing: <span class="tok-str">"lives in Beirut"</span>   similarity(new, existing) = <span class="tok-num">0.86</span>
-<span class="tok-com"># high similarity: this is very likely an update to the same fact,</span>
-<span class="tok-com"># not a new, unrelated one</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="3" data-caption-short="Issue one instruction" hidden
-           data-caption="<b>Step 3.</b> Given the candidate and its closest existing match, decide which of four operations applies. Exactly one instruction per candidate, never a silent duplicate, but see the callout below for who actually makes this decision in the library you will run today.">
-        <div class="lu-code lu-code--sm" data-name="the four operations">
-<pre><code><span class="tok-kw">ADD</span>     <span class="tok-com"># genuinely new fact, no close existing match</span>
-<span class="tok-kw">UPDATE</span>  <span class="tok-com"># contradicts or refines an existing fact ("Beirut" -> "Paris")</span>
-<span class="tok-kw">DELETE</span> <span class="tok-com"># existing fact is now explicitly false</span>
-<span class="tok-kw">NOOP</span>   <span class="tok-com"># candidate already fully covered by what is stored</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="4" data-caption-short="Apply it, memory stays clean" hidden
-           data-caption="<b>Step 4.</b> Whoever owns this decision applies it with an explicit call. There is never more than one live fact per real-world claim, which is exactly what keeps the memory bank from becoming a growing pile of stale duplicates, but only because something enforces it.">
-        <div class="lu-code lu-code--sm" data-name="the result">
-<pre><code>UPDATE("lives in Beirut" -> "lives in Paris")
-<span class="tok-com"># one current fact, not two contradictory ones sitting side by side</span></code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="lu-callout" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">Read this critically: paper versus the library you actually run</span>
-    <p class="lu-sub">This four-operation pipeline is Mem0's own paper's description of its design. Verified directly against the installed <code>mem0ai</code> package (2.0.20, this course's own pin), not assumed from the paper: a plain <code>memory.add()</code> call is currently additive only. It does not run step 2's comparison and choose UPDATE or DELETE for you, a restated fact comes back as a second, separate ADD. A real application has to detect the conflict itself and call <code>memory.update()</code> and <code>memory.delete()</code> explicitly, exactly what <code>demos/module-04/memory_demo.py</code>'s <code>session_one()</code> does. Always check a paper's described mechanism against the exact library version you actually run, not just the paper's own claims about it.</p>
-  </div>
-  <div class="lu-reveal" style="margin-top:var(--lu-s4)">
-    <button class="lu-reveal__btn" type="button">The cost this mechanism does not advertise</button>
-    <div class="lu-reveal__panel" hidden>
-      <p class="lu-sub">Step 2, whether run automatically by a library or by your own conflict-resolution code, is a similarity search against the <i>entire</i> existing memory bank for every single incoming fact. Done naively, that is <b>O(n)</b> comparisons per new fact against n stored facts, the exact same scaling concern Module 3 raised about vector search at scale: a small personal memory bank never notices, a memory bank shared across many users or growing for months needs the same approximate-nearest-neighbour indexing already covered for document retrieval, not a linear scan re-derived from scratch.</p>
-      <p class="lu-sub">On real benchmarks (LOCOMO, GPT-4o-mini scale), Mem0 answers from roughly 1,764 tokens of retrieved memory versus 26,031 tokens for replaying the full transcript, about 15 times less context per query, at a median search latency of about 0.15 seconds.</p>
-    </div>
-  </div>
-  <template data-notes><p>Seven minutes. Step through all four operations as the paper's own conceptual design, then open the "read this critically" callout and say it plainly: the installed library's own add() call does not run this decision for you, your application code does, exactly what demos/module-04/memory_demo.py's session_one() demonstrates with real update() and delete() calls. Then open the cost reveal and say the complexity point: comparing every new fact against every stored fact does not stay cheap forever, whoever runs that comparison, this is the same lesson as vector search at scale, applied to a different data structure. The token and latency numbers are real, from the Mem0 paper (arXiv:2504.19413), not illustrative round numbers, say so if asked. The infographic at <code>assets/infographics/module-04/mem0.html</code> is a visual companion to this whole walkthrough, open it live if the room responds better to a diagram than to code.</p></template>
-</section>
-
-<!-- ==================================================================== 06 -->
-<section class="slide slide--tint" data-label="Temporal knowledge graph: Zep/Graphiti's mechanism" data-section="Lecture" data-minutes="7">
-  <div class="lu-eyebrow">Zep / Graphiti: facts that carry a timeline</div>
-  <h2 class="lu-h1" style="max-width:36ch">A fact is never deleted, it is closed and superseded</h2>
-  <div class="lu-board" style="margin-top:var(--lu-s4)">
-    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 375" preserveAspectRatio="none" aria-hidden="true">
-      <defs><marker id="m4-arrow-graph" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m4-arrow-graph)" d="M 200 190 L 480 190"/>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m4-arrow-graph)" d="M 640 190 L 920 190"/>
-      <text class="lu-edge-label" x="340" y="170">extracted into</text>
-      <text class="lu-edge-label" x="780" y="170">summarised into</text>
-    </svg>
-    <div class="lu-node" style="left:10%;top:52%">Raw episodes (messages)</div>
-    <button type="button" class="lu-node lu-node--instance" style="left:48%;top:52%" data-term="Entities and facts" data-kind="The graph itself"><template>Entities (people, places, things) as nodes; facts as edges between them. Each edge is stamped with valid_at, when the fact became true, and invalid_at, when it stopped being true or was superseded, following the same "close, do not delete" discipline Module 3 introduced for citation sources.</template>Entities + facts (temporal edges)</button>
-    <div class="lu-node" style="left:88%;top:52%">Communities</div>
-  </div>
-  <div class="lu-callout" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">The same "lives in Paris" example, as a graph</span>
-    <p class="lu-sub">edge(user, lives_in, Beirut), valid_at: 2025-01, invalid_at: 2025-09. edge(user, lives_in, Paris), valid_at: 2025-09, invalid_at: null. Both edges stay in the graph; a query about last January still gets the right answer, a query about today gets the other one.</p>
-  </div>
-  <template data-notes><p>Seven minutes. The core contrast with Mem0: Mem0 keeps one current fact per claim and overwrites it, Zep keeps every version and lets time itself disambiguate which one a query needs. This is exactly why Zep suits questions like "where did the user live before Paris," which a flat extract-and-update store has already discarded the means to answer. On real benchmarks (LongMemEval), Zep improves accuracy by up to 18.5% and cuts response latency by about 90% versus replaying full history, real numbers from the Zep paper (arXiv:2501.13956). The infographic at <code>assets/infographics/module-04/zep-graphiti.html</code> is a visual companion to this walkthrough.</p></template>
-</section>
-
-<!-- ==================================================================== 07 -->
-<section class="slide" data-label="Check: which pattern actually buys you what" data-section="Lecture" data-minutes="4">
-  <div class="lu-eyebrow">Check question</div>
-  <div class="lu-split lu-split--wide-left">
-    <div class="lu-mcq" data-qid="m4-q1" data-answer="c"
-         data-label="What the temporal graph buys you that a flat extract-and-update store does not"
-         data-fb-correct=" Correct: a flat store's UPDATE operation is exactly this, it overwrites the old value so the question it could have answered a moment ago is now unanswerable."
-         data-fb-wrong=" Reconsider what UPDATE actually does to the old fact in a flat store, versus what invalid_at does to an old edge in a graph.">
-      <p class="lu-mcq__q">A user asks, "where did I live before I moved to Paris?" Which memory pattern can answer this, and why?</p>
-      <div class="lu-mcq__opts">
-        <button class="lu-mcq__opt" type="button" data-key="a">Neither can, this needs a fresh web search<span class="lu-mcq__why" hidden>The information was already stated by the user earlier in the relationship; the question is whether either memory pattern kept it, not whether it exists anywhere.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="b">Mem0, because ADD keeps every fact ever extracted<span class="lu-mcq__why" hidden>ADD is for genuinely new facts. A contradicting later fact ("Paris") should trigger an explicit UPDATE on the same claim (your own application's job, not something add() does for you), which is exactly the operation that replaces the old value.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="c">Zep, because the old "lives in Beirut" edge is closed (invalid_at set) rather than overwritten<span class="lu-mcq__why" hidden>Correct: the temporal graph keeps every edge, closed or open, so a question about a past state has an answer a flat store already discarded.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="d">Both equally well, the underlying LLM call is the same either way<span class="lu-mcq__why" hidden>The LLM call pattern looks similar, but what the store actually retains afterward is not the same, and that difference is the entire point of today's comparison.</span></button>
-      </div>
-      <div class="lu-mcq__fb" hidden></div>
-    </div>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">The idea behind the question</span>
-      <p class="lu-sub">A flat extract-and-update store optimises for "what is true right now, as compactly as possible." A temporal graph optimises for "what was true when," at the cost of a richer, more expensive structure to build and query.</p>
-    </div>
-  </div>
-  <template data-notes><p>Forty seconds, then reveal. This is the tradeoff, not a "which one is better" question: Mem0 is simpler and cheaper to run; Zep answers a class of question Mem0's own design has thrown away the means to answer. Both are legitimate choices depending on whether historical, "as of when" questions matter for a team's domain.</p></template>
-</section>
-
-<!-- ==================================================================== 08 -->
-<section class="slide slide--tint" data-label="Compaction: keeping a long conversation from overflowing" data-section="Lecture" data-minutes="7">
-  <div class="lu-eyebrow">The other half of memory: not overflowing in the first place</div>
-  <h2 class="lu-h1" style="max-width:36ch">A conversation that never ends still has to fit in a context window</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <ul class="lu-list">
-      <li><b>Truncation.</b> Drop the oldest turns once a budget is hit. Cheapest option, and the one most likely to silently drop the exact fact a later question needs.</li>
-      <li><b>Summarisation.</b> Periodically compress old turns into a running summary. Keeps more, but a summary quietly loses the details Module 3's chunking slide already warned about.</li>
-      <li><b>Segment, then compress.</b> Split the conversation into topically coherent segments first, then denoise each segment with a prompt-compression model before it ever reaches retrieval. <b>SeCom</b> is this course's third technique, assigned as this module's reading rather than a full research dive.</li>
-    </ul>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">SeCom's own reported numbers</span>
-      <p class="lu-sub">On LOCOMO, reading back the full transcript scores 54.2 (GPT4Score); segment-then-compress scores 71.6, a +17.4 point gain, using a compression rate of about 75% (LLMLingua-2). Removing the compression step alone costs 9.46 of those points back, the paper's own ablation, not a rounded estimate.</p>
-    </div>
-  </div>
-  <template data-notes><p>Seven minutes. The throughline: none of the three options is "no cost." Truncation loses whatever falls off the edge, summarisation loses whatever a summary was not built to preserve, segment-then-compress spends a whole extra model call (LLMLingua-2) per segment to avoid both. Name the syllabus's own bar plainly: a long conversation must be compacted, not silently truncated or overflowed, that is graded, not optional. The infographic at <code>assets/infographics/module-04/secom.html</code> is a visual companion to SeCom's own numbers here.</p></template>
-</section>
-
-<!-- ==================================================================== 09 -->
-<section class="slide" data-label="What persistent memory costs in privacy risk" data-section="Lecture" data-minutes="5">
-  <div class="lu-eyebrow">The bill that comes with remembering</div>
-  <h2 class="lu-h1" style="max-width:34ch">A memory bank is a record, and records have obligations</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <ul class="lu-list">
-      <li>Every persisted fact is, by construction, data retained about a specific person, often including things they mentioned in passing and never meant to be stored indefinitely.</li>
-      <li>A memory bank keyed by the wrong identifier can leak one user's facts into another user's session, a bug that looks like "the agent is confused" until it is traced back to a shared or mis-scoped store.</li>
-      <li>A stored fact that is wrong, outdated, or sensitive does not fix itself, and a user has no way to know what the agent "remembers" about them unless the system is built to say so.</li>
-    </ul>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">Previewing Module 5</span>
-      <p class="lu-sub">Bias probing and PII handling, next module, are not a separate topic from memory, they are what memory turns into once it is deployed. Today's lab includes a deliberately small, concrete version of this: a working "forget this user" operation.</p>
-    </div>
-  </div>
-  <template data-notes><p>Five minutes. Keep this concrete, not abstract: name the mis-scoped-store failure mode plainly, since it is the one teams are most likely to actually hit if their memory store is keyed by session id instead of user id. This is the bridge into the discussion slide at the end of today's session.</p></template>
-</section>
-
-<!-- ==================================================================== 10 -->
-<section class="slide slide--tint" data-label="Three techniques, three different jobs" data-section="Lecture" data-minutes="7">
-  <div class="lu-eyebrow">Zep, Mem0, and SeCom, side by side</div>
-  <h2 class="lu-h1" style="max-width:34ch">Not competitors, three answers to three different questions</h2>
-  <table class="lu-table" style="margin-top:var(--lu-s4)">
-    <thead><tr><th>Technique</th><th>Core mechanism</th><th>Best fit</th><th>Real cost</th></tr></thead>
-    <tbody>
-      <tr><td>Mem0 (extract-and-update)</td><td>Flat facts, ADD / UPDATE / DELETE / NOOP</td><td>A clean, current profile of one user, cheaply</td><td>Similarity search grows with memory size; no native "as of when"</td></tr>
-      <tr><td>Zep / Graphiti (temporal graph)</td><td>Entities and time-stamped fact edges</td><td>Multi-hop and "as of when" questions across a relationship</td><td>Richer infrastructure (a real graph) to build and query</td></tr>
-      <tr><td>SeCom (segment + compress)</td><td>Topical segments, then prompt-compression denoising</td><td>Keeping one long conversation itself from overflowing</td><td>An extra compression model call per segment</td></tr>
-    </tbody>
-  </table>
-  <div class="lu-callout lu-callout--concept" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">Read critically, not as a leaderboard</span>
-    <p class="lu-sub">SeCom's own numbers are strong on LOCOMO, but SeCom was built to answer "how should I chunk and denoise one long conversation," not "how do I track a fact that changes over months across many sessions," the problem Mem0 and Zep are actually built for. A benchmark win on one axis does not make a technique the right choice on a different axis.</p>
-  </div>
-  <template data-notes><p>Seven minutes. This slide is today's version of Module 3's CAG-versus-RAG comparison: three real, verified results sitting side by side, with an explicit warning against treating "highest score" as "best tool," since each paper was solving a differently scoped problem. This also discharges this module's assigned reading (the SeCom paper) as a genuine comparison rather than a name-drop. The infographic at <code>assets/infographics/module-04/memory-techniques-comparison.html</code> puts all three side by side visually, the same comparison this table makes in words.</p></template>
-</section>
-
-<!-- ==================================================================== 11 -->
-<section class="slide" data-label="Bridge to the lab: build it, on your own agent" data-section="Lecture" data-minutes="4">
-  <div class="lu-eyebrow">Today's pipeline, in one line</div>
-  <h2 class="lu-h2">Extract and update, or track over time, then compact so nothing overflows</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <ul class="lu-list">
-      <li>Your team's agent gets a real, working memory today, not a diagram of one.</li>
-      <li>You are wiring in Mem0 specifically, the simpler of today's two patterns to stand up in one lab session with only the API key you already have.</li>
-      <li>The bar is concrete: recall a specific user across two genuinely separate sessions, and compact a long conversation instead of letting it overflow.</li>
-    </ul>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">A question worth sitting with</span>
-      <p class="lu-sub">If your team's project needed "as of when" questions instead, would today's Mem0 wiring still be the right call, or would the graph pattern's extra cost actually pay for itself?</p>
-    </div>
-  </div>
-  <template data-notes><p>Four minutes. Do not resolve the question, let it sit, it is exactly the shape of the discussion prompt waiting at the end of today's session. Land the bridge plainly and move into the divider: today is Mem0 in practice, with Zep and SeCom understood well enough to justify not using them.</p></template>
-</section>
-
-<!-- ==================================================================== 12 -->
-<section class="slide slide--night" data-chrome="none" data-label="Part 2 · Build it: memory across two sessions" data-section="Hands-on lab" data-minutes="1">
+<section class="slide slide--night" data-chrome="none" data-label="Part 1 · Where do facts live?" data-section="Lecture" data-minutes="1">
   <div class="slide__body lu-center" style="gap:var(--lu-s5)">
-    <div class="lu-eyebrow">Part two of two · 100 minutes</div>
-    <h2 class="lu-display-xl" style="max-width:22ch">Build it: memory across two sessions</h2>
-    <p class="lu-lead" style="max-width:40ch">Extract facts, keep them clean, retrieve them, compact what grows too large.</p>
+    <div class="lu-eyebrow">Part one of two · about 25 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">Where do facts live?</h2>
+    <p class="lu-lead" style="max-width:44ch">First the vocabulary and the two obvious ideas that do not work. Then the first real answer.</p>
   </div>
-  <template data-notes><p>Ten seconds. "By the end of this block your agent recognises a returning user without you re-typing anything," then start the brief.</p></template>
+  <template data-notes><p>Ten seconds. Promise again: every new word is explained on the slide where it first appears.</p></template>
 </section>
-
+<!-- ==================================================================== 06 -->
+<section class="slide" data-label="Two kinds of memory" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Start with the vocabulary</div>
+  <h2 class="lu-h2">Session memory ends. Persistent memory does not.</h2>
+  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 230, "nodes": [{"id": "s1", "label": "Session 1\nmessage list", "x": 190, "y": 75, "w": 290, "h": 84, "kind": "code"}, {"id": "st", "label": "Memory store\nkept on disk,\nkeyed by user_id", "x": 724, "y": 115, "w": 310, "h": 100, "kind": "data"}, {"id": "s2", "label": "Session 2\nmessage list", "x": 1258, "y": 75, "w": 290, "h": 84, "kind": "code"}], "edges": [{"id": "e1", "from": "s1", "to": "st", "label": "write", "route": "elbow", "sides": ["right", "top"]}, {"id": "e2", "from": "st", "to": "s2", "label": "read", "route": "elbow", "sides": ["top", "left"]}], "steps": [{"show": ["s1", "st", "s2", "e1", "e2"], "run": [], "set": {}}], "legend": false}</script></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Session memory</b>: the message list of one running conversation. It ends when the program ends. <b>Persistent memory</b> (also called cross-session or long-term memory): facts saved outside the program, so a later session can read them. <b>user_id</b>: a name for one person that stays the same across all their sessions.</p></div>
+  <template data-notes><p>Four minutes. Two lists, one store. The key is the person, not the conversation. If the store were keyed by session, the second session could never find what the first one wrote.</p><p>Common mistake I will name now: using a session id where a user id belongs. It makes recall work inside one run and fail in the next. It is the first bug on the likely-bugs slide.</p></template>
+</section>
+<!-- ==================================================================== 07 -->
+<section class="slide" data-label="Why not send the whole history every time?" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">The obvious idea, and its limits</div>
+  <h2 class="lu-h2">Sending everything is slow, and not always more accurate</h2>
+  <table class="lu-table"><thead><tr><th>Paper and test</th><th>Method</th><th>Tokens sent</th><th>Time</th><th>Score</th></tr></thead><tbody><tr><td>Mem0 paper (chats of 26,000 tokens)</td><td>Full history</td><td>26,031</td><td>17.1 s (p95)</td><td>72.9</td></tr><tr><td></td><td>Mem0 memory</td><td>1,764</td><td>1.4 s (p95)</td><td>66.9</td></tr><tr><td>Zep paper (chats of 115,000 tokens)</td><td>Full history</td><td>115,000</td><td>28.9 s</td><td>60.2</td></tr><tr><td></td><td>Zep memory</td><td>1,600</td><td>2.6 s</td><td>71.2</td></tr></tbody><caption>Each paper tests its own system. Compare inside one paper only. p95: 95 of 100 replies were faster.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Context window</b>: the most text (in tokens) a model can read in one call. Even if a whole chat fits, sending it every time is slow and costly, and the one useful fact can get lost in the rest.</p></div>
+  <template data-notes><p>Four minutes. Two lessons. First, sending everything is slow: seventeen seconds at the slow end is too long for a chat. Second, sending everything is not always best: in the second paper, the memory system scored higher than the full history, probably because the model had less noise to read.</p><p>I am careful here: these are two company papers, each testing its own product. I come back to that in the critical read. The Mem0 paper also shows that full history gave the highest score in its own test, 72.9 against 66.9. So memory trades a few points of accuracy for a large saving in time and cost, in that test.</p><p>The Mem0 paper reports a 95th-percentile time. The Zep paper reports a typical (median-style) time, so the two time columns are not the same measure. I say that aloud.</p></template>
+</section>
+<!-- ==================================================================== 08 -->
+<section class="slide" data-label="Similarity: how a memory is found" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">A recap from Module 3, now used for memory</div>
+  <h2 class="lu-h2">Memory is found by meaning, not by exact words</h2>
+  <div class="lu-walk" data-label="Finding the right memory"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 215, "nodes": [{"id": "q", "label": "Question:\n\"Where does the user\nlive now?\"", "x": 150, "y": 88, "w": 270, "h": 100, "kind": "user"}, {"id": "em", "label": "Embedding\nmodel", "x": 510, "y": 88, "w": 200, "h": 84, "kind": "model"}, {"id": "v", "label": "A list of\n768 numbers", "x": 790, "y": 88, "w": 200, "h": 84, "kind": "data"}, {"id": "m", "label": "Stored fact:\n\"User lives in Paris\nfor work\"", "x": 1130, "y": 88, "w": 310, "h": 100, "kind": "data"}, {"id": "sc", "label": "score 0.83", "x": 1130, "y": 188, "w": 200, "h": 40, "kind": "data"}], "edges": [{"id": "e1", "from": "q", "to": "em", "label": ""}, {"id": "e2", "from": "em", "to": "v", "label": ""}, {"id": "e3", "from": "v", "to": "m", "label": ""}], "steps": [{"show": ["q"], "run": [], "set": {"q": "active"}}, {"show": ["em", "e1", "v", "e2"], "run": ["e1", "e2"], "set": {"q": "idle", "v": "inferred"}}, {"show": ["m", "e3", "sc"], "run": ["e3"], "set": {"v": "idle", "m": "active", "sc": "inferred"}}], "legend": false, "flags": {"inferred": "new"}}</script></div><div data-walk-step="1" data-caption-short="A question arrives" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The agent needs to know where the user lives. It has a store of short stored facts."></div><div data-walk-step="2" data-caption-short="Turn it into numbers" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; An &lt;b&gt;embedding model&lt;/b&gt; turns the question into a list of numbers that stands for its meaning. The stored facts were turned into lists in the same way, when they were saved." hidden></div><div data-walk-step="3" data-caption-short="Compare the lists" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; The program compares the question&#x27;s list with each stored fact&#x27;s list. The closer the meaning, the higher the &lt;b&gt;similarity score&lt;/b&gt;. In the real demo this fact scored 0.83." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Embedding</b>: a list of numbers for the meaning of a text; texts with similar meaning get similar lists (you met this in Module 3). <b>Similarity score</b>: a number for how close two lists are, higher is closer. This is how a memory is found even when the words differ: "lives" and "based" can still match.</p></div>
+  <template data-notes><p>Four minutes. A short recap of Module 3, tied to memory. The word-for-word match fails when the question says 'live' and the fact says 'based'. A meaning match works.</p><p>The 0.83 is real: it is the score printed in the live demo for the question in this slide and the stored fact. The embedding model in the demo is Gemini's, and it returns 768 numbers per text.</p></template>
+</section>
+<!-- ==================================================================== 09 -->
+<section class="slide" data-label="Extract and update" data-section="Lecture" data-minutes="5">
+  <div class="lu-eyebrow">The first answer: Mem0</div>
+  <h2 class="lu-h2">Pull out the facts, then keep one clean list</h2>
+  <div class="lu-walk" data-label="The idea of extract and update"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 130, "nodes": [{"id": "t", "label": "New exchange", "x": 150, "y": 65, "w": 240, "h": 64, "kind": "user"}, {"id": "x", "label": "LLM extracts facts", "x": 470, "y": 65, "w": 250, "h": 64, "kind": "model"}, {"id": "c", "label": "Compare with store", "x": 800, "y": 65, "w": 250, "h": 64, "kind": "code"}, {"id": "d", "label": "LLM picks one", "x": 1100, "y": 65, "w": 230, "h": 64, "kind": "model"}, {"id": "s", "label": "Store changed", "x": 1340, "y": 65, "w": 190, "h": 64, "kind": "data"}], "edges": [{"id": "a", "from": "t", "to": "x", "label": ""}, {"id": "b", "from": "x", "to": "c", "label": ""}, {"id": "c1", "from": "c", "to": "d", "label": ""}, {"id": "d1", "from": "d", "to": "s", "label": ""}], "steps": [{"show": ["t"], "run": [], "set": {"t": "active"}}, {"show": ["x", "a"], "run": ["a"], "set": {"t": "idle", "x": "active"}}, {"show": ["c", "b"], "run": ["b"], "set": {"x": "idle", "c": "active"}}, {"show": ["d", "c1", "s", "d1"], "run": ["c1", "d1"], "set": {"c": "idle", "d": "active", "s": "inferred"}}], "legend": false, "flags": {"inferred": "new"}}</script></div><div data-walk-step="1" data-caption-short="A new exchange" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; After each turn the memory system looks at what was just said."></div><div data-walk-step="2" data-caption-short="Extract" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; An LLM pulls out the useful facts, as short sentences. &quot;I just moved from Beirut to Paris&quot; becomes the fact &quot;lives in Paris&quot;." hidden></div><div data-walk-step="3" data-caption-short="Compare" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; Each new fact is compared with the stored facts that are most similar to it." hidden></div><div data-walk-step="4" data-caption-short="Update" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; An LLM chooses one of four operations. The store is changed, so it stays one clean list." hidden></div></div></div><table class="lu-table"><thead><tr><th>Operation</th><th>When</th><th>Example</th></tr></thead><tbody><tr><td>ADD</td><td>A new fact, nothing similar stored</td><td>First mention of where the user lives</td></tr><tr><td>UPDATE</td><td>A stored fact must be corrected</td><td>"Beirut" becomes "Paris"</td></tr><tr><td>DELETE</td><td>A stored fact is now false</td><td>The user sold the car</td></tr><tr><td>NOOP</td><td>Nothing to change</td><td>The user repeats "I live in Paris"</td></tr></tbody></table>
+  <template data-notes><p>Five minutes. The four words are the whole design. Say them aloud and give the one-line meaning of each. NOOP means no operation: do nothing.</p><p>Examples for DELETE and NOOP are invented for teaching. The Beirut and Paris example is the one in the demo.</p><p>This is the design of Mem0, described in its paper. Two slides from now I show what the library you run actually does, because it is not the same.</p></template>
+</section>
+<!-- ==================================================================== 10 -->
+<section class="slide" data-label="Walk: Beirut to Paris" data-section="Lecture" data-minutes="5">
+  <div class="lu-eyebrow">The design on one example</div>
+  <h2 class="lu-h2">UPDATE replaces. The old fact is gone.</h2>
+  <div class="lu-walk" data-label="Beirut to Paris"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 280, "nodes": [{"id": "t", "label": "\"I just moved from\nBeirut to Paris\"", "x": 190, "y": 60, "w": 330, "h": 84, "kind": "user"}, {"id": "cf", "label": "Candidate fact:\n\"lives in Paris\"", "x": 640, "y": 60, "w": 300, "h": 84, "kind": "data"}, {"id": "sm", "label": "Similar stored fact:\n\"lives in Beirut\"  (0.86)", "x": 1120, "y": 60, "w": 400, "h": 84, "kind": "data"}, {"id": "op", "label": "Decision:\nUPDATE", "x": 1120, "y": 205, "w": 230, "h": 84, "kind": "model"}, {"id": "af", "label": "After:\n\"lives in Paris\"", "x": 640, "y": 205, "w": 300, "h": 84, "kind": "data"}, {"id": "b", "label": "Before:\n\"lives in Beirut\"", "x": 190, "y": 205, "w": 280, "h": 84, "kind": "data"}], "edges": [{"id": "e1", "from": "t", "to": "cf", "label": ""}, {"id": "e2", "from": "cf", "to": "sm", "label": "search"}, {"id": "e3", "from": "sm", "to": "op", "label": ""}, {"id": "e4", "from": "op", "to": "af", "label": ""}], "steps": [{"show": ["b", "t"], "run": [], "set": {"t": "active", "b": "idle"}}, {"show": ["cf", "e1"], "run": ["e1"], "set": {"t": "idle", "cf": "active"}}, {"show": ["sm", "e2"], "run": ["e2"], "set": {"cf": "idle", "sm": "inferred"}}, {"show": ["op", "e3"], "run": ["e3"], "set": {"sm": "idle", "op": "active"}}, {"show": ["af", "e4"], "run": ["e4"], "set": {"op": "idle", "af": "inferred", "b": "impossible"}}], "legend": false, "flags": {"inferred": "new", "impossible": "replaced"}}</script></div><div data-walk-step="1" data-caption-short="The store and the new turn" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The store holds one fact, &quot;lives in Beirut&quot;. The user says they moved to Paris."></div><div data-walk-step="2" data-caption-short="Extract the fact" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; The LLM extracts a candidate: the user lives in Paris." hidden></div><div data-walk-step="3" data-caption-short="Find the nearest fact" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; A search finds &quot;lives in Beirut&quot; as the closest stored fact. The score 0.86 is &lt;b&gt;invented for teaching&lt;/b&gt;: high means same topic." hidden></div><div data-walk-step="4" data-caption-short="Decide" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; Same topic, different value: the right operation is UPDATE, not ADD." hidden></div><div data-walk-step="5" data-caption-short="One current fact" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; The store now holds one current fact. The old value is replaced and gone." hidden></div></div></div>
+  <template data-notes><p>Five minutes. The most important slide of Part 1, so I go slowly and ask at each step: what is in the store now?</p><p>Point out the cost of this design in the last step: after UPDATE, Beirut is gone. That is a good thing if you only care about now, and a problem if somebody later asks where the user lived before. That is the next idea.</p><p>The 0.86 is invented to show the idea. The real demo score for a different pair is 0.83 on the earlier slide.</p></template>
+</section>
+<!-- ==================================================================== 11 -->
+<section class="slide" data-label="The paper and the library you run" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Read this critically</div>
+  <h2 class="lu-h2">The design says UPDATE. The library says ADD.</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s3)"><div class="lu-card lu-card--flat"><span class="lu-card__label">What the paper describes</span><ul class="lu-list lu-list--tight"><li>An LLM compares each new fact with similar stored facts</li><li>It chooses ADD, UPDATE, DELETE or NOOP itself</li><li>So "Paris" should <b>replace</b> "Beirut"</li></ul></div><div class="lu-stack"><table class="lu-table"><thead><tr><th>I ran</th><th>Came back (real runs)</th></tr></thead><tbody><tr><td>add: "based in Beirut"</td><td>ADD</td></tr><tr><td>add: "moved to Paris"</td><td>ADD again: two facts</td></tr><tr><td>my update and delete</td><td>One fact: Paris</td></tr><tr><td>a repeat: "based in Paris"</td><td>Nothing added</td></tr></tbody><caption>mem0ai 2.0.20, the version this course pins.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">The difference</span><p class="lu-sub"><code>add()</code> skips a repeat but does <b>not</b> replace a changed fact. Your code must call <code>update()</code> and <code>delete()</code>.</p></div></div></div>
+  <template data-notes><p>Four minutes. This is a real finding from running the library, not from the paper. The paper describes an LLM choosing among four operations. The installed library, in this version, returned ADD both times when the fact changed, and returned nothing when the same fact was repeated.</p><p>The lesson is general: read the paper for the idea, run the library to learn what it does. If your project uses a library from a paper, you will meet gaps like this one. Write them in your baseline README.</p><p>The repeat test used a separate store that already held Paris. The demo script applies the fix by hand with update() and delete(), which you will see in Part 3. The line 'NOOP' printed by the script is its own message, not an output of the library.</p></template>
+</section>
+<!-- ==================================================================== 12 -->
+<section class="slide slide--tint" data-label="Check: where did I live before?" data-section="Lecture" data-minutes="2">
+  <div class="lu-eyebrow">Check question</div>
+  <div class="lu-mcq" data-qid="m4-q1" data-answer="b" data-label="Which pattern can answer a question about the past" data-fb-correct=" The temporal graph closes a fact instead of overwriting it." data-fb-wrong=" Think about what each store still holds after Paris arrives."><p class="lu-mcq__q">A user asks, "where did I live before I moved to Paris?" Which design can answer from its own store?</p><div class="lu-mcq__opts"><button class="lu-mcq__opt" type="button" data-key="a">The flat list, because it keeps every fact ever stored<span class="lu-mcq__why" hidden>After UPDATE the old fact is replaced, so the flat list no longer holds Beirut.</span></button><button class="lu-mcq__opt" type="button" data-key="b">The temporal graph, because the Beirut fact was closed, not deleted<span class="lu-mcq__why" hidden>Yes. The old fact stays, with an end date. A question about the past still has an answer.</span></button><button class="lu-mcq__opt" type="button" data-key="c">Neither: this needs a web search<span class="lu-mcq__why" hidden>The user told the agent. The question is only whether a design kept it.</span></button></div><div class="lu-mcq__fb" hidden></div></div>
+  <template data-notes><p>Two minutes. This sets up the next idea. The flat list optimises for now. The graph optimises for when.</p></template>
+</section>
 <!-- ==================================================================== 13 -->
-<section class="slide" data-label="What you build today" data-section="Hands-on lab" data-minutes="6">
-  <div class="lu-eyebrow">Hands-on lab · 100 minutes · starts now</div>
-  <h2 class="lu-h1" style="max-width:32ch">Give your Module 3 agent persistent, cross-session memory</h2>
-  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
-    <ol class="lu-list lu-list--num">
-      <li>Wire Mem0 in: extract facts from each turn, add them to a per-user memory bank.</li>
-      <li>Retrieve relevant memories for the current query, and feed them into your existing grounded-generation pipeline from Module 3.</li>
-      <li>Prove it: recall a specific user's stated fact in a second, genuinely separate session.</li>
-      <li>Add compaction so a long conversation is summarised, not silently truncated or overflowed.</li>
-    </ol>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">Deliverable · Issue 4</span>
-      <p class="lu-sub">Merged: the agent demonstrably remembers a specific user across two separate sessions, with a working compaction strategy for long conversations.</p>
-    </div>
+<section class="slide slide--night" data-chrome="none" data-label="Part 2 · Time, size and privacy" data-section="Lecture" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">Part two of two · about 40 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">Time, size and privacy</h2>
+    <p class="lu-lead" style="max-width:44ch">Facts that change over time, a conversation that must stay short, and the cost of remembering a person.</p>
   </div>
-  <template data-notes><p>Brief this in under two minutes, then let the room start. The most common early blocker: teams test memory recall inside one long conversation and call it done, that never actually exercises the session boundary the rubric grades. Push every team toward an explicit two-process or two-run test before they move on.</p></template>
+  <template data-notes><p>Ten seconds. Three ideas, each starts from a problem the first half left open.</p></template>
 </section>
-
 <!-- ==================================================================== 14 -->
-<section class="slide" data-label="Walkthrough: extracting and storing facts with Mem0" data-section="Hands-on lab" data-minutes="10">
-  <div class="lu-eyebrow">One call per turn, four possible outcomes</div>
-  <h2 class="lu-h2">Add a memory call after every turn, keyed by user, not by session</h2>
-  <div class="lu-walk" data-label="Mem0 add build walkthrough">
-    <div class="lu-walk__view">
-      <div data-walk-step="1" data-caption-short="Install and initialise"
-           data-caption="<b>Step 1.</b> One new dependency, self-hosted, using the same Gemini key every other module's demo already reads from demos/.env.">
-        <div class="lu-code lu-code--sm" data-name="setup">
-<pre><code>pip install mem0ai
-<span class="tok-kw">from</span> mem0 <span class="tok-kw">import</span> Memory
-memory = Memory()</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="2" data-caption-short="Add after every turn" hidden
-           data-caption="<b>Step 2.</b> After the agent responds, hand the turn's messages to memory.add, keyed by user_id, never by session_id: the whole point is that this survives past the current session.">
-        <div class="lu-code lu-code--sm" data-name="storing a turn">
-<pre><code>memory.add(messages, user_id=<span class="tok-str">"user-482"</span>)
-<span class="tok-com"># user_id identifies the person, across every session they ever start</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="3" data-caption-short="Add is additive, check what it returned" hidden
-           data-caption="<b>Step 3.</b> Print what memory.add() actually returned. The installed mem0ai library's add() is additive only, verified directly against the real package, not assumed from the paper: a restated fact comes back as a second, separate ADD, not an automatic UPDATE.">
-        <div class="lu-code lu-code--sm" data-name="inspecting the result">
-<pre><code>result = memory.add(messages, user_id=<span class="tok-str">"user-482"</span>)
-<span class="tok-kw">print</span>(result[<span class="tok-str">"results"</span>])
-<span class="tok-com"># [{"memory": "lives in Paris", "event": "ADD"}]  (always ADD, even for a restated fact)</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="4" data-caption-short="Resolve the conflict yourself" hidden
-           data-caption="<b>Step 4.</b> add() will not do this for you: check the new fact against what you already have, then call update() to fix the current value and delete() to remove the now-superseded entry. This is your own application logic, not something the library runs automatically.">
-        <div class="lu-code lu-code--sm" data-name="explicit conflict resolution">
-<pre><code><span class="tok-com"># add() alone would leave both "Beirut" and "Paris" stored side by side</span>
-memory.update(beirut_fact_id, text=<span class="tok-str">"lives in Paris"</span>)
-memory.delete(paris_duplicate_id)</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="5" data-caption-short="Restart the process, memory persists" hidden
-           data-caption="<b>Step 5.</b> Kill the script and run it again. Mem0's store lives on disk (or wherever it is configured to persist), not in the now-dead process's memory, so the facts are still there on the next run.">
-        <div class="lu-code lu-code--sm" data-name="the point of today's lab">
-<pre><code><span class="tok-com"># stop the process entirely, start a new one:</span>
-memory.get_all(user_id=<span class="tok-str">"user-482"</span>)
-<span class="tok-com"># the facts are still there, because they never lived in the process</span></code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Ten minutes. Step 5 is the whole lab in miniature, make every team actually kill and restart the process, not just trust that it would work. Expected blocker: a team assumes add() deduplicates on its own and skips step 4 entirely, then wonders why their memory bank fills with contradictory duplicates; watch for it and correct it early, this is exactly the bug slide 19's own table names. A second expected blocker: a team keys memory.add by session id out of habit from Module 2's state graph, which silently defeats the entire point. <code>demos/module-04/memory_demo.py</code>'s session_one() runs this exact add-then-explicit-update-and-delete sequence against the real library, and a second Memory instance stands in for the restart, useful to project if a team wants to see the pattern before writing their own.</p></template>
+<section class="slide" data-label="Knowledge graph: facts as arrows" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">The second answer needs a new picture</div>
+  <h2 class="lu-h2">A graph stores a fact as an arrow between two things</h2>
+  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 170, "nodes": [{"id": "u", "label": "user", "x": 230, "y": 45, "w": 200, "h": 56, "kind": "user"}, {"id": "p", "label": "Paris", "x": 780, "y": 45, "w": 200, "h": 56, "kind": "tool"}, {"id": "u2", "label": "user", "x": 230, "y": 125, "w": 200, "h": 56, "kind": "user"}, {"id": "w", "label": "a bank", "x": 780, "y": 125, "w": 200, "h": 56, "kind": "tool"}], "edges": [{"id": "e1", "from": "u", "to": "p", "label": "lives_in"}, {"id": "e2", "from": "u2", "to": "w", "label": "works_for"}], "steps": [{"show": ["u", "p", "u2", "w", "e1", "e2"], "run": [], "set": {}}], "legend": false}</script></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Knowledge graph</b>: facts stored as boxes joined by labelled arrows. <b>Entity</b>: a box, a thing such as a person, a place or an order. <b>Fact</b> (or edge): one arrow with its two ends, for example (user, lives_in, Paris). The labels lives_in and works_for are the relations. The user is drawn twice only to keep the arrows straight. The example facts are invented for teaching.</p></div>
+  <template data-notes><p>Four minutes. A flat list stores the sentence 'user lives in Paris'. A graph stores the same thing as a structure: two entities and a relation. The benefit is that you can put extra information on the arrow, such as time.</p><p>A fact in a graph is usually written as three parts: who, what relation, what. Say them aloud for both arrows.</p></template>
 </section>
-
 <!-- ==================================================================== 15 -->
-<section class="slide slide--tint" data-label="Walkthrough: retrieving memory into the existing pipeline" data-section="Hands-on lab" data-minutes="10">
-  <div class="lu-eyebrow">Memory is just one more source, not a new pipeline</div>
-  <h2 class="lu-h2">Search memory, merge it with document retrieval, cite it the same way</h2>
-  <div class="lu-walk" data-label="Mem0 search build walkthrough">
-    <div class="lu-walk__view">
-      <div data-walk-step="1" data-caption-short="Search this user's memory"
-           data-caption="<b>Step 1.</b> Before generating an answer, search the user's memory bank for facts relevant to the current query.">
-        <div class="lu-code lu-code--sm" data-name="memory search">
-<pre><code>relevant = memory.search(query, user_id=<span class="tok-str">"user-482"</span>, limit=<span class="tok-num">5</span>)</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="2" data-caption-short="Fold it into Module 3's fused context" hidden
-           data-caption="<b>Step 2.</b> Treat each returned memory exactly like a retrieved document chunk: it gets a source_id, it goes through the same reranking and coverage-check logic already built.">
-        <div class="lu-code lu-code--sm" data-name="unifying with existing retrieval">
-<pre><code>memory_chunks = [{<span class="tok-str">"source_id"</span>: <span class="tok-str">f"memory#{m['id']}"</span>, <span class="tok-str">"text"</span>: m[<span class="tok-str">"memory"</span>]} <span class="tok-kw">for</span> m <span class="tok-kw">in</span> relevant]
-candidates = memory_chunks + document_chunks
-<span class="tok-com"># same rerank(), same coverage_check(), same answer_with_citation()</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="3" data-caption-short="Nothing about citation changes" hidden
-           data-caption="<b>Step 3.</b> A memory-sourced fact gets cited exactly like a document-sourced one, source_id and all. A user can see the agent said this because it remembers, not because the agent is guessing.">
-        <div class="lu-code lu-code--sm" data-name="the citation, unchanged">
-<pre><code>{<span class="tok-str">"answer"</span>: <span class="tok-str">"You mentioned you live in Paris."</span>, <span class="tok-str">"cited_sources"</span>: [<span class="tok-str">"memory#f-118"</span>]}</code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Ten minutes. The design point worth saying out loud: nothing from Module 3's citation-and-refusal logic needs to change, memory is just a second source_id namespace feeding the same fused candidate list. A team that tries to build a separate, parallel "memory answer path" is doing more work than the architecture needs. <code>demos/module-04/memory_demo.py</code>'s part 2 prints this exact search-then-cite shape end to end.</p></template>
+<section class="slide" data-label="Zep: facts with a timeline" data-section="Lecture" data-minutes="6">
+  <div class="lu-eyebrow">The second answer: Zep and Graphiti</div>
+  <h2 class="lu-h2">A fact is closed, never deleted</h2>
+  <div class="lu-walk" data-label="A fact with dates"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 250, "nodes": [{"id": "u", "label": "user", "x": 140, "y": 55, "w": 160, "h": 56, "kind": "user"}, {"id": "be", "label": "Beirut", "x": 560, "y": 55, "w": 200, "h": 56, "kind": "tool"}, {"id": "tb", "label": "valid from 2025-01\nended 2025-09", "x": 1050, "y": 55, "w": 340, "h": 76, "kind": "data"}, {"id": "u2", "label": "user", "x": 140, "y": 190, "w": 160, "h": 56, "kind": "user"}, {"id": "pa", "label": "Paris", "x": 560, "y": 190, "w": 200, "h": 56, "kind": "tool"}, {"id": "tp", "label": "valid from 2025-09\nstill true", "x": 1050, "y": 190, "w": 340, "h": 76, "kind": "data"}], "edges": [{"id": "e1", "from": "u", "to": "be", "label": "lives_in"}, {"id": "e2", "from": "u2", "to": "pa", "label": "lives_in"}, {"id": "f1", "from": "be", "to": "tb", "label": ""}, {"id": "f2", "from": "pa", "to": "tp", "label": ""}], "steps": [{"show": ["u", "be", "e1", "tb", "f1"], "run": ["e1"], "set": {"tb": "active"}}, {"show": ["u2", "pa", "e2", "tp", "f2"], "run": ["e2"], "set": {"tb": "idle", "tp": "inferred"}}, {"show": [], "run": [], "set": {"tp": "idle", "tb": "impossible"}}, {"show": [], "run": [], "set": {"tb": "idle"}}], "legend": false, "flags": {"inferred": "new", "impossible": "closed"}}</script></div><div data-walk-step="1" data-caption-short="The first fact" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The graph stores (user, lives_in, Beirut) and the date the fact became true."></div><div data-walk-step="2" data-caption-short="A new fact arrives" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; The user moves. A second fact appears, valid from the new date. (The same user is drawn again only to keep the arrows straight.)" hidden></div><div data-walk-step="3" data-caption-short="The old fact is closed" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; An LLM notices the two facts cannot both be true now. It sets an &lt;b&gt;end date&lt;/b&gt; on the old one. It does &lt;b&gt;not&lt;/b&gt; delete it." hidden></div><div data-walk-step="4" data-caption-short="Two questions, two answers" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; &quot;Where did I live in March 2025?&quot; finds the Beirut fact. &quot;Where do I live now?&quot; finds the fact with no end date: Paris." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Valid from</b> and <b>ended</b> (the paper calls them t_valid and t_invalid): the time range in which a fact was true. Zep also records when the system learned the fact (t_created, t_expired), so it tracks <b>two timelines</b>. The dates here are invented for teaching.</p></div>
+  <template data-notes><p>Six minutes. The idea is called closing a fact. The graph never throws away history, it stamps it. That is the same discipline as keeping a source in Module 3 and marking it out of date.</p><p>Zep is the product, Graphiti is the open-source graph engine inside it. The paper describes four timestamps per fact: when the system created and expired the record, and when the fact became and stopped being true. I show only the second pair.</p><p>Cost: every new fact needs an LLM call to compare it with the old ones. Richer memory costs more to build.</p><p>The infographic at assets/infographics/module-04/zep-graphiti.html is a visual companion to this walkthrough. The Zep paper has a local copy in research/module-04/.</p></template>
 </section>
-
 <!-- ==================================================================== 16 -->
-<section class="slide" data-label="Checkpoint: prove the two-session recall, for real" data-section="Hands-on lab" data-minutes="7">
-  <div class="lu-eyebrow">Pause here before compaction</div>
-  <h2 class="lu-h1" style="max-width:34ch">The rubric bar, tested literally, not assumed</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <table class="lu-table">
-      <thead><tr><th>Check</th><th>How to confirm it</th></tr></thead>
-      <tbody>
-        <tr><td>Facts are keyed by user, not session</td><td>Grep your own code for every memory.add and memory.search call, confirm user_id, not session_id or conversation_id</td></tr>
-        <tr><td>Recall survives a real process restart</td><td>Kill the script, start a new process, ask the agent something only revealed in the earlier run</td></tr>
-        <tr><td>Your own conflict resolution actually fires</td><td>State the same fact two different ways in two turns; add() will report ADD both times, confirm your own code detected the conflict and called update() or delete(), not that a second, separate ADD went unhandled</td></tr>
-      </tbody>
-    </table>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">Why pause here</span>
-      <p class="lu-sub">This is the literal deliverable for Issue 4. A team that has only tested recall inside one long conversation has not actually tested the thing being graded, catching that now is far cheaper than at the checkpoint discussion.</p>
-    </div>
-  </div>
-  <template data-notes><p>Seven minutes. Circulate and make every team actually restart their process in front of you, not describe what would happen if they did. The second check (deduplication) is the one teams most often skip, and it is the one that silently means their memory bank is quietly filling with duplicate, contradictory facts. <code>demos/module-04/memory_demo.py</code> demonstrates all three checks in one run if a team wants to see the passing case before debugging their own.</p></template>
+<section class="slide" data-label="Zep keeps three layers" data-section="Lecture" data-minutes="3">
+  <div class="lu-eyebrow">How Zep is organised</div>
+  <h2 class="lu-h2">From raw messages, to facts, to groups of facts</h2>
+  <div class="lu-walk" data-label="The three layers of Zep"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 190, "nodes": [{"id": "ep", "label": "Episodes\nthe raw messages", "x": 200, "y": 95, "w": 290, "h": 90, "kind": "data"}, {"id": "fa", "label": "Entities and facts\nwith valid dates", "x": 724, "y": 95, "w": 330, "h": 90, "kind": "tool"}, {"id": "co", "label": "Communities\ngroups with a summary", "x": 1250, "y": 95, "w": 340, "h": 90, "kind": "model"}], "edges": [{"id": "a", "from": "ep", "to": "fa", "label": "extract"}, {"id": "b", "from": "fa", "to": "co", "label": "group"}], "steps": [{"show": ["ep"], "run": [], "set": {"ep": "active"}}, {"show": ["fa", "a"], "run": ["a"], "set": {"ep": "idle", "fa": "active"}}, {"show": ["co", "b"], "run": ["b"], "set": {"fa": "idle", "co": "inferred"}}], "legend": false, "flags": {"inferred": "new"}}</script></div><div data-walk-step="1" data-caption-short="Episodes" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The raw input, such as a message, is kept as it came. Every fact can be traced back to the message that created it."></div><div data-walk-step="2" data-caption-short="Entities and facts" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; From each episode the system extracts entities and the facts between them, with their valid dates." hidden></div><div data-walk-step="3" data-caption-short="Communities" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; Strongly connected entities are grouped, and each group gets a short summary. This gives a high-level view." hidden></div></div></div>
+  <template data-notes><p>Three minutes. This is the paper's own three-level design (episode, semantic entity, community subgraphs). I redrew it as a flow because the paper has no figure of it.</p><p>The practical point: keeping the raw episode means you can always cite where a fact came from. That matches the citation habit from Module 3.</p></template>
 </section>
-
 <!-- ==================================================================== 17 -->
-<section class="slide slide--tint" data-label="Walkthrough: compaction for long conversations" data-section="Hands-on lab" data-minutes="9">
-  <div class="lu-eyebrow">The other half of Issue 4</div>
-  <h2 class="lu-h2">Summarise the old, keep the new, never silently drop or overflow</h2>
-  <div class="lu-walk" data-label="Compaction build walkthrough">
-    <div class="lu-walk__view">
-      <div data-walk-step="1" data-caption-short="Set a real budget"
-           data-caption="<b>Step 1.</b> Pick a concrete token or turn-count budget for the live message list, below the model's actual context limit, with headroom for the system prompt and retrieved context.">
-        <div class="lu-code lu-code--sm" data-name="the budget">
-<pre><code>MAX_LIVE_TURNS = <span class="tok-num">20</span>
-<span class="tok-com"># once exceeded, the oldest turns are summarised, never just dropped</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="2" data-caption-short="Summarise what falls off the edge" hidden
-           data-caption="<b>Step 2.</b> When the budget is hit, summarise the oldest chunk of turns into one compact note, rather than letting them silently disappear from the live message list.">
-        <div class="lu-code lu-code--sm" data-name="compaction, not deletion">
-<pre><code>old_turns = messages[:<span class="tok-num">10</span>]
-summary = summarize(old_turns)
-messages = [summary] + messages[<span class="tok-num">10</span>:]</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="3" data-caption-short="Do not duplicate what Mem0 already covers" hidden
-           data-caption="<b>Step 3.</b> A durable fact ("lives in Paris") belongs in Mem0's memory bank, not just in this rolling summary. The summary is for conversational continuity within a still-open session; Mem0 is for what should survive past it.">
-        <div class="lu-code lu-code--sm" data-name="two different jobs">
-<pre><code><span class="tok-com"># rolling summary: keeps THIS session coherent as it gets long</span>
-<span class="tok-com"># Mem0 memory bank: keeps facts alive ACROSS sessions</span>
-<span class="tok-com"># both are needed; neither substitutes for the other</span></code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Nine minutes. The distinction in step 3 is the one teams blur most: a rolling summary and a persistent memory bank solve different problems on different timescales, and a team that builds only one of them has not actually finished either half of Issue 4. Point back at the lecture's three-technique table if this is not landing. <code>demos/module-04/memory_demo.py</code>'s part 3 shows the budget-and-splice logic on a fake 25-turn conversation, tested without spending a live model call.</p></template>
+<section class="slide" data-label="A clean list or a graph?" data-section="Lecture" data-minutes="3">
+  <div class="lu-eyebrow">Two designs, two jobs</div>
+  <h2 class="lu-h2">Mem0 and Zep side by side</h2>
+  <table class="lu-table"><thead><tr><th></th><th>Mem0 (extract and update)</th><th>Zep (temporal graph)</th></tr></thead><tbody><tr><td>What is stored</td><td>Short facts in a flat list</td><td>Entities and facts, each with dates</td></tr><tr><td>Where a fact goes when it changes</td><td>Replaced (UPDATE)</td><td>Closed with an end date, kept</td></tr><tr><td>Can it answer "as of when?"</td><td>Not built in</td><td>Yes</td></tr><tr><td>What it costs</td><td>Simple, cheap to run</td><td>A real graph to build and query</td></tr><tr><td>Size (a company paper's own count)</td><td>About 7,000 tokens per chat (Mem0 paper)</td><td>1,600 tokens in the prompt (Zep paper); over 600,000 tokens stored (Mem0 paper)</td></tr><tr><td>Best when</td><td>You want a clean profile of one person</td><td>Facts change and the past still matters</td></tr></tbody><caption>The two papers count Zep's size differently. One counts what is sent to the model, the other what is stored. Both papers are written by the companies.</caption></table>
+  <template data-notes><p>Three minutes. Not a leaderboard: two designs for two jobs. If your project only needs 'what is true now', start with the flat list.</p><p>On the size row, the Mem0 paper says Zep's graph uses over 600,000 tokens because it stores a summary at every node. The Zep paper reports about 1,600 tokens in the prompt. Both can be true: one is the whole store, the other is what one question retrieves. I say aloud that each paper is written by a company that sells its own product. The infographic at assets/infographics/module-04/memory-techniques-comparison.html is a visual companion to this table.</p></template>
 </section>
-
 <!-- ==================================================================== 18 -->
-<section class="slide" data-label="Check: a duplicate is about to be created" data-section="Hands-on lab" data-minutes="5">
-  <div class="lu-eyebrow">Decide out loud, with your partner, before you code</div>
-  <div class="lu-mcq" data-qid="m4-q2" data-answer="b"
-       data-label="What the installed mem0ai library actually does when a paraphrase of an existing fact arrives"
-       data-fb-correct=" Correct: verified directly against the real, installed mem0ai package, add() does not run a compare-and-decide step on your behalf. Your own code has to detect the paraphrase and call update() or delete()."
-       data-fb-wrong=" Reconsider what memory_demo.py's session_one() had to do explicitly after calling add() twice with a restated fact, and why.">
-    <p class="lu-mcq__q">A user who already has the stored fact "lives in Paris" says, "yeah, I'm based in Paris these days." Your code calls memory.add() with this new turn. What actually happens, with the mem0ai library this course pins?</p>
-    <div class="lu-mcq__opts">
-      <button class="lu-mcq__opt" type="button" data-key="a">add() recognises the paraphrase by similarity and returns NOOP on its own<span class="lu-mcq__why" hidden>This is the paper's own described design, but verified against the installed library, add() does not run this comparison for you: it is additive only.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="b">add() creates a second, separate memory entry; your own code has to detect the duplicate and call update() or delete() to clean it up<span class="lu-mcq__why" hidden>Correct: this is exactly what memory_demo.py's session_one() demonstrates, add() reports ADD both times, and the application explicitly calls update() and delete() afterward to keep one current fact.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="c">add() raises an error, since the fact already exists in the store<span class="lu-mcq__why" hidden>add() does not check for existing facts before writing; it never raises on a restated fact, it just adds another entry.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="d">add() silently does nothing, since nothing new was learned<span class="lu-mcq__why" hidden>add() is additive, not idempotent: it does not compare against existing memories at all, so it writes a new entry regardless of whether the fact is already stored.</span></button>
-    </div>
-    <div class="lu-mcq__fb" hidden></div>
-  </div>
-  <template data-notes><p>Five minutes. If a team pushes back with "but the lecture's walkthrough showed this happening automatically," point them straight at the lecture's own "read this critically" callout: that four-operation pipeline is the paper's description of Mem0's design, the installed library's add() call does not run it for you today, which is exactly why session_one() calls update() and delete() explicitly. This is the same critical-reading habit Module 5 spends a whole research dive on: a paper's described mechanism is not automatically what the shipped code does.</p></template>
+<section class="slide" data-label="Compaction: keep a long chat short" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">A different problem: length, not forgetting</div>
+  <h2 class="lu-h2">Three ways to shorten a conversation</h2>
+  <table class="lu-table"><thead><tr><th>Option</th><th>What it does</th><th>What can go wrong</th></tr></thead><tbody><tr><td>Truncate</td><td>Drop the oldest turns when a limit is reached</td><td>Cheapest. It silently drops the one fact a later question needs.</td></tr><tr><td>Summarise</td><td>Replace old turns with a short summary</td><td>Keeps more, but a summary loses details.</td></tr><tr><td>Segment, then compress</td><td>Cut the chat into topics, remove filler words from each, then search them (SeCom)</td><td>An extra model call for every segment.</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Compaction</b>: making an old conversation smaller so it still fits the model's context window. <b>Truncate</b>: cut off. <b>Summarise</b>: write a shorter version. This is separate from persistent memory: memory is for facts across sessions, compaction is for length inside one.</p></div>
+  <template data-notes><p>Four minutes. Two different problems that students often mix up. Memory answers 'what do I know about this person across sessions'. Compaction answers 'how do I keep this one long chat inside the window'. You usually need both.</p><p>Module 2 showed the cost of resending the list: it grows with the square of the number of turns. Compaction is the fix for that growth.</p></template>
 </section>
-
 <!-- ==================================================================== 19 -->
-<section class="slide slide--tint" data-label="Likely bugs, named in advance" data-section="Hands-on lab" data-minutes="7">
-  <div class="lu-eyebrow">So you recognize them instead of debugging blind</div>
-  <h2 class="lu-h1" style="max-width:32ch">Four bugs that show up in almost every team's memory today</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <table class="lu-table">
-      <thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead>
-      <tbody>
-        <tr><td>Recall "works" but only inside one run</td><td>Memory keyed by session_id, or backed by an in-process store that never actually persists to disk</td></tr>
-        <tr><td>The same fact appears twice, sometimes contradicting itself</td><td>memory.add called without checking the result, so a silent duplicate ADD was never caught</td></tr>
-        <tr><td>One user sees facts about a different user</td><td>user_id hardcoded, or derived from something shared across users, such as a fixed test string</td></tr>
-        <tr><td>A long conversation eventually errors on context length</td><td>The rolling-summary budget check was written but never actually wired into the main loop</td></tr>
-      </tbody>
-    </table>
-    <div class="lu-reveal">
-      <button class="lu-reveal__btn" type="button">Fastest way to check which one you have</button>
-      <div class="lu-reveal__panel" hidden><p>Print user_id and the full memory.add result on every call, before doing anything else. If a second run cannot see the first run's facts, it is the first bug. If the same claim appears twice under different ids, it is the second. If two different test user_ids ever return the same memories, it is the third.</p></div>
-    </div>
-  </div>
-  <template data-notes><p>Seven minutes. The third bug is the most serious, not just the most common: a mis-scoped user_id is a genuine privacy failure, not a cosmetic one, tie this back to the lecture's privacy slide directly if it comes up.</p></template>
+<section class="slide" data-label="Walk: compaction in the demo" data-section="Lecture" data-minutes="6">
+  <div class="lu-eyebrow">The same idea as running code</div>
+  <h2 class="lu-h2">25 turns in, 20 messages out</h2>
+  <div class="lu-walk" data-label="Compaction in the demo"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 235, "nodes": [{"id": "l", "label": "Live list\n25 turns", "x": 150, "y": 118, "w": 220, "h": 90, "kind": "data"}, {"id": "k", "label": "Budget:\n20 messages", "x": 470, "y": 118, "w": 210, "h": 90, "kind": "code"}, {"id": "o", "label": "Oldest 6 turns", "x": 780, "y": 55, "w": 240, "h": 62, "kind": "data"}, {"id": "s", "label": "One summary\nmessage", "x": 1130, "y": 55, "w": 250, "h": 76, "kind": "model"}, {"id": "n", "label": "New list:\n1 summary + 19 turns = 20", "x": 1100, "y": 190, "w": 500, "h": 76, "kind": "data"}], "edges": [{"id": "e1", "from": "l", "to": "k", "label": ""}, {"id": "e2", "from": "k", "to": "o", "label": "", "route": "elbow", "sides": ["right", "left"]}, {"id": "e3", "from": "o", "to": "s", "label": ""}, {"id": "e4", "from": "s", "to": "n", "label": "", "route": "elbow", "sides": ["bottom", "top"]}], "steps": [{"show": ["l"], "run": [], "set": {"l": "active"}}, {"show": ["k", "e1"], "run": ["e1"], "set": {"l": "idle", "k": "active"}}, {"show": ["o", "e2"], "run": ["e2"], "set": {"k": "idle", "o": "active"}}, {"show": ["s", "e3"], "run": ["e3"], "set": {"o": "idle", "s": "inferred"}}, {"show": ["n", "e4"], "run": ["e4"], "set": {"s": "idle", "n": "inferred"}}], "legend": false, "flags": {"inferred": "new"}}</script></div><div data-walk-step="1" data-caption-short="A growing list" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The fake chat has 25 turns. Left alone, it would keep growing."></div><div data-walk-step="2" data-caption-short="Check the budget" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; The budget is 20 messages. 25 is over it, so something must be folded." hidden></div><div data-walk-step="3" data-caption-short="Pick the oldest" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; The summary will take one place, so the code folds &lt;b&gt;6&lt;/b&gt; oldest turns, not 5: 25 - 6 + 1 = 20." hidden></div><div data-walk-step="4" data-caption-short="Write one summary" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; The 6 turns become one message that starts &quot;Earlier conversation, summarised...&quot;. In the demo the summariser is a stub, not a real model call." hidden></div><div data-walk-step="5" data-caption-short="A list that fits" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; The result has exactly 20 messages. Nothing was silently dropped." hidden></div></div></div>
+  <template data-notes><p>Six minutes. Walk through the arithmetic aloud: 25 minus 6 plus 1 equals 20. A student will ask why 6 and not 5. The answer is in the last step: the summary needs a seat too.</p><p>These are real numbers from the demo. The summariser is a placeholder so the splicing logic can be tested without spending an API call; a real system would call the same model as the rest of the agent.</p></template>
 </section>
-
 <!-- ==================================================================== 20 -->
-<section class="slide" data-label="Stretch: give the user a real 'forget me'" data-section="Hands-on lab" data-minutes="6">
-  <div class="lu-eyebrow">Only once recall and compaction both work</div>
-  <h2 class="lu-h1" style="max-width:32ch">Implement the operation the privacy slide promised</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <p class="lu-p">A single call that deletes every stored memory for one user_id, wired to an actual phrase a user could plausibly say ("forget everything about me"). Confirm afterward that memory.get_all for that user_id returns nothing, and that the agent genuinely no longer recalls the deleted facts, not just that the call ran without an error.</p>
-    <div class="lu-callout">
-      <span class="lu-callout__label">Not a requirement</span>
-      <p class="lu-sub">Issue 4 only requires working recall and compaction. This is for teams whose basic path already works and want to make today's privacy discussion concrete in their own system.</p>
-    </div>
-  </div>
-  <template data-notes><p>Six minutes, only for teams who reach it. The verification step matters as much as the delete call itself: a team that only checks "no error was thrown" has not actually confirmed the user was forgotten. <code>demos/module-04/memory_demo.py</code>'s part 4 is exactly this: delete_all, then check both search and get_all come back empty.</p></template>
+<section class="slide slide--tint" data-label="SeCom: cut by topic, then clean" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Assigned reading, in one figure</div>
+  <h2 class="lu-h2">Make the memory unit match the topic</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><figure class="lu-figure" style="align-items:center;"><img src="../assets/img/m04-pan-fig1-granularity.png" alt="Figure 1 of the SeCom paper. A conversation history with three topic segments about the prosecutor's fallacy, the base rate fallacy and World War II. Each turn has a similarity score to the current request. Turn-level memory picks fragments, session-level memory contains irrelevant information, and a summary loses the detailed reasons. Segment-level memory picks the whole base rate fallacy segment." style="display:block;width:auto;height:auto;max-width:100%;max-height:470px;border-radius:var(--lu-r3)"><figcaption>Figure 1 of Pan et al. (2025), CC BY 4.0. &middot; <a href="../assets/img/m04-pan-fig1-granularity.png" target="_blank" rel="noopener">Open full size</a></figcaption></figure><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">How to read it</span><ol class="lu-list lu-list--num lu-list--tight"><li><b>Turn level</b> is too small: one answer without its question.</li><li><b>Session level</b> is too big: it also carries unrelated topics.</li><li><b>Summaries</b> lose details.</li><li><b>Segments</b>, one per topic, fit the question best.</li></ol></div><p class="lu-caption">SeCom is this module's assigned reading, not a full research dive.</p></div></div>
+  <template data-notes><p>Four minutes. SeCom comes from Tsinghua University and Microsoft, and was published at ICLR 2025, a main conference, so it had a full review. The local PDF is research/module-04/pan-2025-secom-memory.pdf, and the infographic at assets/infographics/module-04/secom.html is a visual companion.</p><p>The question in the figure is 'summarise the reason of the cognitive error we just discussed'. The right memory is the base rate fallacy segment, not a single turn, not the whole session. SeCom does two things: it asks GPT-4 to cut each session into topic segments, and it uses a prompt-compression model (LLMLingua-2) to remove filler words from each segment before searching.</p></template>
 </section>
-
 <!-- ==================================================================== 21 -->
-<section class="slide" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="39">
-  <div class="lu-eyebrow">Open work · rest of the block</div>
-  <h2 class="lu-h1" style="max-width:30ch">Extract and store, retrieve and cite, compact, then prove it across two sessions</h2>
-  <div class="lu-split lu-split--wide-left">
-    <ol class="lu-list lu-list--num">
-      <li>Finish wiring Mem0's add and search calls into your own agent, keyed by user_id.</li>
-      <li>Fold memory into your existing Module 3 retrieval and citation pipeline.</li>
-      <li>Add the rolling-summary compaction step, and confirm it actually triggers on a long conversation.</li>
-      <li>Prove two-session recall with a real process restart, then open the PR. <code>Closes #4</code> in the description links it automatically.</li>
-    </ol>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">A memory call on paper is not the deliverable</span>
-      <p class="lu-sub">Issue 4 needs a real, restarted process recalling a real fact about a real test user, and a long test conversation that compacts instead of erroring out. If a live connection drops mid-session, keep testing recall and compaction against your own logged fixtures, neither needs a live connection to verify once the memory bank already holds the facts.</p>
-    </div>
-  </div>
-  <template data-notes><p>Brief this in under a minute, then this slide stays up for the rest of the block. Circulate team to team, and check specifically for the "only tested within one run" bug, it is the most common and the one teams are least likely to notice on their own before the checkpoint discussion catches it.</p></template>
+<section class="slide" data-label="SeCom&#x27;s numbers, read carefully" data-section="Lecture" data-minutes="3">
+  <div class="lu-eyebrow">Table 1 of the paper · BM25 is the keyword search from Module 3</div>
+  <h2 class="lu-h2">A big gain, and where it comes from</h2>
+  <table class="lu-table"><thead><tr><th>Memory method (LOCOMO test)</th><th>Score</th><th>Tokens sent</th></tr></thead><tbody><tr><td>No history at all</td><td>24.9</td><td>0</td></tr><tr><td>Full history</td><td>54.2</td><td>13,330</td></tr><tr><td>Turn-level memory, BM25 search</td><td>65.6</td><td>3,657</td></tr><tr><td>Session-level memory, BM25 search</td><td>63.2</td><td>3,619</td></tr><tr><td>SeCom (GPT-4 segments, BM25 search)</td><td>71.6</td><td>3,731</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">How to read the gain</span><p class="lu-sub">Against the full history SeCom gains 17.4 points. But plain turn-level memory already scores 65.6, so most of the gain is from <b>retrieving the right piece</b>. SeCom itself adds about 6.</p></div>
+  <template data-notes><p>Three minutes. Both statements are true: 71.6 minus 54.2 is 17.4, and the paper says so. A fair comparison is with the best simple baseline, 65.6. I show both so you can judge.</p><p>Also notice the tokens column: every memory method sends about 3,600 tokens, against 13,330 for the full history. That is the same saving the Mem0 and Zep papers report.</p></template>
 </section>
-
 <!-- ==================================================================== 22 -->
-<section class="slide slide--tint" data-label="Discussion: memory failure modes" data-section="Wrap" data-minutes="14">
-  <div class="lu-eyebrow">Discussion · 14 minutes</div>
-  <div class="lu-split lu-split--wide-left">
-    <div class="lu-stack">
-      <h2 class="lu-h2">Three failure modes, each with a real cost</h2>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Stale facts</span>
-        <p class="lu-sub">A fact was true, then changed, and the agent never found out, so it confidently states something that stopped being true.</p>
-      </div>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Wrong recall</span>
-        <p class="lu-sub">A fact gets attached to the wrong user, or the wrong entity, and the agent confidently tells someone something true about somebody else.</p>
-      </div>
-    </div>
-    <div class="lu-stack">
-      <div class="lu-callout lu-callout--concept">
-        <span class="lu-callout__label">Discuss</span>
-        <p class="lu-sub">For each failure mode: how would your team's own memory design actually catch it, and what would a user experience before anyone noticed?</p>
-      </div>
-      <p class="lu-caption">Then, briefly: what should happen, concretely, when a user asks the agent to forget something?</p>
-    </div>
-  </div>
-  <template data-notes><p>Fourteen minutes. Push every team to answer the forget-me question with an actual mechanism, not a policy statement, "we would delete it" is not an answer until they say from where, keyed by what, and how they would verify it actually happened. Tie back to the stretch task if any team already built one.</p></template>
+<section class="slide" data-label="What persistent memory costs in privacy" data-section="Lecture" data-minutes="5">
+  <div class="lu-eyebrow">The bill that comes with remembering</div>
+  <h2 class="lu-h2">A memory bank is a record about a person</h2>
+  <div class="lu-cards" style="grid-template-columns:repeat(2,1fr)"><div class="lu-card"><span class="lu-card__label">Data you keep</span><p class="lu-sub">Every stored fact is data about one person.</p></div><div class="lu-card"><span class="lu-card__label">A leak that looks like confusion</span><p class="lu-sub">With the wrong id, one person sees the facts of another person.</p></div><div class="lu-card"><span class="lu-card__label">Errors that stay</span><p class="lu-sub">A wrong or old fact does not fix itself.</p></div><div class="lu-card"><span class="lu-card__label">Delete on request</span><p class="lu-sub">You need a way to delete, and to prove it worked.</p></div></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">Preview of Module 5</span><p class="lu-sub">Laws such as the EU's GDPR let people ask for their personal data to be erased. Module 5 covers regional rules. Today's demo has a small, working "forget me".</p></div>
+  <template data-notes><p>Five minutes. Memory is a feature and a liability in the same line of code. I ask the room: what would you tell a user who asks 'what do you know about me?' Could your agent answer?</p><p>The 'wrong user' case: a bug where user_id is hard-coded in a test and left in. Two people then share one memory. It looks like the agent is confused, and it takes a while to see that it is a leak.</p><p>Do not go deep into law. The point is design: a store you can list, correct and delete.</p></template>
 </section>
-
 <!-- ==================================================================== 23 -->
-<section class="slide" data-label="Before Module 5" data-section="Wrap" data-minutes="10">
-  <div class="lu-eyebrow">Before Module 5 · what to read, what to finish</div>
-  <h2 class="lu-h1" style="max-width:30ch">One reading, one checkpoint, one thing due</h2>
-  <div class="lu-split lu-split--wide-left">
-    <div class="lu-stack">
-      <div class="lu-callout lu-callout--concept">
-        <span class="lu-callout__label">Reading, before the next session</span>
-        <ul class="lu-list">
-          <li><a href="https://arxiv.org/abs/2502.05589" target="_blank" rel="noopener">"On Memory Construction and Retrieval for Personalized Conversational Agents"</a> (SeCom, today's third technique).</li>
-          <li>Mem0 and Zep's own documentation, whichever your team did not wire in today.</li>
-          <li>Visual companions to today's three techniques, each fact-checked against its paper: <a href="../assets/infographics/module-04/mem0.html" target="_blank" rel="noopener">Mem0</a>, <a href="../assets/infographics/module-04/zep-graphiti.html" target="_blank" rel="noopener">Zep/Graphiti</a>, <a href="../assets/infographics/module-04/secom.html" target="_blank" rel="noopener">SeCom</a>, and a <a href="../assets/infographics/module-04/memory-techniques-comparison.html" target="_blank" rel="noopener">side-by-side comparison</a>.</li>
-        </ul>
-      </div>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Checkpoint</span>
-        <p class="lu-sub">Issue 4 finished and merged: the agent demonstrably remembers a specific user across two separate sessions, with a working compaction strategy. Report any blocker in your team's channel before Module 5 starts, not during it.</p>
-      </div>
-    </div>
-    <div class="lu-card">
-      <span class="lu-card__label">Next module</span>
-      <h3 class="lu-h3">Module 5 · Evaluation and Responsible Deployment</h3>
-      <p class="lu-sub">Trajectory-level evaluation, the blind spots of LLM-as-judge grading, bias probing, and PII handling.</p>
-    </div>
+<section class="slide slide--night" data-chrome="none" data-label="Research dive · Mem0" data-section="Research dive" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">About 33 minutes · one paper, read closely</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">How Mem0 was built and tested</h2>
+    <p class="lu-lead" style="max-width:44ch">The extract-and-update idea from Part 1, as its own authors describe it, and the numbers they report.</p>
   </div>
-  <template data-notes><p>Ten minutes. Point at this slide specifically for the reading and the checkpoint, do not let either get lost inside the discussion slide before it. Confirm out loud that every team knows what "finished" means for Issue 4 before they leave.</p></template>
+  <template data-notes><p>Ten seconds. Tell the room: I read the whole paper and checked every number in the next slides against its tables. I say clearly when something is my reading and not the authors'.</p></template>
 </section>
-
 <!-- ==================================================================== 24 -->
-<section class="slide" data-label="Self-check" data-section="Wrap" data-minutes="4">
+<section class="slide" data-label="The paper card: what it is and where to read it" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">Start with the basics: what are we reading?</div>
+  <h2 class="lu-h2">A company preprint about its own memory system</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><dl class="lu-defs"><dt>What it is</dt><dd>A <b>research paper</b> from the company that sells Mem0. It is a <b>preprint</b> on arXiv: posted before peer review. The authors test their own system against six groups of other systems.</dd><dt>Title</dt><dd>"Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory"</dd><dt>Authors</dt><dd>Prateek Chhikara, Dev Khant, Saket Aryan, Taranjeet Singh and Deshraj Yadav, Mem0.</dd><dt>When</dt><dd>28 April 2025 (version 1) on arXiv.</dd><dt>Read it</dt><dd><a href="../research/module-04/chhikara-2025-mem0.pdf" target="_blank" rel="noopener">Local copy (PDF)</a> · <a href="https://arxiv.org/abs/2504.19413" target="_blank" rel="noopener">arXiv page</a> · <a href="../assets/infographics/module-04/mem0.html" target="_blank" rel="noopener">interactive infographic</a></dd><dt>License</dt><dd>arXiv's standard license, not Creative Commons. The local copy is for course study only: please cite and share the arXiv page.</dd></dl><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Five questions this part answers</span><ol class="lu-list lu-list--num lu-list--tight"><li>What problem does it solve?</li><li>How does the system work?</li><li>How was it tested?</li><li>What are the results?</li><li>What are its limits?</li></ol></div></div>
+  <template data-notes><p>Two minutes. Say it plainly: this is a company's paper about its own product. That is common in this field and it is not a reason to ignore it, but it is a reason to read the comparisons carefully.</p><p>Not peer reviewed: I do not know of a journal or conference version, and the PDF names none. Zep's paper is the same kind of document. SeCom is different: it appeared at ICLR 2025 after review.</p></template>
+</section>
+<!-- ==================================================================== 25 -->
+<section class="slide" data-label="The problem the paper solves" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Why a memory layer at all</div>
+  <h2 class="lu-h2">Without memory, the agent contradicts what it was told</h2>
+  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 250, "nodes": [{"id": "a1", "label": "Session 1:\n\"I am vegetarian\nand avoid dairy\"", "x": 150, "y": 60, "w": 260, "h": 96, "kind": "user"}, {"id": "a2", "label": "Session 2: \"What\nshould I cook?\"\n(no memory)", "x": 560, "y": 60, "w": 260, "h": 96, "kind": "user"}, {"id": "a3", "label": "\"Try grilled\nchicken\"", "x": 1000, "y": 60, "w": 300, "h": 76, "kind": "data"}, {"id": "b2", "label": "Session 2: \"What\nshould I cook?\"\n(with memory)", "x": 560, "y": 190, "w": 260, "h": 96, "kind": "user"}, {"id": "b3", "label": "\"A vegetarian,\ndairy-free dish\"", "x": 1000, "y": 190, "w": 300, "h": 76, "kind": "data"}], "edges": [{"id": "a", "from": "a2", "to": "a3", "label": ""}, {"id": "b", "from": "b2", "to": "b3", "label": ""}, {"id": "c", "from": "a1", "to": "a2", "label": ""}], "steps": [{"show": ["a1", "a2", "a3", "b2", "b3", "a", "b", "c"], "run": [], "set": {"a3": "impossible", "b3": "inferred"}}], "legend": false, "flags": {"impossible": "wrong", "inferred": "right"}}</script></div><div class="lu-split" style="margin-top:var(--lu-s3)"><div class="lu-card lu-card--flat"><span class="lu-card__label">Reason 1</span><p class="lu-sub">A relationship lasts weeks or months. The history outgrows even a very large context window.</p></div><div class="lu-card lu-card--flat"><span class="lu-card__label">Reason 2</span><p class="lu-sub">Real talk wanders. A key fact can be buried under hours of unrelated words.</p></div></div>
+  <template data-notes><p>Three minutes. The food example is the paper's own, redrawn here. A wrong dinner suggestion is a small harm, but the paper also names health, education and enterprise support where continuity matters.</p><p>The two reasons come from the paper's introduction: history grows past any window, and conversations rarely stay on one topic, so the one useful fact gets buried.</p></template>
+</section>
+<!-- ==================================================================== 26 -->
+<section class="slide" data-label="The words the paper uses" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Before the method: ten words</div>
+  <h2 class="lu-h2">The test and the scores, in plain English</h2>
+  <div class="lu-split"><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>LOCOMO</td><td>A test set of very long chats, with questions about them</td></tr><tr><td>Single-hop</td><td>The answer is in one place in the chat</td></tr><tr><td>Multi-hop</td><td>The answer needs facts from several sessions</td></tr><tr><td>Temporal</td><td>The question is about when, or in what order</td></tr><tr><td>Open-domain</td><td>Memory plus knowledge from outside the chat</td></tr></tbody></table><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Full-context</td><td>Send the whole history to the model</td></tr><tr><td>RAG</td><td>Search the history and send only some pieces (Module 3)</td></tr><tr><td>LLM-as-a-Judge (J)</td><td>Another LLM scores each answer</td></tr><tr><td>p50 and p95</td><td>The typical time, and the time 95 of 100 replies beat</td></tr><tr><td>Token cost</td><td>How many tokens go into the prompt</td></tr></tbody></table></div>
+  <template data-notes><p>Three minutes. I read the ten words and give a one-line example for the four question types. Single-hop: 'what city did she mention?'. Multi-hop: 'what did she study before the job she took in March?'. Temporal: 'did the trip come before or after the wedding?'. These examples are invented for teaching.</p><p>The paper's own descriptions: single-hop is locating one factual span in one turn; multi-hop is synthesising across sessions; open-domain is integrating memory with external knowledge; temporal is about event order and duration.</p></template>
+</section>
+<!-- ==================================================================== 27 -->
+<section class="slide" data-label="The test: LOCOMO" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">How the system was tested</div>
+  <h2 class="lu-h2">Ten long chats, about 200 questions each</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s3)"><table class="lu-table"><thead><tr><th>Property</th><th>Value in the paper</th></tr></thead><tbody><tr><td>Conversations</td><td>10</td></tr><tr><td>Length of each</td><td>About 600 dialogue turns, 26,000 tokens</td></tr><tr><td>Questions per conversation</td><td>About 200</td></tr><tr><td>Question types used</td><td>Single-hop, multi-hop, temporal, open-domain</td></tr><tr><td>Left out</td><td>A fifth, adversarial type: no ground-truth answers</td></tr></tbody><caption>Section 3.1 of the paper.</caption></table><div class="lu-stack"><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Why not just count matching words?</span><p class="lu-sub">Truth: "Alice was born in March." Answer: "Alice is born in July." The words overlap, so word-overlap scores (F1, BLEU) stay high, though the fact is wrong. So the authors add an <b>LLM-as-a-Judge</b> score.</p></div><p class="lu-caption">The example is the paper's own, in Section 3.2.</p></div></div>
+  <template data-notes><p>Three minutes. Ten conversations is a small test. Each is about 26,000 tokens, which fits easily in a modern model's window. I come back to that on the critical read.</p><p>The authors ran the judge ten times and report averages with a plus-or-minus; the next slides show only the averages.</p></template>
+</section>
+<!-- ==================================================================== 28 -->
+<section class="slide" data-label="The method: extract, then update" data-section="Research dive" data-minutes="5">
+  <div class="lu-eyebrow">Method, part 1</div>
+  <h2 class="lu-h2">Six steps from a message to an updated database</h2>
+  <div class="lu-walk" data-label="The Mem0 pipeline"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 305, "nodes": [{"id": "m", "label": "New message pair\nuser + assistant", "x": 170, "y": 60, "w": 280, "h": 84, "kind": "user"}, {"id": "p", "label": "Prompt = summary\n+ last 10 messages\n+ the new pair", "x": 600, "y": 60, "w": 320, "h": 96, "kind": "data"}, {"id": "x", "label": "LLM extracts\ncandidate facts", "x": 1090, "y": 60, "w": 280, "h": 84, "kind": "model"}, {"id": "s", "label": "Search: top 10\nsimilar memories", "x": 1090, "y": 215, "w": 280, "h": 84, "kind": "code"}, {"id": "t", "label": "LLM tool call:\nADD UPDATE\nDELETE NOOP", "x": 600, "y": 215, "w": 300, "h": 96, "kind": "model"}, {"id": "d", "label": "Database\nupdated", "x": 170, "y": 215, "w": 240, "h": 84, "kind": "data"}], "edges": [{"id": "e1", "from": "m", "to": "p", "label": ""}, {"id": "e2", "from": "p", "to": "x", "label": ""}, {"id": "e3", "from": "x", "to": "s", "label": ""}, {"id": "e4", "from": "s", "to": "t", "label": ""}, {"id": "e5", "from": "t", "to": "d", "label": ""}], "steps": [{"show": ["m", "p", "e1"], "run": ["e1"], "set": {"p": "active"}}, {"show": ["x", "e2"], "run": ["e2"], "set": {"p": "idle", "x": "active"}}, {"show": ["s", "e3"], "run": ["e3"], "set": {"x": "idle", "s": "active"}}, {"show": ["t", "e4"], "run": ["e4"], "set": {"s": "idle", "t": "active"}}, {"show": ["d", "e5"], "run": ["e5"], "set": {"t": "idle", "d": "inferred"}}], "legend": false, "flags": {"inferred": "done"}}</script></div><div data-walk-step="1" data-caption-short="Build the prompt" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; Each new pair of messages is combined with two kinds of context: a &lt;b&gt;summary&lt;/b&gt; of the whole conversation, kept fresh in the background, and the &lt;b&gt;last m = 10 messages&lt;/b&gt;."></div><div data-walk-step="2" data-caption-short="Extract" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; An LLM reads this prompt and writes a list of candidate facts from the new exchange." hidden></div><div data-walk-step="3" data-caption-short="Find neighbours" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; For each candidate, the system searches the database for the &lt;b&gt;s = 10&lt;/b&gt; most similar stored memories." hidden></div><div data-walk-step="4" data-caption-short="Choose an operation" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; The candidate and its neighbours go to an LLM through a function-calling interface (a &lt;b&gt;tool call&lt;/b&gt;). The LLM itself picks ADD, UPDATE, DELETE or NOOP. No separate classifier is used." hidden></div><div data-walk-step="5" data-caption-short="Write" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; The chosen operation is carried out on the database." hidden></div></div></div>
+  <template data-notes><p>Five minutes. This is the paper's Figure 2 (page 4), redrawn as an animation. I redrew it instead of reproducing the original figure because the paper is not under a Creative Commons license. Students can open the local copy or the arXiv page to see the authors' own drawing (page 4).</p><p>Settings used in the experiments: m = 10, s = 10, GPT-4o-mini for every LLM step. In the next slides, remember that the paper reports this design, while the library behaves a little differently.</p></template>
+</section>
+<!-- ==================================================================== 29 -->
+<section class="slide" data-label="A graph version: Mem0g" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Method, part 2</div>
+  <h2 class="lu-h2">The same idea, with entities and relations</h2>
+  <div class="lu-walk" data-label="The graph version"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 210, "nodes": [{"id": "tx", "label": "Conversation\ntext", "x": 130, "y": 108, "w": 190, "h": 84, "kind": "user"}, {"id": "ee", "label": "Entity extractor\n(an LLM)", "x": 410, "y": 108, "w": 240, "h": 84, "kind": "model"}, {"id": "rg", "label": "Relationship\ngenerator (an LLM)", "x": 700, "y": 108, "w": 260, "h": 84, "kind": "model"}, {"id": "tr", "label": "(Alice, lives_in,\nSan_Francisco)", "x": 1010, "y": 108, "w": 290, "h": 84, "kind": "data"}, {"id": "cr", "label": "Conflict check:\nmark old as invalid", "x": 1320, "y": 108, "w": 220, "h": 84, "kind": "model"}], "edges": [{"id": "a", "from": "tx", "to": "ee", "label": ""}, {"id": "b", "from": "ee", "to": "rg", "label": ""}, {"id": "c", "from": "rg", "to": "tr", "label": ""}, {"id": "d", "from": "tr", "to": "cr", "label": ""}], "steps": [{"show": ["tx", "ee", "a"], "run": ["a"], "set": {"ee": "active"}}, {"show": ["rg", "b"], "run": ["b"], "set": {"ee": "idle", "rg": "active"}}, {"show": ["tr", "c"], "run": ["c"], "set": {"rg": "idle", "tr": "inferred"}}, {"show": ["cr", "d"], "run": ["d"], "set": {"tr": "idle", "cr": "active"}}], "legend": false, "flags": {"inferred": "new"}}</script></div><div data-walk-step="1" data-caption-short="Find the entities" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; An LLM picks out the things worth remembering, such as people, places and events, with a type for each."></div><div data-walk-step="2" data-caption-short="Find the relations" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; Another LLM step decides which entities are connected, and names the relation." hidden></div><div data-walk-step="3" data-caption-short="A triplet" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; Each fact becomes a triplet: source entity, relation, destination entity. The example is from the paper." hidden></div><div data-walk-step="4" data-caption-short="Handle conflicts" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; If a new fact contradicts an old one, an LLM marks the old relation &lt;b&gt;invalid&lt;/b&gt;. It is not physically removed, so questions about time can still be answered." hidden></div></div></div>
+  <template data-notes><p>Three minutes. Mem0g is the paper's second system. It stores memories as a graph in Neo4j, a graph database. The idea at the end, mark as invalid rather than delete, is the same idea as Zep's closed facts from the lecture.</p><p>Retrieval has two modes: start from the entities in the question and walk around them, or compare the whole question with each stored triplet by similarity.</p></template>
+</section>
+<!-- ==================================================================== 30 -->
+<section class="slide" data-label="Results by question type" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Results, part 1 · Table 1 of the paper, judged score, rounded</div>
+  <h2 class="lu-h2">The best system depends on the question</h2>
+  <table class="lu-table"><thead><tr><th>Judged score (J)</th><th>Single-hop</th><th>Multi-hop</th><th>Open-domain</th><th>Temporal</th></tr></thead><tbody><tr><td>Mem0</td><td>67.1</td><td>51.2</td><td>72.9</td><td>55.5</td></tr><tr><td>Mem0g (graph)</td><td>65.7</td><td>47.2</td><td>75.7</td><td>58.1</td></tr><tr><td>Zep</td><td>61.7</td><td>41.4</td><td>76.6</td><td>49.3</td></tr><tr><td>LangMem</td><td>62.2</td><td>47.9</td><td>71.1</td><td>23.4</td></tr><tr><td>OpenAI memory</td><td>63.8</td><td>42.9</td><td>62.3</td><td>21.7</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Read the table by column</span><p class="lu-sub">Mem0 wins single-hop and multi-hop, the graph version wins temporal, and <b>Zep wins open-domain</b>. OpenAI's memory does badly on time: its memories mostly lacked timestamps.</p></div>
+  <template data-notes><p>Three minutes. Notice there is no single winner: the best system changes with the question type. That is a more useful finding than the headline.</p><p>The paper gives the reason for OpenAI's temporal score: most generated memories had no timestamps, despite being asked to add them.</p></template>
+</section>
+<!-- ==================================================================== 31 -->
+<section class="slide" data-label="Results: accuracy, cost and speed" data-section="Research dive" data-minutes="5">
+  <div class="lu-eyebrow">Results, part 2 · Table 2 of the paper, rounded</div>
+  <h2 class="lu-h2">Almost as accurate, much cheaper, much faster</h2>
+  <table class="lu-table"><thead><tr><th>Method</th><th>Overall score (J)</th><th>Tokens in the prompt</th><th>Slowest 1 in 20 replies (p95)</th></tr></thead><tbody><tr><td>Full history</td><td>72.9</td><td>26,031</td><td>17.1 seconds</td></tr><tr><td>Mem0g (graph)</td><td>68.4</td><td>3,616</td><td>2.6 seconds</td></tr><tr><td>Mem0</td><td>66.9</td><td>1,764</td><td>1.4 seconds</td></tr><tr><td>Zep</td><td>66.0</td><td>3,911</td><td>2.9 seconds</td></tr><tr><td>Best RAG setting</td><td>61.0</td><td>256-token chunks</td><td>1.9 seconds</td></tr><tr><td>OpenAI memory</td><td>52.9</td><td>4,437</td><td>0.9 seconds</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">A trade, not a free win</span><p class="lu-sub">Full history still scores highest. Mem0 gives up about 6 points to cut tokens by 93% and slow replies by 92%.</p></div>
+  <template data-notes><p>Five minutes. Compute with them: (72.9 - 66.9) is 6 points. (17.1 - 1.4) / 17.1 is about 92% faster at the slow end. 1,764 against 26,031 tokens is about 93% fewer. The paper's abstract says 91% for latency and more than 90% for tokens, which is consistent.</p><p>OpenAI's row has a very fast answer time because the authors pasted all the memories in, rather than searching; the paper says this removes the search step from the timing. So that row is not a fair speed comparison.</p></template>
+</section>
+<!-- ==================================================================== 32 -->
+<section class="slide" data-label="The other side: Zep&#x27;s own tests" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Reading a competitor's paper</div>
+  <h2 class="lu-h2">On Zep's tests, Zep wins. On Mem0's tests, Mem0 wins.</h2>
+  <table class="lu-table"><thead><tr><th>Zep paper test</th><th>Method</th><th>Score</th><th>Time</th><th>Tokens</th></tr></thead><tbody><tr><td>DMR, 500 short chats</td><td>Full history (gpt-4-turbo)</td><td>94.4%</td><td></td><td></td></tr><tr><td></td><td>Zep (gpt-4-turbo)</td><td>94.8%</td><td></td><td></td></tr><tr><td>LongMemEval, about 115,000 tokens</td><td>Full history (gpt-4o)</td><td>60.2%</td><td>28.9 s</td><td>115k</td></tr><tr><td></td><td>Zep (gpt-4o)</td><td>71.2%</td><td>2.58 s</td><td>1.6k</td></tr></tbody><caption>Tables 1 and 2 of Rasmussen et al. (2025), CC BY-NC-SA 4.0. Local copy: research/module-04/.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Two companies, two answers</span><p class="lu-sub">The Zep authors call DMR "inadequate": each chat has only about 60 messages, so full history already wins easily. On the longer LongMemEval, Zep beats full history. The Mem0 paper's test shows the opposite order. Different authors, different tests, different winners.</p></div>
+  <template data-notes><p>Three minutes. This is why I do not give you a leaderboard. On a short test the full history is as good as anything. On a very long one a memory system helps. On the Mem0 authors' test, which is 26,000 tokens, the full history is still best.</p><p>The local copy of the Zep paper is research/module-04/rasmussen-2025-zep-graphiti.pdf. Its license, CC BY-NC-SA 4.0, allows sharing for non-commercial use with credit.</p></template>
+</section>
+<!-- ==================================================================== 33 -->
+<section class="slide" data-label="The limits, and how to read it critically" data-section="Research dive" data-minutes="4">
+  <div class="lu-eyebrow">Read it the way a reviewer would</div>
+  <h2 class="lu-h2">Useful evidence, with five open questions</h2>
+  <table class="lu-table"><thead><tr><th>What the paper reports</th><th>A question to ask</th></tr></thead><tbody><tr><td>The authors run every comparison themselves</td><td>They also ran Zep and re-ran A-Mem. Would the Zep team get the same Zep numbers?</td></tr><tr><td>Ten chats of about 26,000 tokens</td><td>Small, and short enough to fit in a modern window. The full history still scored best.</td></tr><tr><td>A fifth question type was dropped</td><td>The adversarial type, where the right answer is "I do not know", is exactly what a safe agent must handle.</td></tr><tr><td>Scores come from an LLM judge</td><td>A judge has its own blind spots. Module 5 measures them.</td></tr><tr><td>The abstract says Mem0 wins "across question types"</td><td>Table 1 shows Zep ahead on open-domain, and the graph version ahead on temporal.</td></tr></tbody></table>
+  <template data-notes><p>Four minutes. Not an attack on the paper: it is a useful engineering report. A critical read asks what each number cannot tell you.</p><p>Also remember the earlier slide: the library behaves differently from the paper's pipeline. If a team uses Mem0 as a baseline, it should run the library and report what it really does.</p></template>
+</section>
+<!-- ==================================================================== 34 -->
+<section class="slide" data-label="What the paper means for our course" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">Connecting the dots</div>
+  <h2 class="lu-h2">Four ideas to carry out of the paper</h2>
+  <table class="lu-table"><thead><tr><th>In the paper</th><th>What to take</th><th>Where it returns</th></tr></thead><tbody><tr><td>Extract, compare, choose an operation</td><td>Memory is a small pipeline of LLM calls</td><td>Demo part 1</td></tr><tr><td>Search by similarity before updating</td><td>Always look at what is stored first</td><td>Demo part 2</td></tr><tr><td>Mark invalid, do not delete</td><td>Keep history when the past matters</td><td>Zep, and the failure-modes discussion</td></tr><tr><td>A judge scores answers</td><td>A score depends on who scores it</td><td>Module 5</td></tr></tbody></table>
+  <template data-notes><p>Two minutes. If Memory is a team's topic, this is the paper to read in full, and the Mem0 and Zep documentation are the next reading. I ask each person to find one row they could use in their own project.</p></template>
+</section>
+<!-- ==================================================================== 35 -->
+<section class="slide slide--night" data-chrome="none" data-label="Part 3 · Watch it built" data-section="Instructor demo" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">Part three of three · about 40 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">Watch it built</h2>
+    <p class="lu-lead" style="max-width:44ch">I run the memory demo part by part and explain every line. You watch and follow. Nobody codes in class.</p>
+  </div>
+  <template data-notes><p>Ten seconds. Say again: you do not need to type anything. Your project work happens between sessions.</p></template>
+</section>
+<!-- ==================================================================== 36 -->
+<section class="slide" data-label="memory_demo.py: the setup" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Part 1 of the memory demo</div>
+  <h2 class="lu-h2">Three parts and one key</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="memory_demo.py (shortened)"><pre><code>USER_ID = <span class="tok-str">"demo-user-482"</span>   <span class="tok-com"># one person, every session</span>
+
+config = {
+  <span class="tok-str">"llm"</span>: {<span class="tok-str">"provider"</span>: <span class="tok-str">"gemini"</span>,
+          <span class="tok-str">"config"</span>: {<span class="tok-str">"model"</span>: <span class="tok-str">"models/gemini-3.1-flash-lite"</span>}},
+  <span class="tok-str">"embedder"</span>: {<span class="tok-str">"provider"</span>: <span class="tok-str">"gemini"</span>,
+          <span class="tok-str">"config"</span>: {<span class="tok-str">"model"</span>: <span class="tok-str">"models/gemini-embedding-001"</span>,
+                     <span class="tok-str">"embedding_dims"</span>: 768}},
+  <span class="tok-str">"vector_store"</span>: {<span class="tok-str">"provider"</span>: <span class="tok-str">"qdrant"</span>,
+          <span class="tok-str">"config"</span>: {<span class="tok-str">"path"</span>: <span class="tok-str">".../mem0_store"</span>,
+                     <span class="tok-str">"on_disk"</span>: <span class="tok-kw">True</span>,
+                     <span class="tok-str">"embedding_model_dims"</span>: 768}},
+}
+memory = Memory.from_config(config)</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What to notice</span><ul class="lu-list lu-list--tight"><li><b>llm</b>: writes and chooses facts</li><li><b>embedder</b>: makes the numbers for similarity</li><li><b>vector_store</b>: a folder on disk, no server</li><li><b>user_id</b>: the person, not the session</li></ul></div><p class="lu-caption">A vector store keeps embeddings and finds the nearest ones.</p></div></div>
+  <template data-notes><p>Four minutes. Three parts and one key. The folder on disk is what makes a later run, even a later day, find the same facts. Delete the folder and the memory is gone.</p><p>Mem0's own examples use OpenAI. This course uses Gemini, so both the LLM and the embedder are set to Gemini. The embedding size, 768, must match in both places or the first add fails.</p></template>
+</section>
+<!-- ==================================================================== 37 -->
+<section class="slide" data-label="memory_demo.py: add, then fix by hand" data-section="Instructor demo" data-minutes="5">
+  <div class="lu-eyebrow">Part 2 of the memory demo</div>
+  <h2 class="lu-h2">The library adds. Our code keeps one current fact.</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="session_one() (shortened)"><pre><code>r1 = memory.add(first_turn,  user_id=USER_ID)
+<span class="tok-com"># "Hi, I'm based in Beirut."</span>
+r2 = memory.add(second_turn, user_id=USER_ID)
+<span class="tok-com"># "I just moved from Beirut to Paris for work."</span>
+
+memory.update(r1[<span class="tok-str">"results"</span>][0][<span class="tok-str">"id"</span>],
+    text=<span class="tok-str">"User currently lives in Paris for work."</span>)
+memory.delete(r2[<span class="tok-str">"results"</span>][0][<span class="tok-str">"id"</span>])</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What to notice</span><ul class="lu-list lu-list--tight"><li><code>add()</code> takes the turn and a <b>user_id</b></li><li>It returns what it did, with an id for each memory</li><li>Our code then does the conflict step: update one, delete the other</li></ul></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">Why the extra code</span><p class="lu-sub">This is the gap from Part 1: the library stored both facts. The application is responsible for keeping one current fact.</p></div></div></div>
+  <template data-notes><p>Five minutes. I run the first part and stop after each printed block. Block one: ADD, with the text the model wrote ('as of October 5, 2026': the model added the date itself). Block two: ADD again. Then the fix.</p><p>The last print in this part, 'NOOP', is a message the script writes itself to show what a repeated fact would mean. It is not a library output.</p></template>
+</section>
+<!-- ==================================================================== 38 -->
+<section class="slide" data-label="memory_demo.py: what part 1 printed" data-section="Instructor demo" data-minutes="5">
+  <div class="lu-eyebrow">Run it</div>
+  <h2 class="lu-h2">Four steps to one current fact</h2>
+  <table class="lu-table"><thead><tr><th>Step</th><th>Event</th><th>Memory text (real run)</th></tr></thead><tbody><tr><td>add, turn 1</td><td>ADD</td><td>User is based in Beirut as of October 5, 2026.</td></tr><tr><td>add, turn 2</td><td>ADD</td><td>User moved from Beirut to Paris for work on October 5, 2026.</td></tr><tr><td>update the first</td><td>UPDATE</td><td>User currently lives in Paris for work.</td></tr><tr><td>delete the second</td><td>DELETE</td><td>Memory deleted successfully!</td></tr></tbody><caption>Printed by the script on 5 October 2026. The date comes from the model, not from us.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Read it</span><p class="lu-sub">Two ADDs, then one UPDATE and one DELETE written by our code. After these four steps the store holds one fact about where the user lives.</p></div>
+  <template data-notes><p>Five minutes. I match each row to a block on the screen. I also point out that the model put a date into the memory. That is helpful for time questions, and it is a reminder that memory text is written by an LLM, so it can be wrong or oddly worded.</p></template>
+</section>
+<!-- ==================================================================== 39 -->
+<section class="slide" data-label="memory_demo.py: a new session" data-section="Instructor demo" data-minutes="5">
+  <div class="lu-eyebrow">Part 3 of the memory demo</div>
+  <h2 class="lu-h2">A fresh object still finds Paris</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="session_two_recall_and_cite() (shortened)"><pre><code>memory = new_memory()   <span class="tok-com"># a brand-new object</span>
+query = <span class="tok-str">"Where does the user live now?"</span>
+found = memory.search(query,
+            filters={<span class="tok-str">"user_id"</span>: USER_ID})
+top = found[<span class="tok-str">"results"</span>][0]
+cited = {<span class="tok-str">"answer"</span>: <span class="tok-str">"Memory says: "</span> + top[<span class="tok-str">"memory"</span>],
+         <span class="tok-str">"cited_sources"</span>: [<span class="tok-str">"memory#"</span> + top[<span class="tok-str">"id"</span>]]}</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What the run printed</span><ul class="lu-list lu-list--tight"><li>memory: User currently lives in Paris for work.</li><li>score: 0.834</li><li>answer: Memory says: User currently lives in Paris for work.</li><li>cited source: memory#c7fcc164-...</li></ul></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">Honest note</span><p class="lu-sub">A new <code>Memory()</code> object stands in for a new process. It shares no Python data with the first, only the folder on disk. The Module 4 notebook runs a real second process.</p></div></div></div>
+  <template data-notes><p>Five minutes. This is the point of persistent memory: the first object is closed, a second one is built from nothing, and the fact is still there.</p><p>The answer is shaped like Module 3's: it carries a source id, so a memory is cited the same way a document chunk is. The score 0.834 is the similarity from the lecture slide.</p><p>If someone asks for the literal restart: the companion notebook runs a second operating-system process. I can show it if time allows.</p></template>
+</section>
+<!-- ==================================================================== 40 -->
+<section class="slide" data-label="memory_demo.py: compaction" data-section="Instructor demo" data-minutes="5">
+  <div class="lu-eyebrow">Part 4 of the memory demo</div>
+  <h2 class="lu-h2">Fold the oldest turns, keep the rest</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="compact() (shortened)"><pre><code><span class="tok-kw">def</span> compact(messages, max_live_turns, summarize):
+    <span class="tok-kw">if</span> len(messages) &lt;= max_live_turns:
+        <span class="tok-kw">return</span> messages
+    overflow = len(messages) - max_live_turns + 1
+    old, kept = messages[:overflow], messages[overflow:]
+    text = summarize(old)
+    note = <span class="tok-str">"Earlier conversation, summarised: "</span> + text
+    <span class="tok-kw">return</span> [{<span class="tok-str">"role"</span>: <span class="tok-str">"system"</span>, <span class="tok-str">"content"</span>: note}] + kept</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What the run printed</span><ul class="lu-list lu-list--tight"><li>input turns: 25</li><li>output messages: 20</li><li>first message: system, "Earlier conversation, summarised: covered 6 earlier turns..."</li></ul></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">A stand-in</span><p class="lu-sub">The summariser here is a stub, so the splice can be tested without a model call. A real system sends the old turns to the same model as the rest of the agent.</p></div></div></div>
+  <template data-notes><p>Five minutes. Same arithmetic as the lecture slide: 25 minus 6 plus 1 is 20. The summary takes one place, so we fold six turns, not five.</p><p>Question I expect: what if the summary is wrong? Then the agent confidently remembers something that was never said. That is a memory failure mode, and the closing discussion returns to it.</p></template>
+</section>
+<!-- ==================================================================== 41 -->
+<section class="slide" data-label="memory_demo.py: forget me" data-section="Instructor demo" data-minutes="5">
+  <div class="lu-eyebrow">Part 5 of the memory demo</div>
+  <h2 class="lu-h2">Delete, then prove it</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="forget_user() (shortened)"><pre><code>memory.delete_all(user_id=user_id)
+
+hits = memory.search(<span class="tok-str">"anything about this user"</span>,
+                     filters={<span class="tok-str">"user_id"</span>: user_id})
+stored = memory.get_all(filters={<span class="tok-str">"user_id"</span>: user_id})
+
+confirmed = (len(hits[<span class="tok-str">"results"</span>]) == 0
+             <span class="tok-kw">and</span> len(stored[<span class="tok-str">"results"</span>]) == 0)</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What the run printed</span><ul class="lu-list lu-list--tight"><li>search hits after delete: 0</li><li>stored memories after delete: 0</li><li>confirmed deleted: true</li></ul></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Verified, not assumed</span><p class="lu-sub">The code does not trust that the delete call ran without an error. It <b>checks</b>, twice, that nothing is left.</p></div></div></div>
+  <template data-notes><p>Five minutes. This answers the wrap question in the syllabus: what happens when a user asks the agent to forget something. In production you would also delete backups and logs.</p><p>Two checks, because a search can miss something that get_all would still list.</p></template>
+</section>
+<!-- ==================================================================== 42 -->
+<section class="slide" data-label="One API detail that causes errors" data-section="Instructor demo" data-minutes="2">
+  <div class="lu-eyebrow">Worth knowing before you copy the code</div>
+  <h2 class="lu-h2">Same word, two places</h2>
+  <table class="lu-table"><thead><tr><th>Calls</th><th>Where the user id goes</th></tr></thead><tbody><tr><td><code>add()</code> and <code>delete_all()</code></td><td>A plain argument: <code>user_id="..."</code></td></tr><tr><td><code>search()</code> and <code>get_all()</code></td><td>Inside a filter: <code>filters={"user_id": "..."}</code></td></tr></tbody><caption>mem0ai 2.0.20. Passing it the wrong way raises a ValueError.</caption></table>
+  <template data-notes><p>Two minutes. A small thing that costs a team an hour. If a call fails with a ValueError about filters, this is the reason. The script gets it right in every call, so copy from it.</p></template>
+</section>
+<!-- ==================================================================== 43 -->
+<section class="slide slide--tint" data-label="Check: a changed fact" data-section="Instructor demo" data-minutes="5">
+  <div class="lu-eyebrow">Decide out loud</div>
+  <div class="lu-mcq" data-qid="m4-q2" data-answer="b" data-label="What add() does with a changed fact" data-fb-correct=" The library adds the change as a new fact. Your code resolves the conflict." data-fb-wrong=" In the demo, the second add() returned ADD, not UPDATE."><p class="lu-mcq__q">The store holds "lives in Paris". The user says, "I moved to Lyon." You call add(). What does the store hold afterwards, with the mem0ai version this course pins?</p><div class="lu-mcq__opts"><button class="lu-mcq__opt" type="button" data-key="a">Only "lives in Lyon": add() replaces the old fact<span class="lu-mcq__why" hidden>That is what the paper describes, but in the demo the library returned ADD and kept both.</span></button><button class="lu-mcq__opt" type="button" data-key="b">Both facts, until your own code updates one and deletes the other<span class="lu-mcq__why" hidden>Yes. The demo showed exactly this for Beirut and Paris. Your application needs a policy for facts that change.</span></button><button class="lu-mcq__opt" type="button" data-key="c">An error, because the new fact contradicts the old one<span class="lu-mcq__why" hidden>The library does not check for contradictions. It never raises an error here.</span></button></div><div class="lu-mcq__fb" hidden></div></div>
+  <template data-notes><p>Five minutes. Pairs decide for a minute, then I reveal. Ask one pair that chose a to explain why it was tempting: the paper says so. Then name the lesson: test the library, not only the paper.</p><p>For a repeat of the same fact, add() returned nothing in my test. So the repeat case is handled, and the change case is not.</p></template>
+</section>
+<!-- ==================================================================== 44 -->
+<section class="slide" data-label="Likely bugs, named in advance" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">So you recognise them instead of debugging blind</div>
+  <h2 class="lu-h2">Four problems you will meet</h2>
+  <table class="lu-table"><thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead><tbody><tr><td>Recall works only inside one run</td><td>Memory is keyed by a session id, or the store is held in the program and never saved to disk</td></tr><tr><td>The same fact appears twice, or two facts disagree</td><td>add() was called without checking the result, so a changed fact was added next to the old one</td></tr><tr><td>One user sees another user's facts</td><td>user_id is fixed in the code, or comes from something shared, such as a test string</td></tr><tr><td>A long chat eventually fails on length</td><td>The compaction step was written but is not called in the main loop</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Fastest way to tell which one you have</span><p class="lu-sub">Print the user_id and the full result of every memory call. If a second run cannot see the first run's facts, it is the first bug. If the same claim appears twice, it is the second. If two different users return the same facts, it is the third.</p></div>
+  <template data-notes><p>Four minutes. These are the problems teams hit in their first week with memory. Say them now so nobody debugs blind later.</p></template>
+</section>
+<!-- ==================================================================== 45 -->
+<section class="slide slide--tint" data-label="Discussion: memory failure modes" data-section="Wrap" data-minutes="6">
+  <div class="lu-eyebrow">Discussion</div>
+  <h2 class="lu-h2">Three ways a memory goes wrong</h2>
+  <div class="lu-cards" style="grid-template-columns:repeat(3,1fr)"><div class="lu-card"><span class="lu-card__label">Stale fact</span><h3 class="lu-h3">Out of date</h3><p class="lu-sub">A fact was true, then changed, and the agent never learned. It states the old value with confidence.</p></div><div class="lu-card"><span class="lu-card__label">Wrong recall</span><h3 class="lu-h3">Wrong person</h3><p class="lu-sub">A fact is attached to the wrong user or the wrong thing. The agent tells someone something true about somebody else.</p></div><div class="lu-card"><span class="lu-card__label">Forget me</span><h3 class="lu-h3">On request</h3><p class="lu-sub">A user asks the agent to forget. Is everything gone, including the summaries?</p></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Discuss with your neighbour</span><p class="lu-sub">For each one: how would your project catch it, and what would a user see before anyone noticed? What should happen, step by step, when a user says "forget everything about me"?</p></div>
+  <template data-notes><p>Six minutes. One minute each in pairs, then I take two examples. For stale facts, the Beirut and Paris example is the model. For wrong recall, the answer is a user id that is never fixed in code. For forget, the answer needs the delete and the check from the demo, and also the summaries and any logs.</p><p>Syllabus: this is the failure-modes discussion. The progress check-in on the next slide completes the wrap.</p></template>
+</section>
+<!-- ==================================================================== 46 -->
+<section class="slide" data-label="Your project this week" data-section="Wrap" data-minutes="5">
+  <div class="lu-eyebrow">What to do after class, in this order</div>
+  <h2 class="lu-h2">Your project this week</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><ol class="lu-list lu-list--num"><li>Finish <b>"2: Baseline reproduction"</b> if you have not: the paper's own method running in <code>baseline/</code>, with the commands in <code>baseline/README.md</code>.</li><li>Put your number next to the paper's own number. If you only ran a small test, say so, and say what a full run would need.</li><li>Once the baseline is done, open <b>"3: Extension"</b> and write what you will build and how you will compare it with the baseline.</li><li>If Memory is your topic, run the Mem0 or Zep quick start from their documentation and write down one thing it does that surprised you.</li></ol><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">No class time for this</span><p class="lu-sub">You do this on your own time. Tell your team channel about any blocker before Module 5, not during it.</p></div></div>
+  <template data-notes><p>Five minutes. Syllabus: the baseline should be finished or nearly so by now, and extension work usually begins around this point. I ask each team in one sentence: baseline done, nearly, or stuck. I do not collect anything.</p><p>Remind them again of the budget rule: your own computer or at most 20 dollars of API spend.</p></template>
+</section>
+<!-- ==================================================================== 47 -->
+<section class="slide" data-label="Before Module 5" data-section="Wrap" data-minutes="2">
+  <div class="lu-eyebrow">Reading and what comes next</div>
+  <h2 class="lu-h2">Before Module 5</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><ul class="lu-list"><li><a href="https://arxiv.org/abs/2502.05589" target="_blank" rel="noopener">On Memory Construction and Retrieval for Personalized Conversational Agents</a> (SeCom): today's compaction reading. <a href="../research/module-04/pan-2025-secom-memory.pdf" target="_blank" rel="noopener">Local copy</a> (CC BY 4.0).</li><li>Mem0 and Zep documentation: whichever your team did not use today. The Zep paper has a <a href="../research/module-04/rasmussen-2025-zep-graphiti.pdf" target="_blank" rel="noopener">local copy</a> (CC BY-NC-SA 4.0).</li><li>Visual companions, each fact-checked against its paper: <a href="../assets/infographics/module-04/mem0.html" target="_blank" rel="noopener">Mem0</a>, <a href="../assets/infographics/module-04/zep-graphiti.html" target="_blank" rel="noopener">Zep and Graphiti</a>, <a href="../assets/infographics/module-04/secom.html" target="_blank" rel="noopener">SeCom</a>, and a <a href="../assets/infographics/module-04/memory-techniques-comparison.html" target="_blank" rel="noopener">side-by-side comparison</a>.</li></ul><div class="lu-card"><span class="lu-card__label">Next module</span><h3 class="lu-h3">Module 5 · Evaluation and Responsible Deployment</h3><p class="lu-sub">Is the agent actually good and safe? Whole-conversation evaluation, bias probing, personal data detection, and what changes after launch.</p></div></div>
+  <template data-notes><p>Two minutes. The syllabus readings are the SeCom paper and the Mem0 and Zep documentation. The Mem0 paper has a local copy for course study; its license is arXiv's standard one, so I point students to the arXiv page when sharing.</p></template>
+</section>
+<!-- ==================================================================== 48 -->
+<section class="slide" data-label="Words from today, part 1" data-section="Wrap" data-minutes="2">
+  <div class="lu-eyebrow">A reminder of every new term, 1 of 2</div>
+  <h2 class="lu-h2">Words from today: where facts live</h2>
+  <div class="lu-split"><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Session memory</td><td>The message list of one running chat</td></tr><tr><td>Persistent memory</td><td>Facts saved so a later session can read them</td></tr><tr><td>user_id</td><td>A name for one person, the same in every session</td></tr><tr><td>Context window</td><td>The most text a model can read in one call</td></tr><tr><td>Similarity score</td><td>How close two meanings are</td></tr></tbody></table><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Embedding</td><td>A list of numbers for the meaning of a text</td></tr><tr><td>Extract and update</td><td>Pull facts out, then add, change or remove them</td></tr><tr><td>ADD UPDATE DELETE NOOP</td><td>The four operations on a stored fact</td></tr><tr><td>Vector store</td><td>A place that keeps embeddings and finds the nearest</td></tr><tr><td>Compaction</td><td>Making an old conversation smaller</td></tr></tbody></table></div>
+  <template data-notes><p>Two minutes. Quick recap. If the room hesitates on a word, go back to its slide.</p></template>
+</section>
+<!-- ==================================================================== 49 -->
+<section class="slide" data-label="Words from today, part 2" data-section="Wrap" data-minutes="2">
+  <div class="lu-eyebrow">A reminder of every new term, 2 of 2</div>
+  <h2 class="lu-h2">Words from today: time, size and the paper</h2>
+  <div class="lu-split"><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Knowledge graph</td><td>Facts as boxes joined by labelled arrows</td></tr><tr><td>Entity</td><td>A thing in the graph: a person, place or order</td></tr><tr><td>Fact (edge)</td><td>One arrow with its two ends</td></tr><tr><td>Valid from and ended</td><td>The time range when a fact was true</td></tr><tr><td>Closing a fact</td><td>Giving it an end date instead of deleting it</td></tr></tbody></table><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Truncate</td><td>Cut off the oldest turns</td></tr><tr><td>Summarise</td><td>Write a shorter version</td></tr><tr><td>LOCOMO</td><td>A test set of long chats with questions</td></tr><tr><td>LLM-as-a-Judge</td><td>Another LLM scores each answer</td></tr><tr><td>p95</td><td>The time 95 of 100 replies beat</td></tr></tbody></table></div>
+  <template data-notes><p>Two minutes. Same idea. Ask two students to explain one word each in their own words.</p></template>
+</section>
+<!-- ==================================================================== 50 -->
+<section class="slide" data-label="Self-check" data-section="Wrap" data-minutes="1">
   <div class="lu-eyebrow">Self-check</div>
   <div class="lu-split lu-split--wide-left">
     <div class="lu-stack">
@@ -592,13 +455,13 @@ messages = [summary] + messages[<span class="tok-num">10</span>:]</code></pre>
         <span class="lu-card__label">Also available</span>
         <ul class="lu-list lu-list--tight">
           <li><kbd>O</kbd> contents · <kbd>/</kbd> search this lecture · <kbd>?</kbd> all shortcuts</li>
-          <li><b>Handout</b> in the bottom bar prints one page per slide with the instructor notes attached.</li>
+          <li><b>Handout</b> in the bottom bar prints one page per slide with the notes attached.</li>
         </ul>
       </div>
       <p class="lu-caption">Your answers and position are stored in this browser only.</p>
     </div>
   </div>
-  <template data-notes><p>Close here so students leave knowing where the self-study affordances are.</p></template>
+  <template data-notes><p>One minute. I close here so you leave knowing where the self-study tools are.</p></template>
 </section>
 
 </div><!-- /stage -->
@@ -606,5 +469,6 @@ messages = [summary] + messages[<span class="tok-num">10</span>:]</code></pre>
 
 <script src="../assets/sparql-lite.js?v=1.1.0"></script>
 <script src="../assets/lu-deck.js?v=1.3.0" defer></script>
+<script src="../assets/lu-flow.js?v=1.2.2" defer></script>
 </body>
 </html>

@@ -2,8 +2,8 @@
 
 Four self-contained, interactive HTML pages, no server needed, open any of
 them directly in a browser. Linked from `lectures/dsca-module-04.html`'s
-speaker notes (slides 5, 6, 8, and 10) and from its own "Before Module 5"
-reading list (slide 23), so students in self-study mode can reach them too.
+speaker notes (the slides "Zep: facts with a timeline", "A clean list or a graph?", "SeCom: cut by topic, then clean" and the Mem0 paper card) and from its own "Before Module 5"
+reading list, so students in self-study mode can reach them too.
 
 - `zep-graphiti.html`, the temporal knowledge graph mechanism (Zep).
 - `mem0.html`, the extract-and-update mechanism (Mem0).

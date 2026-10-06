@@ -1,9 +1,8 @@
 """Module 4: persistent, cross-session memory with Mem0.
 
-Used in lectures/dsca-module-04.html: slide 5 (Mem0's extract-and-update
-mechanism) in the Lecture section, and slides 14 (storing facts), 15
-(retrieval merged into citation), 16 (the two-session checkpoint), 17
-(compaction), and 20 (the "forget me" stretch) in the Hands-on lab. Run
+Used in lectures/dsca-module-04.html, Part 3 ("Watch it built"): the slides
+whose labels start with "memory_demo.py", and the lecture slides "The paper
+and the library you run" and "Walk: compaction in the demo". Run
 directly:
 
     python memory_demo.py

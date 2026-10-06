@@ -1,9 +1,9 @@
 # Module 4 demo: persistent memory with Mem0
 
-Used in `lectures/dsca-module-04.html`: slide 5 (Mem0's extract-and-update
-mechanism) in the Lecture section, and slides 14 (storing facts), 15
-(retrieval merged into citation), 16 (the two-session checkpoint), 17
-(compaction), and 20 (the "forget me" stretch) in the Hands-on lab. One
+Used in `lectures/dsca-module-04.html`: the lecture slides "Extract and update",
+"Walk: Beirut to Paris", "The paper and the library you run" and "Walk:
+compaction in the demo", and Part 3 ("Watch it built"), whose slides start
+with "memory_demo.py". One
 script, `memory_demo.py`, runs against the real `mem0ai` package, not a
 reimplementation: Mem0 is a named course tool per the syllabus, so the
 point is showing the real library's actual behavior.
@@ -44,7 +44,7 @@ Each run starts from a clean store (the script deletes its own
 
 **Part 1, extraction and conflict resolution.** States "I'm based in
 Beirut," then a few turns later, "I just moved from Beirut to Paris for
-work." Current Mem0 2.x extraction is additive, so the second `memory.add()`
+work." In the pinned Mem0 2.x a changed fact is added next to the old one, so the second `memory.add()`
 returns `ADD`. The demo then calls Mem0's real `update()` to make Paris the
 authoritative location and `delete()` to remove the superseded duplicate.
 This exposes a production requirement a flat log hides: an application needs
@@ -60,7 +60,7 @@ that is a faithful test of the same property (the data lives on disk, not
 in a Python object).
 
 **Part 3, compaction.** A fake 25-turn conversation gets folded down to a
-20-turn budget: the oldest 5 turns become one summary message instead of
+20-turn budget: the oldest 6 turns become one summary message instead of
 being silently dropped or left to overflow. The summarizer here is a stub,
 not a real Gemini call, so this part's logic can be tested without spending
 a request every run; a real deployment would call the same model the rest
