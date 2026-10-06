@@ -1,11 +1,13 @@
 # Module 2 demo: raw loop, then LangGraph
 
-Used in `lectures/dsca-module-02.html`: slide 3 ("The raw agent loop, with
-nothing hidden") and slide 14 ("Walkthrough: the raw loop, one call at a
-time") use `raw_loop.py`; slide 5 ("LangGraph: nodes, edges, and state as one
-object") and slide 15 ("Walkthrough: the same behavior, now on LangGraph")
-use `graph.py` via `langgraph dev`. Both build the same order-status agent,
-once with nothing hidden, once on LangGraph with explicit state.
+Used in `lectures/dsca-module-02.html`, Part 3 ("Watch it built"): the slides
+whose labels start with "raw_loop.py" use `raw_loop.py`, and the slides whose
+labels start with "graph.py", "Run it in LangGraph Studio" and "Check: the
+out-of-scope request" use `graph.py` via `langgraph dev`. The lecture slides
+"The raw loop: one list, one call, repeat" and "Walk: one turn through the
+graph" show the same steps as pictures. Both files build the same
+order-status agent, once with nothing hidden, once on LangGraph with explicit
+state. Neither file uses MCP: the lecture explains MCP in concept only.
 
 ## One-time setup
 
@@ -36,7 +38,7 @@ for every demo in this folder):
    Add it to the same `demos/.env` as `LANGSMITH_API_KEY=lsv2...`.
    `langgraph dev` reads it from there.
 
-## Run `raw_loop.py` (slides 3 and 14)
+## Run `raw_loop.py`
 
 From the `demos/` folder, with the environment above active:
 
@@ -48,7 +50,7 @@ Prints the messages array after every step: the user's turn, the model's
 first decision, the tool result, and the model's final reply. No server, no
 browser, nothing else to start.
 
-## Run `graph.py` in LangGraph Studio (slides 5 and 15)
+## Run `graph.py` in LangGraph Studio
 
 From this folder (`demos/module-02/`), same environment:
 
@@ -67,7 +69,7 @@ Studio:
    `graph.py` are `A100` and `A200`; anything else returns "no order found").
 3. Step through the run: you will see the `agent` node decide, the `tool`
    node run the lookup and loop back, and the `agent` node answer, the
-   exact board slide 5 describes. Send something outside order status (a
+   exact graph the lecture slide "LangGraph: the same loop with named parts" draws. Send something outside order status (a
    billing dispute, say) to see the `escalate` node instead.
 
 Stop the server with `Ctrl+C` when done. If `langgraph dev` refuses to
