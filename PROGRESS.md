@@ -108,6 +108,68 @@ committed and pushed to GitHub (`origin/main`) at the instructor's request. Run
      3 had): Module 2 has 7 slides that overflow and 11 stray diagram
      endpoints; Module 4 has 8 and 3; Module 5 has 7, 2 and one stray
      character. Fix by splitting slides, and use `lu-flow` for diagrams.
+   - **Module 2 rebuilt 2026-10-05 (awaiting review).** 57 slides, 180
+     minutes (opening 2, hook 14, lecture 76, research dive 35, instructor
+     demo 38, wrap 15). Audit clean on every check. Every diagram is a
+     `lu-flow`; the lab is now an explained demo of `raw_loop.py` and
+     `graph.py` (real outputs captured 2026-10-05) plus "Your project this
+     week"; the Atreya paper is read from `research/module-02/` and linked
+     locally; terms are defined on the slide where they first appear. The
+     syllabus Session 2 entry still says lecture 50 / lab 100 / wrap 30 and
+     has no research dive, so it needs the same rewrite Module 1 got once the
+     instructor approves this split. The demo does not use MCP (the deck says
+     so); clarification and correction are taught as state updates and
+     labelled "invented for teaching". Full findings: `AUDIT-2026-10-05.md`.
+   - **Module 4 rebuilt 2026-10-05 (awaiting review).** 50 slides, 180
+     minutes (opening 2, hook 14, lecture 68, research dive 37, instructor
+     demo 41, wrap 18). Audit clean. New research dive on the Mem0 paper (read
+     in full, every number checked against its tables); Zep and SeCom numbers
+     checked too; SeCom Figure 1 cropped to `assets/img/m04-pan-fig1-granularity.png`.
+     The demo's real outputs were captured 2026-10-05. **Correction to an older
+     claim:** `add()` in mem0ai 2.0.20 does skip a repeated fact (nothing is
+     added); it only fails to replace a *changed* fact (Beirut then Paris gives
+     two ADDs). The old deck said add() always adds. **License:** the Mem0 paper
+     is under arXiv's non-exclusive license (not CC BY), so the deck links the
+     arXiv page only and does not reproduce its Figure 2 (redrawn as a flow);
+     the PDF `research/module-04/chhikara-2025-mem0.pdf` is still tracked in git
+     and the instructor should decide whether to keep it. Zep is CC BY-NC-SA 4.0,
+     SeCom is CC BY 4.0. The syllabus Session 4 entry (lecture 50 / lab 100 /
+     wrap 30, no research dive) still needs the rewrite once the split is approved.
+   - **Module 3 rebuilt 2026-10-05 (awaiting review).** 53 slides, 180 minutes
+     (opening 2, hook 13, lecture 69, research dive 40, instructor demo 37, wrap
+     19). Audit clean. BM25 is now taught with a worked example from the demo's
+     own FAQ (tf, IDF, the full score 1.907 computed step by step, saturation,
+     length), then cosine with arrows, RRF with the real ranks, recall/MRR/nDCG,
+     chunking, citation and refusal, a prompt-injection note, a KV-cache
+     primer before the CAG paper, both Table 2 benchmarks (the old deck showed
+     only HotPotQA), and Liu et al. as a caveat. **Found while preparing:** the
+     demo's whitespace tokenizer leaves "electronics?" with its question mark,
+     so that word never matches (score 1.907 instead of 3.256 with punctuation
+     stripped); the deck teaches it as a real silent bug and the script is
+     unchanged on purpose. The demo has no cross-encoder (a Gemini call
+     reranks), and both searches agree on the blender question, which the deck
+     says. `lecture-notes.md` for Module 3 and tests for `grounded_rag.py` are
+     still not written.
+   - **Module 5 rebuilt 2026-10-05 (awaiting review).** 53 slides, 180 minutes
+     (opening 2, hook 13, lecture 41, research dive 64, instructor demo 42, wrap
+     18). Audit clean. The research dive is far longer than the syllabus's 40
+     minutes because it now teaches tau-bench, tau2-bench and trajectory-judge
+     each with a paper card, the authors' Figure 1, method, results and a
+     critical read, plus Zheng et al. as background; the instructor should
+     decide whether to trim it or keep it and shorten the lecture. All five
+     Module 5 papers are downloaded to `research/module-05/` and every number
+     was checked against the PDFs. **Corrections to the old deck:** tau-bench
+     gpt-4o retail pass^1 is 61.2 (airline 35.2, average 48.2), the old "retail
+     under 50%" was wrong; trajectory-judge is accepted at the NeurIPS 2026
+     workshop (not "under review"); the persona paper (Cao et al.) assigns the
+     persona to the *agent*, while the demo puts the cue in the *customer's*
+     line, which the deck now says; "p50 average" fixed to "median"; the EU AI
+     Act dates were re-checked on 2026-10-05 (Digital Omnibus on AI in force
+     27 July 2026, Annex III high-risk moved to 2 December 2027, Article 50 in
+     force since 2 August 2026) from law-firm summaries and should be confirmed
+     in the Official Journal. Lebanon's Law 81/2018 added. Local PDFs with
+     non-CC licenses (Mem0, Lost in the Middle, Zheng et al.) are arXiv
+     non-exclusive license; the instructor should decide whether to keep them in git.
 2. **Module 1 follow-ups: done 2026-09-30.** Both notebooks
    (`demos/module-01/hook_demo.ipynb`, `extraction_demo.ipynb`) were run live and
    saved with output; the syllabus is in line; presenter view and the timer were
