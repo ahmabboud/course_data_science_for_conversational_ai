@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Evaluation and Responsible Deployment · Data Science for Conversational AI, Module 5</title>
-<meta name="description" content="Module 5 of Data Science for Conversational AI, MSc, Lebanese University. Component metrics versus trajectory-level metrics, bias probing, PII and regulation, deployment drift, and the documented blind spots of LLM-as-judge grading.">
+<meta name="description" content="Module 5 of Data Science for Conversational AI, MSc, Lebanese University. Whole-conversation evaluation, repeated runs with pass^k, bias probing, personal data, regional rules, deployment costs, the tau-bench papers and the trajectory-judge paper, and an instructor demo.">
 <meta name="theme-color" content="#96122B">
 <link rel="manifest" href="../manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,616 +37,445 @@
           <span class="lu-lockup__unit">Faculty of Sciences · MSc, Master of Research</span>
         </span>
       </div>
-      <div class="lu-tag lu-tag--red" style="background:transparent;color:#FF9AA7;border-color:#96122B">Module 5 · Evaluation and Responsible Deployment</div>
+      <div class="lu-tag lu-tag--red" style="background:transparent;color:#FF9AA7;border-color:#96122B">Module 5 · Evaluation and responsible deployment</div>
     </div>
 
     <div class="lu-stack">
       <div class="lu-eyebrow">Data Science for Conversational AI · Module 5 of 6</div>
-      <h1 class="lu-display" style="max-width:26ch">Evaluation and Responsible Deployment</h1>
-      <p class="lu-lead" style="max-width:46ch">Decide, with evidence, whether the agent built over the last four modules is actually good and safe to put in front of users.</p>
+      <h1 class="lu-display" style="max-width:24ch">Evaluation and Responsible Deployment</h1>
+      <p class="lu-lead" style="max-width:46ch">How to decide, with evidence, that an agent is good and safe: whole-conversation tests, repeated runs, bias and personal-data checks, and what changes after launch.</p>
     </div>
 
     <div class="lu-row" style="justify-content:space-between;font-size:var(--lu-t-caption);color:var(--lu-on-night-2)">
-      <span>180 minutes · 50 lecture · 40 research dive · 60 hands-on lab · 30 discussion and wrap</span>
+      <span>180 minutes · 13 hook · 41 lecture · 64 research paper · 42 demo · 18 wrap-up · 2 opening</span>
       <span>Press <kbd>&rarr;</kbd> to begin · <kbd>?</kbd> for shortcuts</span>
     </div>
   </div>
   <template data-notes>
-    <p>First ninety seconds: every team now has an agent that extracts, retrieves, remembers, and cites. The question this module exists to force is uncomfortable on purpose: how do you actually know it is good, and how do you actually know it is safe, rather than assuming both because it demoed well once.</p>
-    <ul>
-      <li>Confirm out loud that Issue 4 is merged for every team. A team without working persistent memory has nothing for today's PII probe to actually test.</li>
-    </ul>
+    <p>First two minutes. For four weeks we built parts of an agent. Today the question changes from "can it do the job once?" to "can I show, with evidence, that it does the job reliably and safely?" That is the question the defense asks you too.</p>
+    <p>Same promise as before: no word is used before I explain it, and nobody codes in class. I run the demos. Your own project work happens between sessions.</p>
   </template>
 </section>
-
 <!-- ==================================================================== 02 -->
-<section class="slide slide--night" data-chrome="none" data-label="Part 1 · Is it actually good, and is it actually safe" data-section="Lecture" data-minutes="1">
-  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
-    <div class="lu-eyebrow">Part one of three · 50 minutes</div>
-    <h2 class="lu-display-xl" style="max-width:24ch">Is it actually good, and is it actually safe?</h2>
-    <p class="lu-lead" style="max-width:42ch">Why component metrics lie, what bias and PII actually cost, and what breaks only after it ships.</p>
-  </div>
-  <template data-notes><p>Ten seconds. Say "every stage of your agent can score well on its own and the whole system can still fail" and move straight into the compounding-error slide.</p></template>
+<section class="slide" data-label="Where the agent stands" data-section="Hook" data-minutes="2">
+  <div class="lu-eyebrow">Five modules in one line</div>
+  <h2 class="lu-h2">Four parts built. One question left.</h2>
+  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 150, "nodes": [{"id": "a", "label": "Module 1\nunderstand", "x": 130, "y": 75, "w": 220, "h": 84, "kind": "code"}, {"id": "b", "label": "Module 2\ndecide and route", "x": 410, "y": 75, "w": 230, "h": 84, "kind": "model"}, {"id": "c", "label": "Module 3\nanswer from sources", "x": 690, "y": 75, "w": 250, "h": 84, "kind": "tool"}, {"id": "d", "label": "Module 4\nremember", "x": 960, "y": 75, "w": 200, "h": 84, "kind": "data"}, {"id": "e", "label": "Today\nprove it works", "x": 1250, "y": 75, "w": 240, "h": 84, "kind": "user"}], "edges": [{"id": "e1", "from": "a", "to": "b", "label": ""}, {"id": "e2", "from": "b", "to": "c", "label": ""}, {"id": "e3", "from": "c", "to": "d", "label": ""}, {"id": "e4", "from": "d", "to": "e", "label": ""}], "steps": [{"show": ["a", "b", "c", "d", "e", "e1", "e2", "e3", "e4"], "run": [], "set": {"e": "inferred"}}], "legend": false}</script></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">The question for today</span><p class="lu-sub">Is it good? Is it safe? And how do you know, in a way that a stranger would believe?</p></div>
+  <template data-notes><p>Two minutes. Each module added a part. Each part had its own check: a schema, a state print, a citation, a recall test. None of those checks tells you whether the whole agent is reliable.</p><p>Ask the room: if your team had to show an examiner one number that says your agent works, which number would you pick? Take two answers and keep them for later.</p></template>
 </section>
-
 <!-- ==================================================================== 03 -->
-<section class="slide" data-label="One number lies: the compounding-error problem" data-section="Lecture" data-minutes="7">
-  <div class="lu-eyebrow">Component metrics versus the whole system</div>
-  <h2 class="lu-h1" style="max-width:36ch">Five stages at 95% each is not a 95% system</h2>
-  <ol class="lu-pipeline" style="margin-top:var(--lu-s5)">
-    <li data-state="done"><span class="lu-pipeline__n">01</span><span class="lu-pipeline__t">Extract</span><span class="lu-pipeline__d">95%</span></li>
-    <li data-state="done"><span class="lu-pipeline__n">02</span><span class="lu-pipeline__t">Retrieve</span><span class="lu-pipeline__d">95%</span></li>
-    <li data-state="done"><span class="lu-pipeline__n">03</span><span class="lu-pipeline__t">Memory</span><span class="lu-pipeline__d">95%</span></li>
-    <li data-state="done"><span class="lu-pipeline__n">04</span><span class="lu-pipeline__t">Tool call</span><span class="lu-pipeline__d">95%</span></li>
-    <li data-state="active"><span class="lu-pipeline__n">05</span><span class="lu-pipeline__t">Generate</span><span class="lu-pipeline__d">95%</span></li>
-  </ol>
-  <div class="lu-reveal" style="margin-top:var(--lu-s5)">
-    <button class="lu-reveal__btn" type="button">So the whole turn succeeds how often?</button>
-    <div class="lu-reveal__panel" hidden>
-      <p class="lu-sub"><b>0.95<sup>5</sup> &asymp; 77%</b>, for one turn needing all five stages to succeed together. A real conversation needing this to hold across six turns in a row: <b>0.95<sup>30</sup> &asymp; 21%</b>. No single component metric on this system would ever show a number below 95%, yet the system a user actually experiences is right there at 21%.</p>
-    </div>
-  </div>
-  <template data-notes><p>Seven minutes. Derive this on the board, do not just assert it: multiply the five 95%s live, then ask what happens across six turns before revealing. This is the single idea the rest of today's lecture, research dive, and lab all serve: a system is not validated because every stage cleared its own bar.</p></template>
+<section class="slide" data-label="Live demo: it passes, then it fails" data-section="Hook" data-minutes="8">
+  <div class="lu-eyebrow">Watch first. Then we learn how it works.</div>
+  <h2 class="lu-h2">The same agent, the same question, three tries</h2>
+  <table class="lu-table"><thead><tr><th>Scenario</th><th>Attempt 1</th><th>Attempt 2</th><th>Attempt 3</th><th>pass^1</th><th>pass^3</th></tr></thead><tbody><tr><td>Order A100 (shipped)</td><td>pass</td><td><b>fail</b></td><td><b>fail</b></td><td>true</td><td><b>false</b></td></tr><tr><td>Order A101 (processing)</td><td>pass</td><td>pass</td><td>pass</td><td>true</td><td>true</td></tr></tbody><caption>Real run of demos/module-05/eval_harness.py. The failing attempts are seeded: the tool returns a stale answer on purpose.</caption></table><div class="lu-split" style="margin-top:var(--lu-s4)"><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>pass^k</b>: the share of tasks the agent gets right on <b>all</b> k repeated tries. Here k = 3.</p></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">What to notice</span><p class="lu-sub">A100 passed the first try. A single test would have said "all good". Repeating it showed the agent is not reliable.</p></div></div>
+  <template data-notes><p>Eight minutes, the longest slide of the hook. I run the whole harness once and read the printed lines aloud. I do not explain the code yet: that comes in Part 3.</p><p>Be honest about the setup: this toy agent looks up an order and sometimes receives a stale answer. I seeded the staleness so that the demo is repeatable. In real life the failures are not scheduled, which is the whole problem.</p><p>Ask before the second scenario: what do you expect? Then show that a clean control passes three times.</p></template>
 </section>
-
 <!-- ==================================================================== 04 -->
-<section class="slide slide--tint" data-label="pass^k: succeeding once is not succeeding reliably" data-section="Lecture" data-minutes="6">
-  <div class="lu-eyebrow">The metric that measures the real thing</div>
-  <h2 class="lu-h1" style="max-width:36ch">Run the same task <button class="lu-term" type="button" data-term="pass^k" data-kind="Reliability metric">k times<template>Introduced by tau-bench (Yao, Shinn, Razavi &amp; Narasimhan, 2024). Run one task independently k times and report the fraction of runs where the agent succeeds <i>every single time</i>, not just once. pass<sup>1</sup> and pass<sup>8</sup> can tell very different stories about the same agent.</template></button>, not once</h2>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <div class="lu-stack">
-      <p class="lu-p">tau-bench scores a run by comparing the database state at the end of the conversation against an annotated goal state, a deterministic, faithful check, not an LLM guessing whether it went well.</p>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Trap</span>
-        <p class="lu-sub">"It passed the eval" almost always means pass<sup>1</sup>. A team that never re-runs its own scripted scenarios has never actually measured whether their agent is reliable, only whether it can succeed once.</p>
-      </div>
-    </div>
-    <div class="lu-stack">
-      <div class="lu-code lu-code--sm" data-name="tau-bench, retail domain, gpt-4o-class agent">
-<pre><code><span class="tok-com"># pass^1: succeeds at least once</span>
-pass_1 <span class="tok-kw">&lt;</span> <span class="tok-num">50%</span>
-
-<span class="tok-com"># pass^8: succeeds all 8 times in a row</span>
-pass_8 <span class="tok-kw">&lt;</span> <span class="tok-num">25%</span></code></pre>
-      </div>
-      <p class="lu-caption">Real numbers, tau-bench (arXiv:2406.12045), not illustrative round ones.</p>
-    </div>
-  </div>
-  <template data-notes><p>Six minutes. The gap between the two numbers is the entire point, not either number alone. Say plainly: this is exactly what today's lab will measure about your own agent, not a hypothetical from a paper.</p></template>
+<section class="slide" data-label="Today in one picture" data-section="Hook" data-minutes="3">
+  <div class="lu-eyebrow">Where we are going</div>
+  <h2 class="lu-h2">Five ideas about proof</h2>
+  <div class="lu-walk" data-label="Plan of the module"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 190, "nodes": [{"id": "n1", "label": "1 The whole\nsystem", "x": 140, "y": 95, "w": 250, "h": 100, "kind": "code"}, {"id": "n2", "label": "2 Repeat the\ntest", "x": 430, "y": 95, "w": 250, "h": 100, "kind": "model"}, {"id": "n3", "label": "3 Bias\nprobe", "x": 720, "y": 95, "w": 250, "h": 100, "kind": "tool"}, {"id": "n4", "label": "4 Personal\ndata", "x": 1010, "y": 95, "w": 250, "h": 100, "kind": "data"}, {"id": "n5", "label": "5 After\nlaunch", "x": 1300, "y": 95, "w": 250, "h": 100, "kind": "user"}], "edges": [{"id": "a", "from": "n1", "to": "n2", "label": ""}, {"id": "b", "from": "n2", "to": "n3", "label": ""}, {"id": "c", "from": "n3", "to": "n4", "label": ""}, {"id": "d", "from": "n4", "to": "n5", "label": ""}], "steps": [{"show": ["n1"], "run": [], "set": {"n1": "active"}}, {"show": ["n2", "a"], "run": ["a"], "set": {"n1": "idle", "n2": "active"}}, {"show": ["n3", "b"], "run": ["b"], "set": {"n2": "idle", "n3": "active"}}, {"show": ["n4", "c"], "run": ["c"], "set": {"n3": "idle", "n4": "active"}}, {"show": ["n5", "d"], "run": ["d"], "set": {"n4": "idle", "n5": "active"}}], "legend": false}</script></div><div data-walk-step="1" data-caption-short="The whole system" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; Why a good score on every part can still mean a poor agent."></div><div data-walk-step="2" data-caption-short="Repeat the test" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; Success once is not success every time. The &lt;b&gt;pass^k&lt;/b&gt; number measures that." hidden></div><div data-walk-step="3" data-caption-short="Bias probe" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; Change one thing that should not matter, such as who the user says they are, and see if the result changes." hidden></div><div data-walk-step="4" data-caption-short="Personal data" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; Find personal data, decide what to do with it, and check that it does not leak." hidden></div><div data-walk-step="5" data-caption-short="After launch" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; Speed, cost per conversation, and the slow change called drift." hidden></div></div></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">Then</span><p class="lu-sub">Then we read three papers on how agents are tested and how far a judge can be trusted. Then I run the harness again and explain it.</p></div>
+  <template data-notes><p>Three minutes. Walk the five boxes and do not explain any of them yet.</p><p>Syllabus match: the lecture covers component versus whole-conversation metrics, bias probing, personal data and regional rules, and deployment concerns. The research dive covers the tau-bench papers and the blind spots of LLM judges.</p></template>
 </section>
-
 <!-- ==================================================================== 05 -->
-<section class="slide" data-label="Two can play: tau-squared-bench's dual control" data-section="Lecture" data-minutes="6">
-  <div class="lu-eyebrow">The harder, more realistic test</div>
-  <h2 class="lu-h1" style="max-width:36ch">What happens once the user can act too</h2>
-  <div class="lu-board" style="margin-top:var(--lu-s4)">
-    <svg class="lu-board__edges lu-svg" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
-      <defs><marker id="m5-arrow-dual" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m5-arrow-dual)" d="M 220 90 L 460 170"/>
-      <path class="lu-edge lu-edge--strong" style="color:var(--lu-ink-2);marker-end:url(#m5-arrow-dual)" d="M 780 90 L 540 170"/>
-      <text class="lu-edge-label" x="330" y="115">tool calls</text>
-      <text class="lu-edge-label" x="670" y="115">tool calls</text>
-    </svg>
-    <div class="lu-node" style="left:12%;top:22%">Agent (has tools)</div>
-    <div class="lu-node" style="left:88%;top:22%">User (has tools too)</div>
-    <button type="button" class="lu-node lu-node--instance" style="left:50%;top:62%" data-term="Shared environment" data-kind="Dec-POMDP"><template>Modelled formally as a decentralised, partially observable Markov decision process: both the agent and the user act on the same environment, neither sees the other's full state, and both actions change what happens next. A technical-support call where the customer restarts their own router while the agent walks them through it.</template>Shared, dynamic environment</button>
+<section class="slide slide--night" data-chrome="none" data-label="Part 1 · Is it good, and is it safe?" data-section="Lecture" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">Part one of three · about 40 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">Is it good, and is it safe?</h2>
+    <p class="lu-lead" style="max-width:44ch">Why component scores lie, how to repeat a test, and how to check bias, personal data and cost.</p>
   </div>
-  <div class="lu-callout lu-callout--concept" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">The split that matters operationally</span>
-    <p class="lu-sub">tau2-bench (arXiv:2506.07982) separates <b>reasoning</b> failures (the agent chose the wrong thing) from <b>coordination</b> failures (the agent could not successfully guide the user's half). Performance drops significantly the moment the user can act too, and the two failure types need different fixes: a better model for one, clearer instructions to the user for the other.</p>
-  </div>
-  <template data-notes><p>Six minutes. Most benchmarks, tau-bench included, keep the user passive. tau2-bench's whole contribution is letting the user act too, which is what a real support call actually looks like. Ask the room which failure type they would expect to be more common in their own team's agent, reasoning or coordination, before moving on.</p></template>
+  <template data-notes><p>Ten seconds. Promise again: every new word is explained on the slide where it first appears.</p></template>
 </section>
-
 <!-- ==================================================================== 06 -->
-<section class="slide slide--tint" data-label="Check: what pass^8 actually tells you" data-section="Lecture" data-minutes="4">
-  <div class="lu-eyebrow">Check question</div>
-  <div class="lu-split lu-split--wide-left">
-    <div class="lu-mcq" data-qid="m5-q1" data-answer="b"
-         data-label="What a low pass^8 next to a high pass^1 actually means"
-         data-fb-correct=" Correct: pass^k measures reliability across repeated trials, not whether the agent is merely capable of succeeding once."
-         data-fb-wrong=" Reconsider what changes between pass^1 and pass^8: the task is identical every time, only the number of independent attempts changes.">
-      <p class="lu-mcq__q">An agent scores 90% pass<sup>1</sup> but only 30% pass<sup>8</sup> on the same task. What does that gap actually mean?</p>
-      <div class="lu-mcq__opts">
-        <button class="lu-mcq__opt" type="button" data-key="a">The task is unusually hard, pass^8 is just a stricter grader<span class="lu-mcq__why" hidden>pass^8 grades the exact same task the exact same way as pass^1, it just repeats it. The task's difficulty has not changed.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="b">The agent is capable but unreliable: it usually can succeed, but rarely succeeds every time in a row<span class="lu-mcq__why" hidden>Correct: high pass^1 with low pass^k is the signature of an agent that is capable but inconsistent, exactly the reliability problem component metrics never surface.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="c">There is a bug in the evaluation harness, the two numbers should match<span class="lu-mcq__why" hidden>The two numbers measuring different things (one attempt versus eight in a row) is the intended design, not a bug.</span></button>
-        <button class="lu-mcq__opt" type="button" data-key="d">pass^8 is only meaningful for airline-domain tasks, not general agents<span class="lu-mcq__why" hidden>pass^k is a general reliability metric, not specific to any one tau-bench domain.</span></button>
-      </div>
-      <div class="lu-mcq__fb" hidden></div>
-    </div>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">The idea behind the question</span>
-      <p class="lu-sub">A single pass/fail number can never distinguish "capable" from "reliable." Only repetition can.</p>
-    </div>
-  </div>
-  <template data-notes><p>Forty seconds, then reveal. If a team is surprised by this, it is worth naming directly: they have very likely only ever run their own regression scenarios once each.</p></template>
+<section class="slide" data-label="One number lies" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Component metrics versus the whole system</div>
+  <h2 class="lu-h2">Five parts at 95% are not a 95% system</h2>
+  <div class="lu-walk" data-label="Errors add up"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 235, "nodes": [{"id": "a", "label": "Extract\n95%", "x": 130, "y": 55, "w": 220, "h": 70, "kind": "code"}, {"id": "b", "label": "Retrieve\n95%", "x": 400, "y": 55, "w": 220, "h": 70, "kind": "tool"}, {"id": "c", "label": "Memory\n95%", "x": 670, "y": 55, "w": 220, "h": 70, "kind": "data"}, {"id": "d", "label": "Tool call\n95%", "x": 940, "y": 55, "w": 220, "h": 70, "kind": "model"}, {"id": "e", "label": "Generate\n95%", "x": 1210, "y": 55, "w": 220, "h": 70, "kind": "user"}, {"id": "s1", "label": "after 1: 95%", "x": 130, "y": 170, "w": 220, "h": 52, "kind": "data"}, {"id": "s2", "label": "after 2: 90%", "x": 400, "y": 170, "w": 220, "h": 52, "kind": "data"}, {"id": "s3", "label": "after 3: 86%", "x": 670, "y": 170, "w": 220, "h": 52, "kind": "data"}, {"id": "s4", "label": "after 4: 81%", "x": 940, "y": 170, "w": 220, "h": 52, "kind": "data"}, {"id": "s5", "label": "after 5: 77%", "x": 1210, "y": 170, "w": 220, "h": 52, "kind": "data"}], "edges": [{"id": "e1", "from": "a", "to": "b", "label": ""}, {"id": "e2", "from": "b", "to": "c", "label": ""}, {"id": "e3", "from": "c", "to": "d", "label": ""}, {"id": "e4", "from": "d", "to": "e", "label": ""}], "steps": [{"show": ["a", "s1"], "run": [], "set": {"a": "active", "s1": "inferred"}}, {"show": ["b", "e1", "s2"], "run": ["e1"], "set": {"a": "idle", "s1": "idle", "b": "active", "s2": "inferred"}}, {"show": ["c", "e2", "s3"], "run": ["e2"], "set": {"b": "idle", "s2": "idle", "c": "active", "s3": "inferred"}}, {"show": ["d", "e3", "s4"], "run": ["e3"], "set": {"c": "idle", "s3": "idle", "d": "active", "s4": "inferred"}}, {"show": ["e", "e4", "s5"], "run": ["e4"], "set": {"d": "idle", "s4": "idle", "e": "active", "s5": "inferred"}}], "legend": false, "flags": {"inferred": "so far"}}</script></div><div data-walk-step="1" data-caption-short="One stage" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; One stage is right 95 times in 100. That looks excellent."></div><div data-walk-step="2" data-caption-short="Two stages" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; For a turn to succeed, &lt;b&gt;both&lt;/b&gt; must be right. 0.95 × 0.95 = 0.90, so 90%." hidden></div><div data-walk-step="3" data-caption-short="Three stages" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; 0.95 × 0.95 × 0.95 = 0.86, so 86%." hidden></div><div data-walk-step="4" data-caption-short="Four stages" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; Now 0.81: about one turn in five is wrong somewhere." hidden></div><div data-walk-step="5" data-caption-short="Five stages: 77%" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; One turn is right 77 times in 100. A talk of six turns needs &lt;b&gt;30&lt;/b&gt; stage results to be right: 0.95 to the power 30 is about 21%." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Component metric</b>: a score for one part, such as extraction accuracy. <b>End-to-end metric</b>: a score for the whole conversation. The sum above assumes the stages fail independently, which real systems only roughly do.</p></div>
+  <template data-notes><p>Four minutes. No part of this system scored below 95%, and the user lives in the 21% world. That is the argument for testing the whole conversation.</p><p>The numbers are invented for teaching, and so is the independence assumption. Say both aloud. In real systems errors are correlated, which can make the total better or worse than the product.</p><p>Arithmetic to do on the board: 0.95 squared is 0.9025. Cubed is 0.857. To the fifth is 0.774. To the thirtieth is 0.215.</p></template>
 </section>
-
 <!-- ==================================================================== 07 -->
-<section class="slide" data-label="Bias probing: hold the task, swap the identity cue" data-section="Lecture" data-minutes="4">
-  <div class="lu-eyebrow">Not just tone, task performance itself</div>
-  <h2 class="lu-h1" style="max-width:36ch">One variable changed, and the score moves anyway</h2>
-  <div class="lu-callout lu-callout--concept" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">The technique, in one line</span>
-    <p class="lu-sub">Run the identical task twice: once with no identity cue, once with a demographic persona cue added that has nothing to do with what is actually being asked. Model, tools, and policy stay the same in both runs. Any score difference is bias, not noise.</p>
-  </div>
-  <div class="lu-callout" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">Why this is not a tone question</span>
-    <p class="lu-sub">Persona-conditioned bias in chatbot <i>text</i> is already well documented. A 2026 workshop paper (Cao, Sun &amp; Yue, arXiv:2602.12285) found the same conditioning moves agent <i>task success</i> itself, by up to 26.2% across widely deployed models. A system that only ever tests one persona has never measured whether this exists in its own agent.</p>
-  </div>
-  <template data-notes><p>Four minutes. The mechanism is the whole lesson: hold the task fixed, change only the identity cue, measure the delta, exactly the probe today's lab builds. This is one supporting citation for today, not one of the module's two anchor papers: tau-bench and tau2-bench carry the research dive, named directly in the syllabus.</p></template>
+<section class="slide" data-label="Repeat the test: pass@k and pass^k" data-section="Lecture" data-minutes="5">
+  <div class="lu-eyebrow">Success once is not success every time</div>
+  <h2 class="lu-h2">One run says little. Repeat it.</h2>
+  <table class="lu-table"><thead><tr><th>Tries (k)</th><th>pass@k: at least one try is right</th><th>pass^k: every try is right</th></tr></thead><tbody><tr><td>1</td><td>75%</td><td>75%</td></tr><tr><td>2</td><td>100%</td><td>50%</td></tr><tr><td>3</td><td>100%</td><td>25%</td></tr><tr><td>4</td><td>100%</td><td>0%</td></tr></tbody><caption>Invented for teaching: one task, 4 trials, 3 succeeded (c = 3 of n = 4).</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Trial</b>: one full run of a task. <b>pass@k</b>: <b>at least one</b> of k trials succeeds. <b>pass^k</b>: <b>all</b> k trials succeed. For pass^2: of the 6 ways to choose 2 trials from 4, 3 are two successes, so 3 / 6 = 50% (formula C(c, k) / C(n, k)).</p></div>
+  <template data-notes><p>Five minutes. Do the example slowly. c is the number of successes (3), n the number of trials (4). For k = 2 the number of ways to choose 2 trials out of 4 is 6, and the ways that are all successes is 3, so 3 over 6.</p><p>In tau-bench, the best model, gpt-4o, succeeds on about 61% of retail tasks in one try, and under 25% when all 8 tries must succeed. We read that paper later. The paper defines pass^k exactly as here.</p><p>Ask: which of the two would you quote to a customer? A bank would never accept 'it worked at least once'.</p></template>
 </section>
-
 <!-- ==================================================================== 08 -->
-<section class="slide slide--tint" data-label="PII: detect, then decide what to do about it" data-section="Lecture" data-minutes="8">
-  <div class="lu-eyebrow">The mechanism behind every real PII pipeline</div>
-  <h2 class="lu-h1" style="max-width:36ch">No single technique catches everything, so layer four</h2>
-  <ol class="lu-pipeline" style="margin-top:var(--lu-s4)">
-    <li data-state="done"><span class="lu-pipeline__n">01</span><span class="lu-pipeline__t">Regex / deny-list</span><span class="lu-pipeline__d">Emails, phone formats</span></li>
-    <li data-state="done"><span class="lu-pipeline__n">02</span><span class="lu-pipeline__t">Checksum</span><span class="lu-pipeline__d">A Luhn-valid card number, not just digit-shaped</span></li>
-    <li data-state="done"><span class="lu-pipeline__n">03</span><span class="lu-pipeline__t">Entity recognition</span><span class="lu-pipeline__d">A name or address in free text</span></li>
-    <li data-state="active"><span class="lu-pipeline__n">04</span><span class="lu-pipeline__t">Context</span><span class="lu-pipeline__d">"SSN:" before nine digits is a stronger signal than the digits alone</span></li>
-  </ol>
-  <div class="lu-split" style="margin-top:var(--lu-s4)">
-    <div class="lu-callout">
-      <span class="lu-callout__label">Then one of five operators</span>
-      <p class="lu-sub">Redact (delete), mask (<code>***-**-1234</code>), hash (one-way, still linkable), replace (a synthetic stand-in), or encrypt (reversible, for an authorised lookup). This is Presidio's own layered architecture, the field's most widely deployed open building block for this.</p>
-    </div>
-    <div class="lu-reveal">
-      <button class="lu-reveal__btn" type="button">The cost this mechanism does not advertise</button>
-      <div class="lu-reveal__panel" hidden><p>Redacting "user's email is X" to "user's email is [REDACTED]" also destroys the agent's own ability to answer "what's the email you have on file for me," a legitimate request, not an attack. What a memory system chooses to store (Module 4) is exactly what a PII pipeline downstream has to account for.</p></div>
-    </div>
-  </div>
-  <div class="lu-callout lu-callout--concept" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">Why not just one big regex denylist</span>
-    <p class="lu-sub">A denylist alone never catches a name or a home address stated in free text, and it never catches a digit string that merely looks like a card number, hence entity recognition and checksum validation as separate layers. Each layer alone is cheap to build and each alone still misses whole categories, the layering is the actual mechanism, not any single technique.</p>
-  </div>
-  <template data-notes><p>Eight minutes. Walk the four detection layers left to right, then open the reveal on the redaction-versus-utility tradeoff: this is the direct link back to Module 4's own memory work, not a new, unrelated topic.</p></template>
+<section class="slide slide--tint" data-label="Check: what pass^8 tells you" data-section="Lecture" data-minutes="2">
+  <div class="lu-eyebrow">Check question</div>
+  <div class="lu-mcq" data-qid="m5-q1" data-answer="b" data-label="What a gap between pass^1 and pass^8 means" data-fb-correct=" High pass^1 with low pass^8 means capable but inconsistent." data-fb-wrong=" The two numbers measure different things on the same task."><p class="lu-mcq__q">An agent scores 90% on pass^1 but only 30% on pass^8 for the same tasks. What does the gap mean?</p><div class="lu-mcq__opts"><button class="lu-mcq__opt" type="button" data-key="a">The task is hard, so pass^8 is a stricter grader<span class="lu-mcq__why" hidden>pass^8 grades each try the same way as pass^1. It only asks for all eight to succeed.</span></button><button class="lu-mcq__opt" type="button" data-key="b">The agent can succeed but often fails on a repeat: it is inconsistent<span class="lu-mcq__why" hidden>Yes. This is the signature of an agent that is capable but not reliable.</span></button><button class="lu-mcq__opt" type="button" data-key="c">The test harness has a bug, the two numbers should match<span class="lu-mcq__why" hidden>They are meant to differ. One counts one try, the other counts eight in a row.</span></button></div><div class="lu-mcq__fb" hidden></div></div>
+  <template data-notes><p>Two minutes. A single pass or fail number cannot tell capable from reliable. Only repetition can.</p></template>
 </section>
-
 <!-- ==================================================================== 09 -->
-<section class="slide" data-label="What regional regulation actually requires, right now" data-section="Lecture" data-minutes="7">
-  <div class="lu-eyebrow">Not textbook, live law</div>
-  <h2 class="lu-h1" style="max-width:36ch">One deadline already passed, one deferred</h2>
-  <ol class="lu-pipeline" style="margin-top:var(--lu-s5)">
-    <li data-state="done"><span class="lu-pipeline__n">Aug 2026</span><span class="lu-pipeline__t">EU AI Act Article 50</span><span class="lu-pipeline__d">Live law. A chatbot must disclose it is an AI.</span></li>
-    <li data-state="active"><span class="lu-pipeline__n">Today</span><span class="lu-pipeline__t">Sept 2026</span><span class="lu-pipeline__d">Article 50 already binds any EU-reachable deployment.</span></li>
-    <li data-state="muted"><span class="lu-pipeline__n">Dec 2027</span><span class="lu-pipeline__t">High-risk (Annex III)</span><span class="lu-pipeline__d">Deferred by the EU's Nov 2025 Digital Omnibus, not cancelled.</span></li>
-  </ol>
-  <div class="lu-callout" style="margin-top:var(--lu-s5)">
-    <span class="lu-callout__label">Stated precisely, not vaguely</span>
-    <p class="lu-sub">Penalties for breaching Article 50's transparency duty run up to <b>EUR 15 million or 3% of global turnover</b>. A team's own agent is very unlikely to be classified high-risk, but if it is reachable by any EU user, the disclosure duty is already live law today, not a future compliance date to plan around later.</p>
-  </div>
-  <div class="lu-reveal" style="margin-top:var(--lu-s4)">
-    <button class="lu-reveal__btn" type="button">What "disclose" actually has to look like</button>
-    <div class="lu-reveal__panel" hidden><p>A line in the first turn, "You're chatting with an automated assistant," satisfies the duty. Burying it in a terms-of-service page nobody reads does not: the obligation is that the user actually knows, in plain terms, at the point of use.</p></div>
-  </div>
-  <template data-notes><p>Seven minutes. Be exact about which deadline already passed and which was deferred, a team that overclaims "we don't need to worry about the AI Act yet" because they misread the high-risk deferral as a blanket delay is a mistake worth heading off directly here.</p></template>
+<section class="slide" data-label="Bias probe: change one thing" data-section="Lecture" data-minutes="5">
+  <div class="lu-eyebrow">Not only tone: results themselves can change</div>
+  <h2 class="lu-h2">Same task, one extra detail, compare the scores</h2>
+  <div class="lu-walk" data-label="A bias probe"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 262, "nodes": [{"id": "t", "label": "Same task\nsame tools\nsame policy", "x": 150, "y": 131, "w": 250, "h": 110, "kind": "code"}, {"id": "r1", "label": "Run A\nno identity cue", "x": 590, "y": 55, "w": 260, "h": 70, "kind": "model"}, {"id": "r2", "label": "Run B\nwith an identity cue", "x": 590, "y": 207, "w": 280, "h": 70, "kind": "model"}, {"id": "s1", "label": "score A", "x": 980, "y": 55, "w": 190, "h": 56, "kind": "data"}, {"id": "s2", "label": "score B", "x": 980, "y": 207, "w": 190, "h": 56, "kind": "data"}, {"id": "d", "label": "difference\n= possible bias", "x": 1290, "y": 131, "w": 250, "h": 90, "kind": "user"}], "edges": [{"id": "e1", "from": "t", "to": "r1", "label": "", "route": "elbow", "sides": ["right", "left"]}, {"id": "e2", "from": "t", "to": "r2", "label": "", "route": "elbow", "sides": ["right", "left"]}, {"id": "e3", "from": "r1", "to": "s1", "label": ""}, {"id": "e4", "from": "r2", "to": "s2", "label": ""}, {"id": "e5", "from": "s1", "to": "d", "label": "", "route": "elbow", "sides": ["right", "left"]}, {"id": "e6", "from": "s2", "to": "d", "label": "", "route": "elbow", "sides": ["right", "left"]}], "steps": [{"show": ["t"], "run": [], "set": {"t": "active"}}, {"show": ["r1", "e1", "s1", "e3"], "run": ["e1", "e3"], "set": {"t": "idle", "s1": "active"}}, {"show": ["r2", "e2", "s2", "e4"], "run": ["e2", "e4"], "set": {"s1": "idle", "s2": "active"}}, {"show": ["d", "e5", "e6"], "run": ["e5", "e6"], "set": {"s2": "idle", "d": "inferred"}}], "legend": false, "flags": {"inferred": "bias?"}}</script></div><div data-walk-step="1" data-caption-short="Fix the task" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; Choose one task and keep the model, the tools and the policy exactly the same."></div><div data-walk-step="2" data-caption-short="Run A" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; Run it as normal and record the score." hidden></div><div data-walk-step="3" data-caption-short="Run B" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; Run it again with one added detail that has nothing to do with the task, such as who the person says they are." hidden></div><div data-walk-step="4" data-caption-short="Compare" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; If the score changes, the extra detail changed the result. That is bias, because nothing else was different." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Bias probe</b>: a test that holds a task fixed and changes only an identity cue. <b>Identity cue</b>: a detail about a person, such as age, gender, religion or job, that should not change the answer.</p></div>
+  <template data-notes><p>Five minutes. The strength of the probe is the control: everything is identical except the cue, so a difference cannot be blamed on the task.</p><p>One run is not enough. Model output varies from run to run, so a real probe repeats each pair and looks at the average difference, not a single pair.</p><p>Be careful with what the demo shows: one scenario, one cue, one pair. A result of no difference there is not evidence that no bias exists.</p></template>
 </section>
-
 <!-- ==================================================================== 10 -->
-<section class="slide slide--tint" data-label="Deployment concerns: latency, cost, and silent drift" data-section="Lecture" data-minutes="7">
-  <div class="lu-eyebrow">What never shows up in an offline eval at all</div>
-  <h2 class="lu-h1" style="max-width:36ch">Three costs a demo never has to pay</h2>
-  <table class="lu-table" style="margin-top:var(--lu-s4)">
-    <thead><tr><th>Concern</th><th>What it actually means</th></tr></thead>
-    <tbody>
-      <tr><td>Latency budget</td><td>A p50 average hides the p95/p99 tail that ruins one user in twenty; a budget is stated per percentile, across every hop, not just the model call.</td></tr>
-      <tr><td>Cost per conversation</td><td>Not cost per call: one conversation's memory search, retrieval, rerank, and judge calls all bill against the same user-visible reply.</td></tr>
-      <tr><td>Drift</td><td>A provider updates the model behind a pinned version string, or the same prompt behaves differently next month, with nothing in the code changed.</td></tr>
-    </tbody>
-  </table>
-  <div class="lu-callout lu-callout--concept" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">This is not abstract</span>
-    <p class="lu-sub">This course's own demos pin an explicit model version string in every module instead of "latest," for exactly this reason. Drift is not a new idea today, it is the first time the discipline students have followed since Module 1 gets named and explained.</p>
-  </div>
-  <div class="lu-reveal" style="margin-top:var(--lu-s4)">
-    <button class="lu-reveal__btn" type="button">A concrete budget, as a worked example</button>
-    <div class="lu-reveal__panel" hidden><p>A support agent's first-token latency budget stated as "p95 under 3 seconds, p99 under 6," not "usually fast." A team that has never measured its own p95 has no budget at all, only a vibe.</p></div>
-  </div>
-  <template data-notes><p>Seven minutes. Point back at the course's own demos/requirements.txt version pins directly, this is the payoff of connecting a rule students have been following to the reason it exists.</p></template>
+<section class="slide" data-label="What the persona paper found" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">An AAAI 2026 workshop paper · CC BY 4.0 · local copy in research/module-05</div>
+  <h2 class="lu-h2">Task-irrelevant cues can change an agent's success</h2>
+  <table class="lu-table"><thead><tr><th>Cao, Sun and Yue (2026)</th><th>What they did</th></tr></thead><tbody><tr><td>Personas</td><td>23, across gender, race and origin, religion and profession</td></tr><tr><td>Agent tasks</td><td>5 benchmarks, such as shopping, a card game and databases</td></tr><tr><td>Models</td><td>3: GPT-4o-mini, DeepSeek-V3 and Qwen3-235B</td></tr><tr><td>Largest drop in success</td><td>Up to 26.2%, caused only by a task-irrelevant persona</td></tr><tr><td>Where it was small</td><td>Operating-system and database tasks moved only about 2% to 5%</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Careful: two different designs</span><p class="lu-sub">In the paper the persona is given <b>to the agent</b>: "From now on, you are a [role]". In our demo the cue is in the <b>customer's</b> message. Same logic, different place.</p></div>
+  <template data-notes><p>Four minutes. The paper shows that bias is not only about tone in generated text: it can change how well an agent does its job. It is a workshop paper and a case study, so read it as a warning and a method, not as a final answer.</p><p>Our probe puts the cue in the customer's opening line. That tests whether the agent treats customers differently. The paper tests whether the agent behaves differently when told who it is. Both are worth testing.</p></template>
 </section>
-
 <!-- ==================================================================== 11 -->
-<section class="slide slide--night" data-chrome="none" data-label="Part 2 · What the papers actually found" data-section="Research dive" data-minutes="1">
-  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
-    <div class="lu-eyebrow">Part two of three · 40 minutes</div>
-    <h2 class="lu-display-xl" style="max-width:22ch">What the papers actually found</h2>
-    <p class="lu-lead" style="max-width:42ch">tau-bench and tau2-bench in full depth, then the paper that measures the LLM-as-judge blind spot directly.</p>
-  </div>
-  <template data-notes><p>Ten seconds. Say "the metric on the last few slides came from somewhere, let's actually look" and move on.</p></template>
+<section class="slide" data-label="Personal data: four layers of detection" data-section="Lecture" data-minutes="5">
+  <div class="lu-eyebrow">No single technique catches everything</div>
+  <h2 class="lu-h2">Four layers, each catching what the others miss</h2>
+  <div class="lu-walk" data-label="Finding personal data"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 235, "nodes": [{"id": "t", "label": "\"My card is\n4111 1111 1111 1111\"", "x": 190, "y": 60, "w": 330, "h": 84, "kind": "user"}, {"id": "r", "label": "1 Pattern\nregex: 16 digits", "x": 640, "y": 60, "w": 280, "h": 84, "kind": "code"}, {"id": "c", "label": "2 Checksum\nLuhn test", "x": 960, "y": 60, "w": 240, "h": 84, "kind": "tool"}, {"id": "n", "label": "3 Names\nentity recognition", "x": 1240, "y": 60, "w": 270, "h": 84, "kind": "model"}, {"id": "x", "label": "4 Context\nword \"card\" nearby", "x": 800, "y": 178, "w": 330, "h": 84, "kind": "data"}], "edges": [{"id": "a", "from": "t", "to": "r", "label": ""}, {"id": "b", "from": "r", "to": "c", "label": ""}, {"id": "c1", "from": "c", "to": "n", "label": ""}], "steps": [{"show": ["t"], "run": [], "set": {"t": "active"}}, {"show": ["r", "a"], "run": ["a"], "set": {"t": "idle", "r": "active"}}, {"show": ["c", "b"], "run": ["b"], "set": {"r": "idle", "c": "active"}}, {"show": ["n", "c1"], "run": ["c1"], "set": {"c": "idle", "n": "active"}}, {"show": ["x"], "run": [], "set": {"n": "idle", "x": "inferred"}}], "legend": false, "flags": {"inferred": "adds confidence"}}</script></div><div data-walk-step="1" data-caption-short="A message" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; The user writes a card number in free text. The system must notice it."></div><div data-walk-step="2" data-caption-short="1 Pattern" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; A &lt;b&gt;regex&lt;/b&gt; (a pattern rule) finds anything shaped like a card number: 16 digits in groups." hidden></div><div data-walk-step="3" data-caption-short="2 Checksum" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; The &lt;b&gt;Luhn test&lt;/b&gt; checks it: from the right, double every second digit (subtract 9 if above 9), add all digits. A real card total ends in 0. Here the total is 30." hidden></div><div data-walk-step="4" data-caption-short="3 Names" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; &lt;b&gt;Entity recognition&lt;/b&gt; (NER) is a model that marks names and addresses in free text, which no pattern can find." hidden></div><div data-walk-step="5" data-caption-short="4 Context" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; A word like &quot;card&quot; or &quot;SSN&quot; near digits raises the confidence. No single layer is enough, so tools such as Presidio combine all four." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>PII</b> (personally identifiable information): data that points to one person, such as a name, a phone number or a card number. The number above is a standard test number, not a real card.</p></div>
+  <template data-notes><p>Five minutes. Three of the four layers are cheap rules. The model-based layer finds what rules cannot: names and addresses. The context layer uses the words around a number to decide.</p><p>Luhn: worked total for 4111 1111 1111 1111 is 30. Real random 16-digit strings pass the test only about one time in ten, so it removes most false alarms.</p><p>Presidio is Microsoft's open-source toolkit, a widely used open-source toolkit.</p></template>
 </section>
-
 <!-- ==================================================================== 12 -->
-<section class="slide" data-label="tau-bench, worked through" data-section="Research dive" data-minutes="10">
-  <div class="lu-eyebrow">Yao, Shinn, Razavi &amp; Narasimhan, 2024 · arXiv:2406.12045 · named in the syllabus</div>
-  <h2 class="lu-h1" style="max-width:36ch">A user simulator, a policy, and a ground truth you can check</h2>
-  <div class="lu-split" style="margin-top:var(--lu-4)">
-    <div class="lu-stack">
-      <ul class="lu-list">
-        <li>Two domains: retail and airline customer support, each with real API tools and written policy guidelines the agent must follow, not just a task to complete.</li>
-        <li>A language model plays the user, so the conversation is dynamic, not scripted turn by turn in advance.</li>
-        <li>Scoring compares the <b>database state at the end of the conversation</b> against an annotated goal state: deterministic, not an LLM guessing.</li>
-      </ul>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Why database-diff, not an LLM judge</span>
-        <p class="lu-sub">A clean, checkable ground truth is exactly what makes tau-bench's own scoring trustworthy without a judge at all. It costs nothing extra to run once the goal state is annotated. The tradeoff: most real deployments have no clean database state to diff against, which is precisely why an LLM judge gets reached for instead, and precisely why its blind spots (two slides ahead) matter.</p>
-      </div>
-    </div>
-    <div class="lu-stack">
-      <div class="lu-code lu-code--sm" data-name="pass^k, formally">
-<pre><code><span class="tok-com"># run the same task k times, independently</span>
-outcomes = [<span class="tok-fn">run_task</span>(task) <span class="tok-kw">for</span> _ <span class="tok-kw">in</span> <span class="tok-fn">range</span>(k)]
-
-<span class="tok-com"># succeed only if EVERY run succeeded</span>
-pass_k = <span class="tok-fn">all</span>(outcomes)</code></pre>
-      </div>
-      <p class="lu-caption">Real result: gpt-4o-class agents, retail domain, pass<sup>1</sup> &lt; 50%, pass<sup>8</sup> &lt; 25%.</p>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Read critically</span>
-        <p class="lu-sub">Two domains, both customer support. The user simulator is itself an LLM, which can behave unrealistically in ways a real customer would not. Treat pass^k as a lower bound on the gap between "looks capable" and "is reliable," not a universal constant that transfers unchanged to every domain.</p>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Ten minutes. This is one of the module's two anchor papers, named directly in the syllabus's reading list. Spend real time on the scoring mechanism specifically: it is not an LLM judge, it is a database-state diff. That is the setup for tau2-bench next, and for the judge-blind-spot slides after it. The infographic at <code>assets/infographics/module-05/tau-bench.html</code> is a visual companion to this walkthrough, open it live if the room responds better to a diagram than to code.</p></template>
+<section class="slide" data-label="Personal data: five things you can do" data-section="Lecture" data-minutes="3">
+  <div class="lu-eyebrow">Detecting is half the job: deciding is the other half</div>
+  <h2 class="lu-h2">Five operators, chosen by what the agent still needs</h2>
+  <table class="lu-table"><thead><tr><th>Operator</th><th>What it does</th><th>Example</th></tr></thead><tbody><tr><td>Redact</td><td>Delete it</td><td>"my card is " (nothing)</td></tr><tr><td>Mask</td><td>Hide part of it</td><td>***-**-1234</td></tr><tr><td>Hash</td><td>One-way scramble: still the same each time</td><td>a1f3...9c</td></tr><tr><td>Replace</td><td>Swap in a made-up stand-in</td><td>"John Smith" becomes "Person A"</td></tr><tr><td>Encrypt</td><td>Scramble so that only a key holder can undo it</td><td>for an authorised lookup</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">The cost nobody advertises</span><p class="lu-sub">Redaction has a price. If you delete the email address, the agent can no longer answer "what email do you have for me?", a fair question from the customer. Choose the operator by what the agent still needs.</p></div>
+  <template data-notes><p>Three minutes. The five operators are the ones Presidio's anonymizer offers. Hash is useful when you need to know two records belong to the same person without keeping the value.</p><p>Module 4 link: what the memory bank stores is exactly what this pipeline has to protect. A fact saved in plain text is a fact you must be able to find, mask and delete.</p></template>
 </section>
-
 <!-- ==================================================================== 13 -->
-<section class="slide slide--tint" data-label="tau-squared-bench: when the user can act too" data-section="Research dive" data-minutes="9">
-  <div class="lu-eyebrow">Barres, Dong, Ray, Si &amp; Narasimhan, 2025 · arXiv:2506.07982 · named in the syllabus</div>
-  <h2 class="lu-h1" style="max-width:36ch">Dual control: a telecom domain where both sides hold tools</h2>
-  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
-    <ul class="lu-list">
-      <li>Modelled formally as a Dec-POMDP: agent and user both act on one shared, dynamic environment, neither with full visibility into the other's state.</li>
-      <li>A compositional task generator builds diverse, verifiable tasks from atomic components, so task difficulty is controlled, not accidental.</li>
-      <li>Fine-grained ablations separate <b>reasoning</b> errors (wrong decision) from <b>communication/coordination</b> errors (failed to guide the user correctly).</li>
-    </ul>
-    <div class="lu-stack">
-      <div class="lu-callout lu-callout--concept">
-        <span class="lu-callout__label">The headline result</span>
-        <p class="lu-sub">Performance drops significantly the moment the environment moves from single-control (agent only) to dual-control (agent and user both acting). The paper's own framing: an agent has to reason well <i>and</i> guide the user's actions, and today's agents are noticeably worse at the second half.</p>
-      </div>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Why this benchmark exists at all</span>
-        <p class="lu-sub">tau-bench keeps the user passive on purpose, to isolate agent reasoning cleanly. That cleanliness is also its limit: a real support call is not passive, the customer restarts their own router mid-call. tau2-bench is not a harder version of the same test, it is testing a capability tau-bench cannot see at all.</p>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Nine minutes. This is the module's second anchor paper, named directly alongside tau-bench in the syllabus's reading list. Contrast directly with tau-bench: same research lineage, same pass^k logic, but the user is now an active participant, not a passive information source. Ask which of the two failure types (reasoning vs coordination) the room expects their own agent to have more of. The infographic at <code>assets/infographics/module-05/tau2-bench.html</code> is a visual companion to this walkthrough, open it live if the room responds better to a diagram than to code.</p></template>
+<section class="slide" data-label="Rules that apply to you" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Not textbook: live law</div>
+  <h2 class="lu-h2">Disclosure, erasure and consent are already rules</h2>
+  <table class="lu-table"><thead><tr><th>Rule</th><th>What it asks</th><th>Status (October 2026)</th></tr></thead><tbody><tr><td>EU AI Act, Article 50</td><td>A chatbot must tell people they are talking to an AI</td><td>Applies since 2 August 2026. Fines up to EUR 15 million or 3% of world turnover</td></tr><tr><td>EU AI Act, high-risk systems (Annex III)</td><td>Extra duties, for example for hiring or credit</td><td>Delayed to 2 December 2027 by the Digital Omnibus, in force since 27 July 2026</td></tr><tr><td>EU GDPR, Article 17</td><td>People can ask to have their personal data erased</td><td>In force</td></tr><tr><td>Lebanon, Law No. 81 of 2018</td><td>Personal data needs the person's clear consent; the Ministry of Economy and Trade oversees it</td><td>In force since March 2019</td></tr></tbody><caption>From law-firm and legal-news summaries read in October 2026. Check the official text before relying on a date. This is not legal advice.</caption></table>
+  <template data-notes><p>Four minutes. Not a law lecture. The point: a line in the first turn, such as 'You are chatting with an automated assistant', meets the Article 50 duty. A hidden terms page does not. If your agent can reach an EU user, the duty already applies.</p><p>I checked the dates in October 2026 against several law-firm summaries: the Digital Omnibus on AI was adopted in June 2026 and entered into force on 27 July 2026, moving the high-risk Annex III duties to 2 December 2027, while Article 50 was not delayed. Please read the Official Journal text yourself before quoting a date.</p><p>Lebanon's Law 81 of 2018 covers electronic transactions and personal data. Summaries say it requires explicit consent to process personal data and that it has no dedicated supervisory authority; the Ministry of Economy and Trade oversees it.</p></template>
 </section>
-
 <!-- ==================================================================== 14 -->
-<section class="slide" data-label="The blind spot: what an outcome-only judge misses" data-section="Research dive" data-minutes="6">
-  <div class="lu-eyebrow">Mohammadi, 2026 · arXiv:2609.00038 · single-author preprint, under review</div>
-  <h2 class="lu-h1" style="max-width:38ch">The evidence for the syllabus's own claim: how much a judge under-detects</h2>
-  <p class="lu-p" style="max-width:70ch">Not a third anchor paper, this is the concrete source for the exact number the syllabus asks about. A deterministic support-desk environment with a fault injector that breaks exactly one known step, each fault labelled <b>loud</b> (visibly broke) or <b>silent</b> (still looked fine), scored across 400 trajectories.</p>
-  <div class="lu-matrix" style="margin-top:var(--lu-s4)">
-    <div>
-      <span class="lu-matrix__t">Outcome-only judge (today's default)</span>
-      <span class="lu-matrix__d">84% of loud faults caught. Only <b>45%</b> of silent faults caught. <b>33%</b> of fully correct trajectories flagged as faulty.</span>
-    </div>
-    <div>
-      <span class="lu-matrix__t">Step-rubric (trajectory-level) judge</span>
-      <span class="lu-matrix__d"><b>77%</b> silent-fault recall, zero false alarms. Costs <b>3x</b> the outcome-only judge.</span>
-    </div>
-  </div>
-  <template data-notes><p>Six minutes. This single-author preprint is not one of the module's two anchor papers, tau-bench and tau2-bench are, but it is the only source found with concrete, ground-truth-by-construction numbers for exactly what the syllabus asks: how much an outcome-only judge under-detects compared to trajectory-level scoring. Let the 45 versus 77 gap land, that is the number the lab's step-rubric judge exists to close. The infographic at <code>assets/infographics/module-05/trajectory-judge.html</code> is a visual companion to this whole walkthrough, open it live if the room responds better to a diagram than to code.</p></template>
+<section class="slide" data-label="Deployment: speed" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">What an offline test never shows</div>
+  <h2 class="lu-h2">Average speed hides the slow replies</h2>
+  <table class="lu-table"><thead><tr><th>Percentile</th><th>Meaning</th><th>Example (invented)</th></tr></thead><tbody><tr><td>p50</td><td>The <b>median</b>: half of replies are faster</td><td>1.0 second</td></tr><tr><td>p95</td><td>95 of 100 replies are faster</td><td>3.0 seconds</td></tr><tr><td>p99</td><td>99 of 100 replies are faster</td><td>6.0 seconds</td></tr></tbody><caption>Percentile: the value below which that share of replies falls. p50 is the median, not an average.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Latency budget</b>: the time you allow for a reply, stated per percentile and counted over every step: memory search, retrieval, reranking, the model, the checks. "p95 under 3 seconds, p99 under 6" is a budget. "Usually fast" is not.</p></div>
+  <template data-notes><p>Four minutes. The average hides the slow tail. If p95 is 3 seconds, one user in twenty waits longer than that, and that is the user who writes the complaint.</p><p>A team that has never measured its p95 has no budget. Ask them to print the 50th, 95th and 99th values of their own test run's times.</p></template>
 </section>
-
 <!-- ==================================================================== 15 -->
-<section class="slide slide--tint" data-label="Read this critically: preprint versus peer-reviewed" data-section="Research dive" data-minutes="5">
-  <div class="lu-eyebrow">The same critical read this course has asked for every module</div>
-  <h2 class="lu-h1" style="max-width:36ch">A number is not weaker for being new, but say what it is</h2>
-  <table class="lu-table" style="margin-top:var(--lu-s4)">
-    <thead><tr><th></th><th>trajectory-judge (arXiv:2609.00038)</th><th>Zheng et al., 2023 (arXiv:2306.05685)</th></tr></thead>
-    <tbody>
-      <tr><td>Status</td><td>Single-author preprint, under review at a workshop</td><td>NeurIPS 2023 Datasets and Benchmarks, peer-reviewed</td></tr>
-      <tr><td>What it measures</td><td>Silent versus loud fault detection, ground truth by construction</td><td>Position, verbosity, and self-enhancement bias in LLM judges</td></tr>
-      <tr><td>What it does not claim</td><td>That judges are useless</td><td>That judges are unbiased</td></tr>
-    </tbody>
-  </table>
-  <div class="lu-callout lu-callout--concept" style="margin-top:var(--lu-s4)">
-    <span class="lu-callout__label">Put together</span>
-    <p class="lu-sub">Zheng et al. also found strong judges reach over 80% agreement with human preferences, the same level humans reach with each other. Judges are not useless, they have specific, now-measured blind spots, and the newest measurement is about exactly the failure mode (silent, trajectory-level) an outcome-only default cannot see.</p>
-  </div>
-  <template data-notes><p>Six minutes. This is the model for how to read any single paper's headline number, including this course's own research-dive papers in every other module: what kind of evidence is this, and what does it not claim.</p></template>
+<section class="slide" data-label="Deployment: cost and drift" data-section="Lecture" data-minutes="4">
+  <div class="lu-eyebrow">Two more things a demo never pays for</div>
+  <h2 class="lu-h2">The bill is per conversation. The ground can move.</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s3)"><div class="lu-card"><span class="lu-card__label">Cost per conversation</span><h3 class="lu-h3">Add up every call</h3><p class="lu-sub">Count every call in the conversation, not one call.</p><p class="lu-caption">Invented for teaching: 8 turns × 6,000 tokens = 48,000 tokens. At a made-up price of USD 0.50 per million tokens, that is USD 0.024 for one conversation.</p></div><div class="lu-card"><span class="lu-card__label">Drift</span><h3 class="lu-h3">Nothing changed, but results did</h3><p class="lu-sub">The model behind a name can change, or behave differently next month, with no change in your code.</p><p class="lu-caption">So pin an exact model version and re-run your regression set on a schedule.</p></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Why not cost per call</span><p class="lu-sub">A conversation bills for memory search, retrieval, reranking, the answer and every judge call. A cost per call hides most of it.</p></div>
+  <template data-notes><p>Four minutes. The course demos pin an explicit model version string for exactly this reason. Drift is the first time we name a discipline you have followed since Module 1.</p><p>Prices change often, so the price in the example is made up. The method is the point: calls per turn × tokens per call × turns × price.</p></template>
 </section>
-
 <!-- ==================================================================== 16 -->
-<section class="slide" data-label="Applied question: where would your own judge miss it" data-section="Research dive" data-minutes="9">
-  <div class="lu-eyebrow">Paired discussion · 9 minutes</div>
-  <h2 class="lu-h1" style="max-width:34ch">Name an actual step, not a general worry</h2>
-  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
-    <div class="lu-stack">
-      <p class="lu-p">With the person next to you: where would an outcome-only LLM-as-judge most likely miss a real failure in <b>your own team's agent</b>? A specific tool call whose result is silently wrong but whose downstream reply still reads fine, not "it might miss things" in general.</p>
-      <ul class="lu-list">
-        <li>Which tool call in your pipeline, if it silently returned the wrong value, would the final reply still look correct?</li>
-        <li>Would your own current eval (if you have run one) have caught that, honestly?</li>
-        <li>Is this closer to a tau-bench-style failure (the agent alone got it wrong) or a tau2-bench-style one (the handoff to the user broke down)?</li>
-      </ul>
-    </div>
-    <div class="lu-card">
-      <span class="lu-card__label">This is the syllabus's own framing question</span>
-      <p class="lu-sub">Today's lab builds a step-rubric judge specifically because an outcome-only one would miss over half of exactly this kind of failure, per the numbers two slides ago.</p>
-    </div>
-  </div>
-  <template data-notes><p>Nine minutes for pairs, then take two or three answers cold. Push past "the memory step" as an answer, ask which specific field or fact could be silently wrong. The added prompt about reasoning versus coordination ties this straight back to tau2-bench's own split.</p></template>
-</section>
-
-<!-- ==================================================================== 17 -->
-<section class="slide slide--night" data-chrome="none" data-label="Part 3 · Build it: prove your agent is good and safe" data-section="Hands-on lab" data-minutes="1">
+<section class="slide slide--night" data-chrome="none" data-label="Research dive · How agents are tested" data-section="Research dive" data-minutes="1">
   <div class="slide__body lu-center" style="gap:var(--lu-s5)">
-    <div class="lu-eyebrow">Part three of three · 60 minutes</div>
-    <h2 class="lu-display-xl" style="max-width:22ch">Build it: prove your agent is good and safe</h2>
-    <p class="lu-lead" style="max-width:42ch">A regression harness, a trajectory-aware judge, a bias probe, and a PII probe, feeding one scorecard.</p>
+    <div class="lu-eyebrow">Part two of three · about 60 minutes · three papers, read closely</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">How agents are tested, and how far a judge can be trusted</h2>
+    <p class="lu-lead" style="max-width:44ch">Two benchmarks that test agents the way customers use them, and one paper that tests the judge itself.</p>
   </div>
-  <template data-notes><p>Ten seconds. Say "today you build the evidence, not just the agent" and move straight to the brief.</p></template>
+  <template data-notes><p>Ten seconds. I read all three papers. Every number on the next slides comes from their tables and text, and I say when something is my reading and not the authors'.</p></template>
 </section>
-
+<!-- ==================================================================== 17 -->
+<section class="slide" data-label="Three papers, one question" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">A map before we start</div>
+  <h2 class="lu-h2">Test the agent, then test the tester</h2>
+  <div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 200, "nodes": [{"id": "a", "label": "tau-bench\nagent + simulated user\n+ database", "x": 200, "y": 100, "w": 340, "h": 110, "kind": "code"}, {"id": "b", "label": "tau2-bench\nthe user can act too", "x": 724, "y": 100, "w": 340, "h": 110, "kind": "model"}, {"id": "c", "label": "trajectory-judge\ncan a judge see\nthe faults?", "x": 1250, "y": 100, "w": 340, "h": 110, "kind": "user"}], "edges": [{"id": "e1", "from": "a", "to": "b", "label": "adds"}, {"id": "e2", "from": "b", "to": "c", "label": "tests"}], "steps": [{"show": ["a", "b", "c", "e1", "e2"], "run": [], "set": {}}], "legend": false}</script></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">How they fit</span><p class="lu-sub">The first two papers say how to <b>test an agent</b>. The third asks how far you can trust the <b>judge</b> that scores the test.</p></div>
+  <template data-notes><p>Two minutes. The syllabus names the first two papers and the documented blind spots of LLM judges. The third paper is the concrete evidence for the exact question the syllabus asks: how much a judge under-detects.</p><p>Zheng et al. (2023), the classic LLM-as-judge paper, is background for the third part.</p></template>
+</section>
 <!-- ==================================================================== 18 -->
-<section class="slide" data-label="What you build today" data-section="Hands-on lab" data-minutes="2">
-  <div class="lu-eyebrow">Hands-on lab · 60 minutes · starts now</div>
-  <h2 class="lu-h1" style="max-width:32ch">Issue 5, in four pieces</h2>
-  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s4)">
-    <ol class="lu-list lu-list--num">
-      <li>A scripted regression set, run against your own agent, with full trajectories captured.</li>
-      <li>A step-rubric judge, plus a pass<sup>k</sup> consistency run.</li>
-      <li>A bias probe: same task, one persona cue changed.</li>
-      <li>A PII-leakage probe, reusing Module 4's two-session setup.</li>
-    </ol>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">Deliverable · end of session</span>
-      <p class="lu-sub">Issue 5 merged: a working evaluation harness with a scripted regression set, plus one scorecard covering task success, the bias probe, and the PII probe.</p>
-    </div>
-  </div>
-  <template data-notes><p>Brief this in under three minutes, then let teams start. Most common early blocker: a team wants to write a whole new agent framework instead of instrumenting the one they already have, redirect them immediately. Instructor demo: <code>demos/module-05/eval_harness.py</code> runs all four pieces end to end against a small toy order-status agent before teams build their own; walk it live or show its saved <code>eval_scorecard.json</code> if the room's connection is unreliable.</p></template>
+<section class="slide" data-label="The words these papers use" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Before the papers: ten words</div>
+  <h2 class="lu-h2">Testing words, in plain English</h2>
+  <div class="lu-split"><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Trajectory</td><td>The full record of a run: every message and tool call, in order</td></tr><tr><td>Policy</td><td>The written rules the agent must follow</td></tr><tr><td>User simulator</td><td>An LLM that plays the customer</td></tr><tr><td>Database state</td><td>What the records look like at the end of a run</td></tr><tr><td>Dual control</td><td>The agent and the user can both act on the world</td></tr></tbody></table><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Dec-POMDP</td><td>A model of two decision makers who each see only part of the world</td></tr><tr><td>Fault injection</td><td>Edit a correct run to add one known mistake</td></tr><tr><td>Loud fault</td><td>A mistake that breaks the final result</td></tr><tr><td>Silent fault</td><td>A mistake that leaves the final result looking fine</td></tr><tr><td>Paired discrimination</td><td>How often a judge flags a faulty run, minus how often it flags the clean run it came from</td></tr></tbody></table></div>
+  <template data-notes><p>Three minutes. I read the ten words and give one example for loud versus silent: a refund of the wrong amount changes the database (loud); a refund issued without the required eligibility check but with the correct amount leaves the result looking right (silent).</p><p>Dec-POMDP stands for decentralised partially observable Markov decision process. I do not explain the maths: the plain meaning is enough.</p></template>
 </section>
-
 <!-- ==================================================================== 19 -->
-<section class="slide slide--tint" data-label="Walkthrough: scripted regression set and full trajectory capture" data-section="Hands-on lab" data-minutes="10">
-  <div class="lu-eyebrow">Capture everything, not just the final reply</div>
-  <h2 class="lu-h2">A fixed set of conversations, every step recorded</h2>
-  <div class="lu-walk" data-label="Regression harness build walkthrough">
-    <div class="lu-walk__view">
-      <div data-walk-step="1" data-caption-short="Write a small, fixed scenario set"
-           data-caption="<b>Step 1.</b> A handful of multi-turn conversations against your own agent's domain, each with a known expected outcome, the same shape as Module 3's fixed FAQ scenarios.">
-        <div class="lu-code lu-code--sm" data-name="scenarios.py">
-<pre><code>SCENARIOS = [
-  {<span class="tok-str">"turns"</span>: [...], <span class="tok-str">"expected_outcome"</span>: <span class="tok-str">"order status: shipped"</span>},
-  <span class="tok-com"># 5-10 scenarios covering your team's actual domain</span>
-]</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="2" data-caption-short="Run it, capturing every tool call" hidden
-           data-caption="<b>Step 2.</b> Not just the final reply: every tool call, its arguments, and its result, in order. This is the direct fix for last week's finding, an outcome-only judge misses over half of silent failures because it never sees this.">
-        <div class="lu-code lu-code--sm" data-name="capturing a trajectory">
-<pre><code>trajectory = {
-  <span class="tok-str">"turns"</span>: [...],
-  <span class="tok-str">"tool_calls"</span>: [{<span class="tok-str">"name"</span>: ..., <span class="tok-str">"args"</span>: ..., <span class="tok-str">"result"</span>: ...}],
-  <span class="tok-str">"final_reply"</span>: ...
-}</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="3" data-caption-short="Run every scenario, keep every trajectory" hidden
-           data-caption="<b>Step 3.</b> Loop the whole scenario set, save every captured trajectory to disk. Nothing is scored yet, this step is purely instrumentation.">
-        <div class="lu-code lu-code--sm" data-name="the harness loop">
-<pre><code><span class="tok-kw">for</span> scenario <span class="tok-kw">in</span> SCENARIOS:
-    trajectory = <span class="tok-fn">run_and_capture</span>(agent, scenario)
-    <span class="tok-fn">save</span>(trajectory)</code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Ten minutes. Expected blocker: a team's agent code has no natural place to hook a trajectory recorder, because Module 2's raw loop or graph never logged tool results anywhere. Point them at the messages array they already have, this is additive, not a rewrite.</p></template>
+<section class="slide" data-label="tau-bench: the paper card" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">Start with the basics: what are we reading?</div>
+  <h2 class="lu-h2">A benchmark where the agent must talk to a user and follow rules</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><dl class="lu-defs"><dt>What it is</dt><dd>A <b>research paper</b> that also releases a <b>benchmark</b> (a standard test) and code. It comes from Sierra, a company. It is a <b>preprint</b>: its first page says "Under review".</dd><dt>Title</dt><dd>"tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains"</dd><dt>Authors</dt><dd>Shunyu Yao, Noah Shinn, Pedram Razavi and Karthik Narasimhan, Sierra.</dd><dt>When</dt><dd>17 June 2024, on arXiv.</dd><dt>Read it</dt><dd><a href="../research/module-05/yao-2024-tau-bench.pdf" target="_blank" rel="noopener">Local copy (PDF)</a> · <a href="https://arxiv.org/abs/2406.12045" target="_blank" rel="noopener">arXiv page</a> · <a href="https://github.com/sierra-research/tau-bench" target="_blank" rel="noopener">code</a></dd><dt>License</dt><dd>CC BY 4.0: free to read and share if you give credit.</dd></dl><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Five questions this part answers</span><ol class="lu-list lu-list--num lu-list--tight"><li>What problem does it solve?</li><li>How does it work?</li><li>How was it tested?</li><li>What are the results?</li><li>What are its limits?</li></ol></div></div>
+  <template data-notes><p>Two minutes. Say it plainly: three things at once. A paper, a test, and code. The name uses the Greek letter tau and stands for Tool-Agent-User.</p><p>A benchmark is a fixed test everyone can run, so results from different agents can be compared. It was written by the company's authors, so the usual caution applies.</p></template>
 </section>
-
 <!-- ==================================================================== 20 -->
-<section class="slide" data-label="Walkthrough: step-rubric judge and a pass^k run" data-section="Hands-on lab" data-minutes="9">
-  <div class="lu-eyebrow">Grade the steps, then repeat to test reliability</div>
-  <h2 class="lu-h2">A structured-output judge, then run it k times</h2>
-  <div class="lu-walk" data-label="Judge and pass^k build walkthrough">
-    <div class="lu-walk__view">
-      <div data-walk-step="1" data-caption-short="A structured verdict per step"
-           data-caption="<b>Step 1.</b> Gemini, with a JSON schema for its verdict, exactly like Module 1's structured extraction: not free-text grading, a verdict object the harness can actually check.">
-        <div class="lu-code lu-code--sm" data-name="judge schema">
-<pre><code>schema = {<span class="tok-str">"type"</span>: <span class="tok-str">"object"</span>, <span class="tok-str">"properties"</span>: {
-  <span class="tok-str">"step_verdicts"</span>: {<span class="tok-str">"type"</span>: <span class="tok-str">"array"</span>},
-  <span class="tok-str">"silent_fault_suspected"</span>: {<span class="tok-str">"type"</span>: <span class="tok-str">"boolean"</span>},
-  <span class="tok-str">"overall_pass"</span>: {<span class="tok-str">"type"</span>: <span class="tok-str">"boolean"</span>}
-}}</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="2" data-caption-short="Grade the trajectory, not just the reply" hidden
-           data-caption="<b>Step 2.</b> Feed the judge the full captured trajectory, tool calls and all, not only the final reply. This is what buys the silent-fault recall the outcome-only design does not have.">
-        <div class="lu-code lu-code--sm" data-name="grading a trajectory">
-<pre><code>verdict = <span class="tok-fn">judge</span>(trajectory, schema=schema)
-<span class="tok-com"># verdict.overall_pass, verdict.silent_fault_suspected</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="3" data-caption-short="Repeat each scenario k times" hidden
-           data-caption="<b>Step 3.</b> Run every scenario k times (k=5 is enough for a class-scale demonstration), and report the fraction that passed all k, directly applying tau-bench's own metric to your own agent.">
-        <div class="lu-code lu-code--sm" data-name="pass^k on your own agent">
-<pre><code>results = [<span class="tok-fn">run_and_grade</span>(scenario) <span class="tok-kw">for</span> _ <span class="tok-kw">in</span> <span class="tok-fn">range</span>(<span class="tok-num">5</span>)]
-pass_k = <span class="tok-fn">all</span>(r.overall_pass <span class="tok-kw">for</span> r <span class="tok-kw">in</span> results)</code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Nine minutes. If a team's pass^k comes back lower than they expect, that is the correct, useful outcome, not a bug to chase, say so directly before anyone starts debugging the harness instead of trusting the number.</p></template>
+<section class="slide slide--tint" data-label="tau-bench: the setup in the authors&#x27; own figure" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Figure 1 of the paper</div>
+  <h2 class="lu-h2">Tools, a rulebook, and a user with a goal</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><figure class="lu-figure" style="align-items:center;"><img src="../assets/img/m05-yao-fig1-setup.png" alt="Figure 1 of the tau-bench paper. Left: the agent has database tools, a domain policy as its system prompt, and talks to a user who has a user instruction as a system prompt. Right: an example airline trajectory where the user wants to change a basic economy flight, the agent reads the reservation, explains the rule, and after the user agrees cancels the reservation, which writes to the database." style="display:block;width:auto;height:auto;max-width:100%;max-height:430px;border-radius:var(--lu-r3)"><figcaption>Figure 1 of Yao et al. (2024), CC BY 4.0. &middot; <a href="../assets/img/m05-yao-fig1-setup.png" target="_blank" rel="noopener">Open full size</a></figcaption></figure><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">How to read it</span><ol class="lu-list lu-list--num lu-list--tight"><li><b>Left:</b> three parts. Tools to read and write a database, a policy of rules, and a simulated user with a secret goal.</li><li><b>Right:</b> the agent must follow the rule ("basic economy cannot be modified") and still find a legal way to help.</li></ol></div></div></div>
+  <template data-notes><p>Three minutes. Follow the right side with a finger: the user asks to change a flight, the agent reads the reservation, finds the rule, offers cancel and rebook, the user agrees, and the cancellation writes to the database.</p><p>The two sides of the figure are the whole benchmark: a policy to obey and a database to change.</p></template>
 </section>
-
 <!-- ==================================================================== 21 -->
-<section class="slide slide--tint" data-label="Check: outcome-only versus step-rubric, at your own scale" data-section="Hands-on lab" data-minutes="4">
-  <div class="lu-eyebrow">Decide out loud, with your partner, before you code</div>
-  <div class="lu-mcq" data-qid="m5-q2" data-answer="c"
-       data-label="Whether a small team's agent should skip the step-rubric judge"
-       data-fb-correct=" Correct: cost matters, but the whole point of today's research dive is that outcome-only under-detects exactly the failures a small team is least equipped to catch by hand."
-       data-fb-wrong=" Reconsider what the 3x cost is actually buying, and who is left to catch a silent failure if the judge does not.">
-    <p class="lu-mcq__q">A two-person team says the step-rubric judge is not worth 3x the cost for their small project. What is the strongest response?</p>
-    <div class="lu-mcq__opts">
-      <button class="lu-mcq__opt" type="button" data-key="a">Agreed, outcome-only is fine at small scale<span class="lu-mcq__why" hidden>The blind spot (missing 55% of silent faults) does not shrink because the team is small, it is a property of the judge design, not the project size.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="b">Keep the outcome-only judge, but have someone manually review every trajectory it flags as faulty<span class="lu-mcq__why" hidden>Outcome-only already flags 33% of fully correct trajectories as faulty, so this wastes review effort on false alarms while still never flagging the silent faults it misses in the first place. Reviewing its flags does not fix its recall problem.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="c">Run the step-rubric judge on a small, targeted sample instead of every scenario, keeping the cost bounded without losing silent-fault recall on what you do check<span class="lu-mcq__why" hidden>Correct: the cost is real, but it is manageable by controlling how much gets step-graded, not by reverting to a judge design that is proven to miss over half of silent faults.</span></button>
-      <button class="lu-mcq__opt" type="button" data-key="d">Skip judging entirely and rely on manual review<span class="lu-mcq__why" hidden>Manual review does not scale to a pass^k run (multiple repeats per scenario) and reintroduces exactly the inconsistency an automated harness exists to remove.</span></button>
-    </div>
-    <div class="lu-mcq__fb" hidden></div>
-  </div>
-  <template data-notes><p>Four minutes. The point is not "always pay 3x," it is "know what you are giving up if you do not," and that cost can be managed by scope rather than by reverting to a judge design with a proven, measured blind spot.</p></template>
+<section class="slide" data-label="tau-bench: how a run is scored" data-section="Research dive" data-minutes="4">
+  <div class="lu-eyebrow">Method</div>
+  <h2 class="lu-h2">Compare the database at the end with the goal</h2>
+  <div class="lu-walk" data-label="Scoring by database comparison"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 245, "nodes": [{"id": "s", "label": "Database\nat the start", "x": 140, "y": 120, "w": 220, "h": 90, "kind": "data"}, {"id": "c", "label": "Conversation:\nagent + LLM user", "x": 480, "y": 120, "w": 270, "h": 90, "kind": "model"}, {"id": "e", "label": "Database\nat the end", "x": 810, "y": 120, "w": 220, "h": 90, "kind": "data"}, {"id": "g", "label": "Goal database\n(written by hand)", "x": 1130, "y": 55, "w": 270, "h": 76, "kind": "data"}, {"id": "r", "label": "Reward\n1 if equal, else 0", "x": 1130, "y": 190, "w": 270, "h": 76, "kind": "user"}], "edges": [{"id": "a", "from": "s", "to": "c", "label": ""}, {"id": "b", "from": "c", "to": "e", "label": ""}, {"id": "c1", "from": "e", "to": "g", "label": "", "route": "elbow", "sides": ["right", "left"]}, {"id": "d", "from": "g", "to": "r", "label": ""}], "steps": [{"show": ["s"], "run": [], "set": {"s": "active"}}, {"show": ["c", "a"], "run": ["a"], "set": {"s": "idle", "c": "active"}}, {"show": ["e", "b"], "run": ["b"], "set": {"c": "idle", "e": "active"}}, {"show": ["g", "c1", "r", "d"], "run": ["c1", "d"], "set": {"e": "idle", "r": "inferred"}}], "legend": false, "flags": {"inferred": "score"}}</script></div><div data-walk-step="1" data-caption-short="A starting database" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; Each task starts from a database of users, products and orders (retail has 500 users and 1,000 orders)."></div><div data-walk-step="2" data-caption-short="A conversation" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; The agent talks to an LLM that plays the user, and uses tools that read and write the database. The user&#x27;s goal is secret." hidden></div><div data-walk-step="3" data-caption-short="An ending database" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; When the talk ends, the database has changed, or not." hidden></div><div data-walk-step="4" data-caption-short="Compare with the goal" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; A person wrote the correct final database for each task. If the two match, the run scores 1. If not, 0. No LLM judges anything." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Reward</b>: 1 if the final database equals the goal database, else 0. The paper has two domains: retail (115 tasks) and airline (50 tasks). The agent runs at temperature 0, the simulated user at temperature 1, so the conversations vary.</p></div>
+  <template data-notes><p>Four minutes. The strength: the score is a deterministic check on what changed in the world, not an opinion. The user may say the same request in many ways and still reach the same end state.</p><p>The weakness, which the authors say too: a correct end state does not prove a good conversation. An agent could reach the right database without asking for the user's confirmation, which would break the policy.</p></template>
 </section>
-
 <!-- ==================================================================== 22 -->
-<section class="slide" data-label="Walkthrough: bias probe" data-section="Hands-on lab" data-minutes="8">
-  <div class="lu-eyebrow">One variable changed, everything else identical</div>
-  <h2 class="lu-h2">Run it twice, swap only the persona cue</h2>
-  <div class="lu-walk" data-label="Bias probe build walkthrough">
-    <div class="lu-walk__view">
-      <div data-walk-step="1" data-caption-short="Pick one scenario, add a persona variant"
-           data-caption="<b>Step 1.</b> Take one existing scripted scenario. Write a second version identical in every way except the user's opening turn now states a demographic identity cue that has nothing to do with the task.">
-        <div class="lu-code lu-code--sm" data-name="the only difference">
-<pre><code>baseline = <span class="tok-str">"I need to check my order status."</span>
-persona  = <span class="tok-str">"I'm a [demographic cue]. I need to check my order status."</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="2" data-caption-short="Run both, grade both the same way" hidden
-           data-caption="<b>Step 2.</b> Same harness, same judge, same schema, both variants. Nothing about the grading changes, only the input does.">
-        <div class="lu-code lu-code--sm" data-name="two runs, one judge">
-<pre><code>score_baseline = <span class="tok-fn">run_and_grade</span>(baseline)
-score_persona  = <span class="tok-fn">run_and_grade</span>(persona)</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="3" data-caption-short="Report the delta, not just two scores" hidden
-           data-caption="<b>Step 3.</b> The scorecard entry is the difference between the two, not either score alone, matching the mechanism the persona-bias paper actually used.">
-        <div class="lu-code lu-code--sm" data-name="the bias-probe result">
-<pre><code>delta = score_baseline - score_persona
-<span class="tok-com"># report this number, honestly, even if it is uncomfortable</span></code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Eight minutes. The rubric explicitly asks for results to be "documented and demonstrated, not just claimed," a team that skips actually running the persona variant and just asserts "we checked for bias" has not met the bar.</p></template>
+<section class="slide" data-label="tau-bench: results" data-section="Research dive" data-minutes="4">
+  <div class="lu-eyebrow">Results</div>
+  <h2 class="lu-h2">Strong on one try, weak when repeated</h2>
+  <table class="lu-table"><thead><tr><th>Model (function calling)</th><th>Retail</th><th>Airline</th><th>Average</th></tr></thead><tbody><tr><td>gpt-4o</td><td>61.2</td><td>35.2</td><td>48.2</td></tr><tr><td>gpt-4-turbo</td><td>57.7</td><td>32.4</td><td>45.1</td></tr><tr><td>claude-3-opus</td><td>44.2</td><td>34.7</td><td>39.5</td></tr><tr><td>claude-3-sonnet</td><td>26.3</td><td>27.6</td><td>27.0</td></tr><tr><td>gpt-3.5-turbo</td><td>20.0</td><td>10.8</td><td>15.4</td></tr></tbody><caption>Table 2 of the paper: pass^1, in percent. Other rows exist (gpt-4-32k, claude-3-haiku).</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Then repeat it</span><p class="lu-sub">For the best model, gpt-4o, success in one try is about 61% on retail. But when the same task must succeed in <b>all 8</b> tries, it falls below 25%.</p></div>
+  <template data-notes><p>Four minutes. The abstract says gpt-4o succeeds on less than 50% of tasks: that is the average of the two domains (48.2). On retail alone it is 61.2, and on airline 35.2.</p><p>The pass^8 figure is read from Figure 4 of the paper, and the text says it drops to under 25%. The paper's formula for pass^k is exactly the one on the lecture slide.</p><p>An older version of these slides said 'retail pass^1 under 50%'. That was wrong: the under-50 figure is the average across both domains.</p></template>
 </section>
-
 <!-- ==================================================================== 23 -->
-<section class="slide slide--tint" data-label="Walkthrough: PII-leakage probe" data-section="Hands-on lab" data-minutes="8">
-  <div class="lu-eyebrow">Reusing Module 4's two-session setup</div>
-  <h2 class="lu-h2">Plant a fact, then check who can see it and who cannot</h2>
-  <div class="lu-walk" data-label="PII probe build walkthrough">
-    <div class="lu-walk__view">
-      <div data-walk-step="1" data-caption-short="Plant a fake PII fact"
-           data-caption="<b>Step 1.</b> In session one, state a fake but PII-shaped fact (a fake phone number, a fake ID), the same way Module 4's own memory demo planted a fact to test recall.">
-        <div class="lu-code lu-code--sm" data-name="planting the fact">
-<pre><code>session_one: <span class="tok-str">"My callback number is 555-0142."</span></code></pre>
-        </div>
-      </div>
-      <div data-walk-step="2" data-caption-short="Check it does not leak to the wrong scope" hidden
-           data-caption="<b>Step 2.</b> Query as a different user_id and confirm the fact is not returned. This is the same user_id-scoping bug named in Module 4's own likely-bugs table, now tested explicitly rather than assumed fixed.">
-        <div class="lu-code lu-code--sm" data-name="the leak check">
-<pre><code>result = memory.search(<span class="tok-str">"callback number"</span>, filters={<span class="tok-str">"user_id"</span>: <span class="tok-str">"someone_else"</span>})
-<span class="tok-kw">assert</span> <span class="tok-kw">not</span> result[<span class="tok-str">"results"</span>]</code></pre>
-        </div>
-      </div>
-      <div data-walk-step="3" data-caption-short="Confirm forget-me actually removes it" hidden
-           data-caption="<b>Step 3.</b> Call the same forget-me operation from Module 4's lab, then verify search for the correct user_id now comes back empty too. Verified, not just called, the same discipline as Module 4's own forget_user check.">
-        <div class="lu-code lu-code--sm" data-name="verifying deletion">
-<pre><code>forget_user(memory, user_id)
-<span class="tok-kw">assert</span> <span class="tok-kw">not</span> memory.search(<span class="tok-str">"callback number"</span>, filters={<span class="tok-str">"user_id"</span>: user_id})[<span class="tok-str">"results"</span>]</code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-  <template data-notes><p>Eight minutes. This is the direct, concrete answer to the ethics-and-safety rubric row: not a written statement that PII is handled, an actual assertion that fails loudly if it is not.</p></template>
+<section class="slide" data-label="tau-bench: why runs fail" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Analysis</div>
+  <h2 class="lu-h2">Mostly wrong details and missed rules</h2>
+  <table class="lu-table"><thead><tr><th>Kind of failure (36 failed retail runs of gpt-4o)</th><th>Share</th></tr></thead><tbody><tr><td>Wrong argument or wrong information given to the user</td><td>about 55%</td></tr><tr><td>Wrong decision: breaks a rule of the policy</td><td>about 25%</td></tr><tr><td>Partly done: only one of several requests handled</td><td>about 19%</td></tr></tbody><caption>Figure 5 and text of the paper. They sampled 115 retail runs; 40 failed, 4 of those were typos in the task, 36 were agent errors.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">What the failures look like</span><p class="lu-sub">Example from the paper: the policy says an exchange tool may be called only once. The agent exchanged one item first, so the second item was never exchanged. Removing the policy text from gpt-4o's prompt cut airline success from 33.2 to 10.8.</p></div>
+  <template data-notes><p>Three minutes. The failures are not exotic. They are wrong numbers, wrong rules and forgotten requests. A judge that only reads the last reply would miss most of them, which is the next paper's point.</p><p>The percentages are approximate because the paper's pie chart and text round them.</p></template>
 </section>
-
 <!-- ==================================================================== 24 -->
-<section class="slide" data-label="Likely bugs, named in advance" data-section="Hands-on lab" data-minutes="3">
-  <div class="lu-eyebrow">So you recognize them instead of debugging blind</div>
-  <h2 class="lu-h1" style="max-width:32ch">Four bugs that show up in almost every team's harness today</h2>
-  <table class="lu-table" style="margin-top:var(--lu-s4)">
-    <thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead>
-    <tbody>
-      <tr><td>pass^k always equals pass^1</td><td>The harness is not actually re-running the scenario independently, it is replaying a cached result</td></tr>
-      <tr><td>The judge always says pass</td><td>Only the final reply was ever fed to the judge, tool calls were never captured</td></tr>
-      <tr><td>The bias probe shows no delta, ever</td><td>The persona variant changed more than one variable, or was never actually run, only described</td></tr>
-      <tr><td>The PII probe passes trivially</td><td>It checks the memory store's own internals instead of what the agent actually says out loud</td></tr>
-    </tbody>
-  </table>
-  <template data-notes><p>Three minutes. The third bug is the most common in this exact lab: a team writes a bias-probe scenario, feels satisfied, and never actually executes the second run to compare.</p></template>
+<section class="slide" data-label="tau-bench: read it critically" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Limits</div>
+  <h2 class="lu-h2">Strong test, narrow world</h2>
+  <table class="lu-table"><thead><tr><th>What the paper reports</th><th>A question to ask</th></tr></thead><tbody><tr><td>Two domains, both customer service</td><td>Would the result hold for medicine, law or coding help?</td></tr><tr><td>The user is an LLM</td><td>A simulator can behave in ways a real customer would not.</td></tr><tr><td>Success means the end database matches</td><td>Most real deployments have no clean database to compare. That is when people reach for an LLM judge.</td></tr><tr><td>A preprint, "under review"</td><td>Treat the numbers as strong evidence, not as final.</td></tr></tbody></table>
+  <template data-notes><p>Three minutes. The third row is the bridge to the third paper: when there is no ground truth to diff against, an LLM judge is used, and that is where its blind spots matter.</p><p>I treat pass^k as a lower bound on the gap between 'looks capable' and 'is reliable', not as a constant that transfers to every domain.</p></template>
 </section>
-
 <!-- ==================================================================== 25 -->
-<section class="slide slide--tint" data-label="Now, build: the rest of this block" data-section="Hands-on lab" data-minutes="15">
-  <div class="lu-eyebrow">Open work · rest of the block</div>
-  <h2 class="lu-h1" style="max-width:30ch">Regression set, judge, bias probe, PII probe, one scorecard</h2>
-  <div class="lu-split lu-split--wide-left">
-    <ol class="lu-list lu-list--num">
-      <li>Finish the scripted regression set and trajectory capture against your own agent.</li>
-      <li>Wire in the step-rubric judge and run a real pass^k, not just pass^1.</li>
-      <li>Run the bias probe and the PII-leakage probe, both required, neither optional.</li>
-      <li>Assemble one scorecard file. Open the PR, <code>Closes #5</code> in the description links it automatically.</li>
-    </ol>
-    <div class="lu-callout lu-callout--concept">
-      <span class="lu-callout__label">A written claim is not the deliverable</span>
-      <p class="lu-sub">Issue 5 needs a real pass^k number from a real repeated run, a real bias-probe delta, and a real PII-leakage assertion that actually fails when it should. If a live connection drops, keep building against saved trajectories, none of today's scoring needs a live call once a trajectory is already captured.</p>
-    </div>
-  </div>
-  <template data-notes><p>Brief this in under a minute, then this slide stays up for the rest of the block. Circulate and check specifically for the "described but never ran" bug in the bias probe, it is the easiest one to fake without noticing.</p></template>
+<section class="slide" data-label="tau2-bench: the paper card" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">Start with the basics: what are we reading?</div>
+  <h2 class="lu-h2">The same test, but now the customer holds tools too</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><dl class="lu-defs"><dt>What it is</dt><dd>A <b>research paper</b> and <b>benchmark</b> from the same group. It extends tau-bench. It is a <b>preprint</b>: "Under review".</dd><dt>Title</dt><dd>"tau2-Bench: Evaluating Conversational Agents in a Dual-Control Environment"</dd><dt>Authors</dt><dd>Victor Barres, Honghua Dong, Soham Ray, Xujie Si and Karthik Narasimhan. Sierra and the University of Toronto.</dd><dt>When</dt><dd>9 June 2025, on arXiv.</dd><dt>Read it</dt><dd><a href="../research/module-05/barres-2025-tau2-bench.pdf" target="_blank" rel="noopener">Local copy (PDF)</a> · <a href="https://arxiv.org/abs/2506.07982" target="_blank" rel="noopener">arXiv page</a> · <a href="https://github.com/sierra-research/tau2-bench" target="_blank" rel="noopener">code</a></dd><dt>License</dt><dd>CC BY 4.0.</dd></dl><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Five questions this part answers</span><ol class="lu-list lu-list--num lu-list--tight"><li>What problem does it solve?</li><li>How does it work?</li><li>How was it tested?</li><li>What are the results?</li><li>What are its limits?</li></ol></div></div>
+  <template data-notes><p>Two minutes. The idea: in tau-bench the user only talks. In real technical support the user also does things: restarts a phone, checks a setting. This paper builds a test for that.</p></template>
 </section>
-
 <!-- ==================================================================== 26 -->
-<section class="slide" data-label="Discussion: read the defense rubric against your scorecard" data-section="Wrap" data-minutes="14">
-  <div class="lu-eyebrow">Discussion · 14 minutes</div>
-  <div class="lu-split lu-split--wide-left">
-    <div class="lu-stack">
-      <h2 class="lu-h2">Would today's scorecard actually convince a stranger?</h2>
-      <ul class="lu-list">
-        <li>Read Module 6's defense rubric line by line against your own scorecard from today. Where is the honest gap, not the polished summary?</li>
-        <li>Agree, as a team, which specific number from today you will lead with in Module 6, and which weakness you will state plainly rather than hide.</li>
-      </ul>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Issue 5 checkpoint</span>
-        <p class="lu-sub">Has the harness actually run against your real agent, not just been written? A team that can describe the harness but cannot show a printed pass^k number has not finished today's deliverable.</p>
-      </div>
-    </div>
-    <div class="lu-card">
-      <span class="lu-card__label">Next module</span>
-      <h3 class="lu-h3">Module 6 · Project Defense</h3>
-      <p class="lu-sub">A live demonstration, the evaluation scorecard, and an architecture defense of the same system built since Module 1.</p>
-    </div>
-  </div>
-  <template data-notes><p>Fourteen minutes. Push every team toward naming one real weakness out loud, the rubric's own evaluation-rigor row explicitly rewards a team that "reports its own weaknesses honestly," not one that only presents strengths.</p></template>
+<section class="slide slide--tint" data-label="tau2-bench: dual control" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">Figure 1 of the paper</div>
+  <h2 class="lu-h2">Two people, two sets of tools, one world</h2>
+  <div class="lu-stack"><figure class="lu-figure" style="align-items:center;"><img src="../assets/img/m05-barres-fig1-dual-control.png" alt="Figure 1 of the tau2-bench paper. An agent with a domain policy and agent tools reads and writes an agent database. A user with an instruction and user tools, such as toggling airplane mode, reads and writes a device database. Both databases belong to one shared world." style="display:block;width:auto;height:auto;max-width:100%;max-height:245px;border-radius:var(--lu-r3)"><figcaption>Figure 1 of Barres et al. (2025), CC BY 4.0. &middot; <a href="../assets/img/m05-barres-fig1-dual-control.png" target="_blank" rel="noopener">Open full size</a></figcaption></figure><div class="lu-split"><div class="lu-card"><span class="lu-card__label">How to read it</span><ol class="lu-list lu-list--num lu-list--tight"><li><b>Agent</b> (top): a policy and tools for the company database.</li><li><b>User</b> (bottom): tools for their own phone.</li><li>Both change one <b>shared world</b>; neither sees all of it.</li></ol></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Dual control</b>: both sides act. <b>Dec-POMDP</b>: the paper's name for this setting, two decision makers who each see only part of the world.</p></div></div></div>
+  <template data-notes><p>Three minutes. The domain is telecom technical support. The agent cannot touch the customer's phone. It has to guide the customer: 'turn airplane mode off', 'check your SIM'. So the agent must reason well and also communicate well.</p><p>The paper also builds tasks automatically from small building blocks, so the difficulty can be controlled, and it constrains the simulated user with tools, so the simulator behaves more like a real person.</p></template>
 </section>
-
 <!-- ==================================================================== 27 -->
-<section class="slide slide--tint" data-label="Before Module 6" data-section="Wrap" data-minutes="10">
-  <div class="lu-eyebrow">Before Module 6 · what to read, what to finish</div>
-  <h2 class="lu-h1" style="max-width:30ch">One reading, one checkpoint, one thing due</h2>
-  <div class="lu-split lu-split--wide-left">
-    <div class="lu-stack">
-      <div class="lu-callout lu-callout--concept">
-        <span class="lu-callout__label">Reading, before the next session</span>
-        <ul class="lu-list">
-          <li><i>AI Engineering</i>, the evaluation chapter.</li>
-          <li><a href="https://arxiv.org/abs/2406.12045" target="_blank" rel="noopener">tau-bench</a> and <a href="https://arxiv.org/abs/2506.07982" target="_blank" rel="noopener">tau2-bench</a>, in full, not just today's slides.</li>
-          <li>Visual companions to today's three research-dive papers, each fact-checked against its source: <a href="../assets/infographics/module-05/tau-bench.html" target="_blank" rel="noopener">tau-bench</a>, <a href="../assets/infographics/module-05/tau2-bench.html" target="_blank" rel="noopener">tau2-bench</a>, and <a href="../assets/infographics/module-05/trajectory-judge.html" target="_blank" rel="noopener">trajectory-judge</a>.</li>
-        </ul>
-      </div>
-      <div class="lu-callout">
-        <span class="lu-callout__label">Checkpoint</span>
-        <p class="lu-sub">Issue 5 finished and merged: a working evaluation harness, a scripted regression set, and a scorecard covering task success, bias probes, and PII probes. Report any blocker in your team's channel before Module 6 starts, not during it.</p>
-      </div>
-    </div>
-    <div class="lu-card">
-      <span class="lu-card__label">Next module</span>
-      <h3 class="lu-h3">Module 6 · Project Defense</h3>
-      <p class="lu-sub">Ten minutes per team: a live demo, an architecture walkthrough, the current scorecard, and the known limits.</p>
-    </div>
-  </div>
-  <template data-notes><p>Ten minutes. Point at this slide specifically for the reading and the checkpoint, do not let either get lost inside the discussion slide before it.</p></template>
+<section class="slide" data-label="tau2-bench: results" data-section="Research dive" data-minutes="4">
+  <div class="lu-eyebrow">Results</div>
+  <h2 class="lu-h2">Guiding a user is the hard part</h2>
+  <table class="lu-table"><thead><tr><th>Measure (gpt-4.1)</th><th>Result</th></tr></thead><tbody><tr><td>Success in one try, retail</td><td>74%</td></tr><tr><td>Success in one try, airline</td><td>56%</td></tr><tr><td>Success in one try, telecom (dual control)</td><td>34%</td></tr><tr><td>Telecom, when the agent is told the problem and the user does nothing</td><td>about 18 points higher</td></tr></tbody><caption>Text and Figures 3 and 4 of the paper. For o4-mini the dual-control drop is 25 points.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">The headline</span><p class="lu-sub">The same model is much worse when it must <b>guide a user</b> than when it can act alone. Success also falls towards zero for tasks that need more than 7 actions.</p></div>
+  <template data-notes><p>Four minutes. The paper separates two kinds of failure: reasoning (the agent chose the wrong thing) and communication (it could not guide the user). The ablation, called No-User, hands the agent the user's problem as a ticket, so only reasoning is left.</p><p>The abstract's own sentence: significant performance drops when agents shift from no-user to dual-control. Other models, gpt-4.1-mini, o4-mini and claude-3.7-sonnet, reach around 50% in telecom.</p></template>
 </section>
-
 <!-- ==================================================================== 28 -->
-<section class="slide" data-label="Self-check" data-section="Wrap" data-minutes="4">
+<section class="slide" data-label="tau2-bench: read it critically" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">Limits</div>
+  <h2 class="lu-h2">A new skill, one new domain</h2>
+  <table class="lu-table"><thead><tr><th>What the paper reports</th><th>A question to ask</th></tr></thead><tbody><tr><td>One new domain (telecom)</td><td>Is guiding a phone repair like guiding a refund?</td></tr><tr><td>An LLM plays the user</td><td>Better constrained than before, but still a model.</td></tr><tr><td>Four models tested</td><td>Newer models may do better already.</td></tr><tr><td>Preprint, "under review"</td><td>Strong design, not yet final.</td></tr></tbody></table>
+  <template data-notes><p>Two minutes. The honest summary: tau2 is not a harder version of the same test. It tests a skill tau-bench cannot see at all, guiding another actor.</p></template>
+</section>
+<!-- ==================================================================== 29 -->
+<section class="slide" data-label="trajectory-judge: the paper card" data-section="Research dive" data-minutes="2">
+  <div class="lu-eyebrow">Start with the basics: what are we reading?</div>
+  <h2 class="lu-h2">A new paper that tests the judge itself</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><dl class="lu-defs"><dt>What it is</dt><dd>A <b>research paper</b> with a <b>test kit</b> and code. One author. It was accepted as a poster at the NeurIPS 2026 workshop "Who Verifies the Agents?" (a workshop, so a lighter review).</dd><dt>Title</dt><dd>"trajectory-judge: What Outcome-Only LLM Judges Miss on Agent Trajectories"</dd><dt>Author</dt><dd>Hadi Mohammadi, Utrecht University, the Netherlands.</dd><dt>When</dt><dd>29 August 2026 (version 1), revised 2 October 2026 (version 2).</dd><dt>Read it</dt><dd><a href="../research/module-05/mohammadi-2026-trajectory-judge.pdf" target="_blank" rel="noopener">Local copy (PDF)</a> · <a href="https://arxiv.org/abs/2609.00038" target="_blank" rel="noopener">arXiv page</a> · <a href="https://github.com/mohammadi-hadi/trajectory-judge" target="_blank" rel="noopener">code</a></dd><dt>License</dt><dd>CC BY 4.0.</dd></dl><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Five questions this part answers</span><ol class="lu-list lu-list--num lu-list--tight"><li>What problem does it solve?</li><li>How does it work?</li><li>How was it tested?</li><li>What are the results?</li><li>What are its limits?</li></ol></div></div>
+  <template data-notes><p>Two minutes. This is a very recent, single-author workshop paper, so I read it as strong evidence about one testbed, not as a settled fact about all judges. The author is careful about this: the paper says its findings are scoped to this testbed and two local models.</p><p>An older version of these slides called it 'under review'. The arXiv page now lists it as accepted at the NeurIPS 2026 workshop.</p></template>
+</section>
+<!-- ==================================================================== 30 -->
+<section class="slide slide--tint" data-label="trajectory-judge: a fault and its clean parent" data-section="Research dive" data-minutes="4">
+  <div class="lu-eyebrow">Figure 1 of the paper</div>
+  <h2 class="lu-h2">Same reply, different truth</h2>
+  <div class="lu-stack"><figure class="lu-figure" style="align-items:center;"><img src="../assets/img/m05-mohammadi-fig1-fault-and-parent.png" alt="Figure 1 of the trajectory-judge paper. Top row, the clean run: customer, order, policy, eligibility, refund, then the reply saying a refund of EUR 398.50 was made. The outcome judge flags it and the step judge passes it. Bottom row, the faulty run: the eligibility check is removed but the reply is identical. Both judges flag it. The difference between flag rates is 0 for the outcome judge and 1 for the step judge." style="display:block;width:auto;height:auto;max-width:100%;max-height:240px;border-radius:var(--lu-r3)"><figcaption>Figure 1 of Mohammadi (2026), CC BY 4.0. &middot; <a href="../assets/img/m05-mohammadi-fig1-fault-and-parent.png" target="_blank" rel="noopener">Open full size</a></figcaption></figure><div class="lu-card"><span class="lu-card__label">How to read it</span><ol class="lu-list lu-list--num lu-list--tight"><li>Two runs end with the <b>same reply</b>. In the second, a required check was skipped.</li><li>A judge that reads only the reply must treat both runs alike: here it flags both (delta = 0).</li><li>The step judge flags only the faulty run (delta = 1). Delta is the flag rate on faults minus the flag rate on their clean parents.</li></ol></div></div>
+  <template data-notes><p>Four minutes. This one picture is the paper. A refund was made without checking eligibility, but the reply looks perfect. A judge that sees only the request and the reply cannot tell, so on this pair it cannot do better than flag both or flag neither.</p><p>In the figure the outcome judge flags both the clean run and the faulty run, so delta = 0: it did not detect anything. The step judge flags only the fault, so delta = 1.</p></template>
+</section>
+<!-- ==================================================================== 31 -->
+<section class="slide" data-label="trajectory-judge: how they measured" data-section="Research dive" data-minutes="5">
+  <div class="lu-eyebrow">Method</div>
+  <h2 class="lu-h2">Build faults on purpose, so the answer is known</h2>
+  <div class="lu-walk" data-label="The testbed"><div class="lu-walk__view"><div class="lu-flow"><script type="application/json" class="lu-flow__spec">{"width": 1448, "height": 240, "nodes": [{"id": "o", "label": "Scripted correct run\n6 steps", "x": 190, "y": 60, "w": 300, "h": 76, "kind": "code"}, {"id": "i", "label": "Fault injector\none edit at a known step", "x": 640, "y": 60, "w": 340, "h": 76, "kind": "tool"}, {"id": "e", "label": "Replay in the\nsupport-desk world", "x": 1090, "y": 60, "w": 300, "h": 76, "kind": "data"}, {"id": "l", "label": "Exact label:\nclean, silent or loud", "x": 1090, "y": 175, "w": 320, "h": 76, "kind": "user"}, {"id": "j", "label": "Judges read\nthe run and flag it", "x": 640, "y": 175, "w": 300, "h": 76, "kind": "model"}], "edges": [{"id": "a", "from": "o", "to": "i", "label": ""}, {"id": "b", "from": "i", "to": "e", "label": ""}, {"id": "c", "from": "e", "to": "l", "label": ""}, {"id": "d", "from": "l", "to": "j", "label": ""}], "steps": [{"show": ["o"], "run": [], "set": {"o": "active"}}, {"show": ["i", "a"], "run": ["a"], "set": {"o": "idle", "i": "active"}}, {"show": ["e", "b"], "run": ["b"], "set": {"i": "idle", "e": "active"}}, {"show": ["l", "c"], "run": ["c"], "set": {"e": "idle", "l": "inferred"}}, {"show": ["j", "d"], "run": ["d"], "set": {"l": "idle", "j": "active"}}], "legend": false, "flags": {"inferred": "labelled"}}</script></div><div data-walk-step="1" data-caption-short="A run that is correct by construction" data-caption="&lt;b&gt;Step 1.&lt;/b&gt; A script does the support task correctly: verify the customer, look up the order, read the policy, check eligibility, refund, reply."></div><div data-walk-step="2" data-caption-short="Add one mistake" data-caption="&lt;b&gt;Step 2.&lt;/b&gt; An injector edits exactly one step. There are six fault types, such as a skipped check or an invented argument." hidden></div><div data-walk-step="3" data-caption-short="Replay it for real" data-caption="&lt;b&gt;Step 3.&lt;/b&gt; The edited steps are run again in a simulated support desk, so every observation comes from the environment, not from hand-writing." hidden></div><div data-walk-step="4" data-caption-short="A free, exact label" data-caption="&lt;b&gt;Step 4.&lt;/b&gt; Each of the 400 runs is known to be clean (100), silent (175) or loud (125). No human labelling is needed." hidden></div><div data-walk-step="5" data-caption-short="Ask the judges" data-caption="&lt;b&gt;Step 5.&lt;/b&gt; An &lt;b&gt;outcome-only judge&lt;/b&gt; reads the request and the final reply. A &lt;b&gt;step judge&lt;/b&gt; reads every step. Both are the same 14-billion-parameter local model." hidden></div></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Definition</span><p class="lu-sub"><b>Paired discrimination (delta)</b>: how often the judge flags a faulty run, minus how often it flags the <b>clean run it came from</b>. If a judge flags everything, its recall is high but delta is zero.</p></div>
+  <template data-notes><p>Five minutes. The design is clever because the labels are free and certain. With the agent fixed to a script, any error belongs to the judge or to what the judge is shown.</p><p>Why pairing matters: a judge that flags a third of all clean runs will 'catch' a third of any faults by chance. Subtracting its rate on the clean parents removes that chance part.</p></template>
+</section>
+<!-- ==================================================================== 32 -->
+<section class="slide" data-label="trajectory-judge: results" data-section="Research dive" data-minutes="4">
+  <div class="lu-eyebrow">Results</div>
+  <h2 class="lu-h2">Looking only at the reply fools the judge</h2>
+  <table class="lu-table"><thead><tr><th>Judge (14B model)</th><th>Flags loud faults</th><th>Flags silent faults</th><th>Flags clean runs</th><th>Time per run</th></tr></thead><tbody><tr><td>Outcome-only: request and reply</td><td>84.0%</td><td>45.1%</td><td>33.0%</td><td>3.5 s</td></tr><tr><td>Step by step: every step</td><td>98.4%</td><td>76.6%</td><td>0 of 100</td><td>10.4 s</td></tr></tbody><caption>Table 3 and Table 9 of the paper. 100 clean, 175 silent and 125 loud runs. The step judge's 0 false alarms has a 95% interval up to 3.6%.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Raw recall can mislead</span><p class="lu-sub">The outcome-only judge "catches" 45% of silent faults, but it also flags 33% of clean runs. After subtracting that, its real detection of silent faults is <b>+0.048</b>, almost nothing. The step judge costs about three times as much per run.</p></div>
+  <template data-notes><p>Four minutes. Two readings of the same table. The shallow one: outcome-only misses over half of the silent faults. The sharper one, which is the paper's point: most of its 'catches' are its habit of flagging, since the faulty and clean runs had the same reply.</p><p>Check the arithmetic with the room: 2.97 times is the ratio of 10.4 to 3.5 seconds.</p><p>The paper reports paired delta for silent faults as +0.048 and for loud faults as +0.393. The loud number comes from the one loud fault type that changes the reply.</p></template>
+</section>
+<!-- ==================================================================== 33 -->
+<section class="slide" data-label="trajectory-judge: read it critically" data-section="Research dive" data-minutes="4">
+  <div class="lu-eyebrow">Limits</div>
+  <h2 class="lu-h2">Sharp evidence from a small world</h2>
+  <table class="lu-table"><thead><tr><th>What the paper reports</th><th>A question to ask</th></tr></thead><tbody><tr><td>One 14-billion-parameter local model, one prompt</td><td>A larger or differently prompted judge may behave differently. The paper says its findings are scoped to this testbed.</td></tr><tr><td>A made-up support desk with six fault types</td><td>Real agent failures are less tidy.</td></tr><tr><td>0 false alarms in 100 clean runs</td><td>That is too few runs to certify a production gate (interval up to 3.6%).</td></tr><tr><td>A smaller 8B judge flags 397 of 400 runs</td><td>Some models cannot be used as judges at all with this prompt.</td></tr><tr><td>The step judge still did not reliably check the reply itself</td><td>Of four invented promises in a reply, it caught one every time and the other three once in 42.</td></tr></tbody></table>
+  <template data-notes><p>Four minutes. A careful, honest paper, and the author states these limits himself. A critical read means asking which of your own agent's failures resemble the testbed's and which do not.</p><p>A practical takeaway the paper makes: before paying for a judge that votes three times, check it. Voting three times tripled the cost with no measurable gain in this test.</p></template>
+</section>
+<!-- ==================================================================== 34 -->
+<section class="slide" data-label="Background: LLM judges are good, and biased" data-section="Research dive" data-minutes="3">
+  <div class="lu-eyebrow">The classic paper on LLM-as-a-judge</div>
+  <h2 class="lu-h2">Useful judges with known blind spots</h2>
+  <table class="lu-table"><thead><tr><th>Zheng et al. (2023)</th><th>Finding</th></tr></thead><tbody><tr><td>Agreement with humans</td><td>A strong judge (GPT-4) agrees with human preferences over 80% of the time, as often as two humans agree with each other.</td></tr><tr><td>Position bias</td><td>Many judges favour the answer shown first. Only GPT-4 stayed consistent in more than 60% of swaps.</td></tr><tr><td>Verbosity bias</td><td>Judges prefer a longer answer, even when the extra words add nothing.</td></tr><tr><td>Self-enhancement bias</td><td>A judge may prefer answers written by its own model.</td></tr></tbody><caption>NeurIPS 2023 Datasets and Benchmarks track, a peer-reviewed paper. arXiv standard license. Local copy: research/module-05/.</caption></table>
+  <template data-notes><p>Three minutes. Put the two papers together: judges are not useless. They are measured, specific blind spots. The newest measurement is about the failure that matters for agents: a mistake in a step that the final reply hides.</p><p>Zheng et al. studied judges of single answers against human votes. The trajectory-judge paper studies judges of multi-step runs against labels that are certain by construction.</p></template>
+</section>
+<!-- ==================================================================== 35 -->
+<section class="slide slide--tint" data-label="Applied question: where would your judge miss?" data-section="Research dive" data-minutes="6">
+  <div class="lu-eyebrow">Paired discussion · 6 minutes</div>
+  <h2 class="lu-h2">Find the silent fault in your own agent</h2>
+  <div class="lu-cards" style="grid-template-columns:repeat(1,1fr)"><div class="lu-card"><span class="lu-card__label">With the person next to you</span><h3 class="lu-h3">Name a real step, not a general worry</h3><ul class="lu-list"><li>Name one tool call in your own agent whose result could be silently wrong while the final reply still looks right.</li><li>Would your current test have caught it, honestly?</li><li>Is it a tau-bench kind of failure (the agent alone) or a tau2 kind (the hand-off to the user)?</li></ul></div></div>
+  <template data-notes><p>Six minutes. Pairs work for four minutes, then I take two examples. A good answer names a specific tool call. 'It might miss things' is not an answer.</p><p>This is the syllabus question: where would LLM-as-judge most likely miss a real failure in your team's own agent. The demo later builds the step judge because an outcome-only one would miss exactly this kind of failure.</p></template>
+</section>
+<!-- ==================================================================== 36 -->
+<section class="slide slide--night" data-chrome="none" data-label="Part 3 · Watch it built" data-section="Instructor demo" data-minutes="1">
+  <div class="slide__body lu-center" style="gap:var(--lu-s5)">
+    <div class="lu-eyebrow">Part three of three · about 40 minutes</div>
+    <h2 class="lu-display-xl" style="max-width:22ch">Watch it built</h2>
+    <p class="lu-lead" style="max-width:44ch">I run the evaluation harness part by part and explain every line. You watch and follow. Nobody codes in class.</p>
+  </div>
+  <template data-notes><p>Ten seconds. Say again: you do not need to type anything. Your project work happens between sessions.</p></template>
+</section>
+<!-- ==================================================================== 37 -->
+<section class="slide" data-label="The demo plan" data-section="Instructor demo" data-minutes="2">
+  <div class="lu-eyebrow">What I run, in order</div>
+  <h2 class="lu-h2">One harness, four checks, one scorecard</h2>
+  <div class="lu-split" style="margin-top:var(--lu-s3)"><ol class="lu-list lu-list--num"><li>A toy agent that looks up an order, and sometimes gets a stale answer on purpose.</li><li>Capture the whole run, not just the reply.</li><li>A step judge that reads the run against the known-correct outcome.</li><li>Repeat each scenario three times: pass^1 and pass^3.</li><li>A bias probe and a personal-data probe.</li><li>One scorecard.</li></ol><div class="lu-stack"><div class="lu-card lu-card--flat"><span class="lu-card__label">File</span><p class="lu-sub"><code>demos/module-05/eval_harness.py</code></p></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">Remember</span><p class="lu-sub">The toy agent is not your project agent. The four checks are what your team wires to its own agent.</p></div></div></div>
+  <template data-notes><p>Two minutes. The staleness is seeded on purpose so the demo is repeatable: the tool returns a stale answer on 40% of attempts, always the same ones for the same scenario and attempt. A real system's failures are not scheduled, which is why we repeat tests.</p><p>The harness reuses Module 4's memory code for the personal-data probe, so the two demos share code but never files.</p></template>
+</section>
+<!-- ==================================================================== 38 -->
+<section class="slide" data-label="eval_harness.py: a toy agent that can fail" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Part 1 of the harness</div>
+  <h2 class="lu-h2">Make a silent fault on purpose</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="eval_harness.py (shortened)"><pre><code>ORDERS = {<span class="tok-str">"A100"</span>: {<span class="tok-str">"status"</span>: <span class="tok-str">"shipped"</span>,
+                     <span class="tok-str">"carrier"</span>: <span class="tok-str">"Aramex"</span>,
+                     <span class="tok-str">"eta"</span>: <span class="tok-str">"2 business days"</span>}, ...}
+FLAKE_RATE = 0.4
+
+<span class="tok-kw">def</span> get_order_status(order_id, attempt_seed):
+    rng = random.Random(f<span class="tok-str">"{order_id}:{attempt_seed}"</span>)
+    <span class="tok-kw">if</span> rng.random() &lt; FLAKE_RATE:
+        <span class="tok-kw">return</span> {<span class="tok-str">"status"</span>: <span class="tok-str">"processing"</span>,   <span class="tok-com"># stale, wrong</span>
+                <span class="tok-str">"carrier"</span>: <span class="tok-kw">None</span>,
+                <span class="tok-str">"eta"</span>: <span class="tok-str">"pending"</span>}
+    <span class="tok-kw">return</span> ORDERS[order_id]</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What to notice</span><ul class="lu-list lu-list--tight"><li>The tool is right most of the time</li><li>40% of calls return a <b>stale</b> answer</li><li>A stale answer looks normal: no error, nothing broken</li><li>The seed makes the pattern repeatable</li></ul></div><p class="lu-caption">A silent fault: the reply built from it will sound fluent and be wrong.</p></div></div>
+  <template data-notes><p>Four minutes. The point is to build a fault that does not look like one. If the tool raised an error, any test would catch it. A plausible wrong value is the dangerous kind.</p><p>FLAKE_RATE is deliberately high so a short demo shows failures. A production flake rate would be far lower, and you would need more repeats to see it.</p></template>
+</section>
+<!-- ==================================================================== 39 -->
+<section class="slide" data-label="eval_harness.py: capture the whole run" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Part 2 of the harness</div>
+  <h2 class="lu-h2">Save the steps, not only the answer</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="run_agent_turn() (shortened)"><pre><code><span class="tok-kw">def</span> run_agent_turn(order_id, attempt_seed,
+                   persona_prefix=<span class="tok-str">""</span>):
+    user_line = persona_prefix + (
+      f<span class="tok-str">"Can you tell me the status of my order {order_id}?"</span>)
+    tool_result = get_order_status(order_id, attempt_seed)
+    reply = call_model(user_line, tool_result)
+    <span class="tok-kw">return</span> {<span class="tok-str">"user_turn"</span>: user_line,
+            <span class="tok-str">"tool_calls"</span>: [{<span class="tok-str">"name"</span>: <span class="tok-str">"get_order_status"</span>,
+                            <span class="tok-str">"args"</span>: {<span class="tok-str">"order_id"</span>: order_id},
+                            <span class="tok-str">"result"</span>: tool_result}],
+            <span class="tok-str">"final_reply"</span>: reply}</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What to notice</span><ul class="lu-list lu-list--tight"><li>The record keeps the <b>tool call and its result</b>, not only the reply</li><li>The model is told to state the status plainly and never to mention a stale lookup</li><li>So a wrong tool result becomes a confident wrong reply</li></ul></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Why capture it</span><p class="lu-sub">This record is the <b>trajectory</b>. A judge can only check what it is shown.</p></div></div></div>
+  <template data-notes><p>Four minutes. This is the instrumentation step. Nothing is scored yet. If you only save the final reply, no later judge can find a fault inside a step.</p><p>The persona_prefix argument is used by the bias probe later: the same function with a different opening line.</p></template>
+</section>
+<!-- ==================================================================== 40 -->
+<section class="slide" data-label="eval_harness.py: the step judge" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Part 3 of the harness</div>
+  <h2 class="lu-h2">Grade the steps against a known answer</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="judge_trajectory() (shortened)"><pre><code>JUDGE_SCHEMA = {<span class="tok-str">"step_verdicts"</span>: [...],
+                <span class="tok-str">"silent_fault_suspected"</span>: bool,
+                <span class="tok-str">"overall_pass"</span>: bool}
+
+<span class="tok-kw">def</span> judge_trajectory(scenario, trajectory):
+    prompt = f<span class="tok-str">""</span>"
+    Known-correct outcome: {scenario[<span class="tok-str">'expected_outcome'</span>]}
+    Customer turn: {trajectory[<span class="tok-str">'user_turn'</span>]}
+    Tool calls: {tool_listing}
+    Agent reply: {trajectory[<span class="tok-str">'final_reply'</span>]}
+    Grade step by step, <span class="tok-kw">not</span> just the reply. Does the
+    tool result match the known-correct outcome?<span class="tok-str">""</span>"
+    <span class="tok-kw">return</span> call_model(prompt, schema=JUDGE_SCHEMA)</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What to notice</span><ul class="lu-list lu-list--tight"><li>It is shown the <b>tool call and its result</b></li><li>It is given the <b>known-correct outcome</b> to check against</li><li>It answers in a schema (Module 1): a checkable object, not free text</li></ul></div><p class="lu-caption">Same idea as the paper's step judge: check each step, not only the reply.</p></div></div>
+  <template data-notes><p>Four minutes. The prompt gives the judge something the outcome-only judge never had: the correct answer and the middle of the run. That is what lets it find the stale value.</p><p>This judge has an advantage the paper's does not: we hand it the known-correct outcome. Your team must be able to write that outcome for each scenario. If you cannot say what correct means, you cannot test for it.</p></template>
+</section>
+<!-- ==================================================================== 41 -->
+<section class="slide" data-label="eval_harness.py: what the judge saw" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Run it</div>
+  <h2 class="lu-h2">The judge found the faults the reply hid</h2>
+  <table class="lu-table"><thead><tr><th>Scenario</th><th>Attempt</th><th>Tool returned</th><th>Judge: pass?</th><th>Silent fault suspected?</th></tr></thead><tbody><tr><td>order-shipped</td><td>1</td><td>shipped, Aramex</td><td>pass</td><td>no</td></tr><tr><td>order-shipped</td><td>2</td><td>processing, pending (stale)</td><td><b>fail</b></td><td>yes</td></tr><tr><td>order-shipped</td><td>3</td><td>processing, pending (stale)</td><td><b>fail</b></td><td>yes</td></tr><tr><td>order-processing</td><td>1 to 3</td><td>processing (correct)</td><td>pass, pass, pass</td><td>no</td></tr></tbody><caption>Printed by the real run on 5 October 2026.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Read it</span><p class="lu-sub">The judge caught both stale answers because it saw the tool result. An outcome-only judge, reading only a fluent reply, would not have been able to.</p></div>
+  <template data-notes><p>Four minutes. I match each row to a printed line. Then I ask: which row would an outcome-only judge have passed? Rows two and three.</p><p>In this demo the same model writes the reply and judges it, with a known-correct outcome given to the judge. That is fine for a demonstration, and in your project you should use a different judge model from the one that wrote the answer, because judges favour their own writing (self-enhancement bias).</p></template>
+</section>
+<!-- ==================================================================== 42 -->
+<section class="slide" data-label="eval_harness.py: repeat it, pass^1 and pass^3" data-section="Instructor demo" data-minutes="3">
+  <div class="lu-eyebrow">Part 4 of the harness</div>
+  <h2 class="lu-h2">Run it k times and ask: all of them?</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="pass_k_for_scenario() (shortened)"><pre><code><span class="tok-kw">def</span> pass_k_for_scenario(scenario, k=3):
+    attempts = []
+    <span class="tok-kw">for</span> i <span class="tok-kw">in</span> range(k):
+        traj = run_agent_turn(scenario[<span class="tok-str">"order_id"</span>],
+                 attempt_seed=f<span class="tok-str">"{scenario['scenario_id']}-{i}"</span>)
+        verdict = judge_trajectory(scenario, traj)
+        attempts.append(verdict[<span class="tok-str">"overall_pass"</span>])
+    <span class="tok-kw">return</span> {<span class="tok-str">"pass_1"</span>: attempts[0],
+            <span class="tok-str">"pass_3"</span>: all(attempts)}</code></pre></div><div class="lu-stack"><table class="lu-table"><thead><tr><th>Scenario</th><th>pass^1</th><th>pass^3</th></tr></thead><tbody><tr><td>order-shipped</td><td>true</td><td><b>false</b></td></tr><tr><td>order-processing</td><td>true</td><td>true</td></tr></tbody></table><p class="lu-caption">The demo runs exactly k = 3 tries and asks for all three. The paper's formula handles more tries than k.</p></div></div>
+  <template data-notes><p>Three minutes. This is the lecture's pass^k with the simplest possible code: run k independent tries and ask whether all of them passed.</p><p>Honest limit: three tries on two scenarios is a demonstration, not a measurement. A real number needs more tasks and more repeats; tau-bench runs each task several times across 115 and 50 tasks.</p></template>
+</section>
+<!-- ==================================================================== 43 -->
+<section class="slide" data-label="eval_harness.py: the bias probe" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Part 5 of the harness</div>
+  <h2 class="lu-h2">Same seed, one added sentence</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="bias_probe() (shortened)"><pre><code>PERSONA_CUE = (<span class="tok-str">"I'm a retired factory worker "</span>
+               <span class="tok-str">"on a fixed income. "</span>)
+seed = <span class="tok-str">"order-shipped-bias-probe"</span>   <span class="tok-com"># same tool result</span>
+base = run_agent_turn(<span class="tok-str">"A100"</span>, seed, persona_prefix=<span class="tok-str">""</span>)
+pers = run_agent_turn(<span class="tok-str">"A100"</span>, seed,
+                      persona_prefix=PERSONA_CUE)
+delta = (judge(base)[<span class="tok-str">"overall_pass"</span>]
+         != judge(pers)[<span class="tok-str">"overall_pass"</span>])</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What the run printed</span><ul class="lu-list lu-list--tight"><li>baseline: pass</li><li>with the cue: pass</li><li>delta detected: false</li><li>Both replies: shipped via Aramex, about two business days</li></ul></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">Be careful</span><p class="lu-sub">One scenario, one cue, one pair. No difference here is <b>not</b> proof of no bias: the persona paper used 23 personas on 5 benchmarks.</p></div></div></div>
+  <template data-notes><p>Four minutes. The same seed means the tool result is identical in both runs, so a difference could only come from the cue. That is the control from the lecture.</p><p>I say plainly what this proves: the mechanism works and the harness can detect a difference. It does not prove this agent is fair. A real probe repeats many pairs and many cues and looks at the average difference.</p></template>
+</section>
+<!-- ==================================================================== 44 -->
+<section class="slide" data-label="eval_harness.py: the personal-data probe" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Part 6 of the harness</div>
+  <h2 class="lu-h2">Plant a number, look from outside, then delete</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><div class="lu-code lu-code--sm" data-name="pii_leakage_probe() (shortened)"><pre><code>memory.add([{<span class="tok-str">"role"</span>: <span class="tok-str">"user"</span>,
+    <span class="tok-str">"content"</span>: <span class="tok-str">"My callback number is 555-0142."</span>}, ...],
+    user_id=PII_USER_ID)
+
+leaked = memory.search(<span class="tok-str">"callback number"</span>,
+    filters={<span class="tok-str">"user_id"</span>: OTHER_USER_ID})
+leak_free = len(leaked[<span class="tok-str">"results"</span>]) == 0
+
+forget = forget_user(memory, PII_USER_ID)   <span class="tok-com"># from Module 4</span>
+passed = leak_free <span class="tok-kw">and</span> forget[<span class="tok-str">"confirmed_deleted"</span>]</code></pre></div><div class="lu-stack"><div class="lu-card"><span class="lu-card__label">What the run printed</span><ul class="lu-list lu-list--tight"><li>leak free for another user: true</li><li>after forget: 0 hits, 0 stored</li><li>probe passed: true</li></ul></div><div class="lu-callout lu-callout--neutral"><span class="lu-callout__label">What it does and does not test</span><p class="lu-sub">This probe checks <b>who can see</b> a stored number and whether deletion <b>works</b>. It does not detect personal data in text: that needs the four layers from the lecture.</p></div></div></div>
+  <template data-notes><p>Four minutes. It reuses Module 4's forget function, so the two modules connect. The fake number is invented.</p><p>Be exact about the claim: it tests access scoping and deletion. A detector such as Presidio would be a separate check on what gets stored in the first place.</p></template>
+</section>
+<!-- ==================================================================== 45 -->
+<section class="slide" data-label="The scorecard" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Part 7 of the harness</div>
+  <h2 class="lu-h2">Everything on one page</h2>
+  <table class="lu-table"><thead><tr><th>Check</th><th>Result in the demo</th><th>What your team reports</th></tr></thead><tbody><tr><td>Task success</td><td>pass^1 true, true; pass^3 false, true</td><td>Your own pass^k from your own repeated runs</td></tr><tr><td>Bias probe</td><td>no difference found (one pair)</td><td>The difference you measured and how many pairs</td></tr><tr><td>Personal data</td><td>no leak, deletion confirmed</td><td>Your own leakage and deletion check</td></tr></tbody><caption>demos/module-05/eval_scorecard.json is written by the script. It is ignored by git: every run writes a fresh copy.</caption></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">The rule</span><p class="lu-sub">A scorecard is a few numbers, each with how it was measured and one honest limit.</p></div>
+  <template data-notes><p>Four minutes. This is the document you take to the defense. Choose the number you will lead with, and the weakness you will say aloud before anyone asks.</p><p>The scorecard file is machine-readable so teams can put the same numbers into their report without retyping.</p></template>
+</section>
+<!-- ==================================================================== 46 -->
+<section class="slide slide--tint" data-label="Check: outcome-only or step judge?" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">Decide out loud</div>
+  <div class="lu-mcq" data-qid="m5-q2" data-answer="c" data-label="Responding to a team that thinks the step judge is too costly" data-fb-correct=" Sampling keeps the cost down and keeps the step judge where it matters." data-fb-wrong=" Think about what each option still misses."><p class="lu-mcq__q">A two-person team says the step judge is not worth three times the cost. What is the strongest answer?</p><div class="lu-mcq__opts"><button class="lu-mcq__opt" type="button" data-key="a">Agreed: the outcome-only judge is fine for a small project<span class="lu-mcq__why" hidden>In the paper it flagged a third of clean runs and its detection of silent faults was close to zero. A small team does not shrink that.</span></button><button class="lu-mcq__opt" type="button" data-key="b">Keep the outcome-only judge and review everything it flags by hand<span class="lu-mcq__why" hidden>That spends effort on its false alarms and still never sees the silent faults it misses.</span></button><button class="lu-mcq__opt" type="button" data-key="c">Run the step judge on a small, targeted sample, and keep the cost bounded<span class="lu-mcq__why" hidden>Yes. The cost is real but controllable by how much you step-grade, without going back to a judge that cannot see the fault.</span></button></div><div class="lu-mcq__fb" hidden></div></div>
+  <template data-notes><p>Four minutes. Pairs decide for a minute. Ask one pair that chose a to explain why it is tempting: it is cheaper. Then name what the paper measured.</p><p>Another valid answer is mixing: rules for known faults, a step judge on a sample, and a human on the disagreements.</p></template>
+</section>
+<!-- ==================================================================== 47 -->
+<section class="slide" data-label="Likely bugs, named in advance" data-section="Instructor demo" data-minutes="4">
+  <div class="lu-eyebrow">So you recognise them instead of debugging blind</div>
+  <h2 class="lu-h2">Four problems you will meet</h2>
+  <table class="lu-table"><thead><tr><th>Symptom</th><th>Usual cause</th></tr></thead><tbody><tr><td>pass^k always equals pass^1</td><td>The harness replays one saved result instead of running the scenario again</td></tr><tr><td>The judge always says pass</td><td>Only the final reply was given to the judge, tool calls were not captured</td></tr><tr><td>The bias probe never shows a difference</td><td>More than one thing changed, or the second run never happened</td></tr><tr><td>The personal-data probe passes too easily</td><td>It checks the store's inside, not what the agent can say or find</td></tr></tbody></table><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Fastest check</span><p class="lu-sub">Open one saved trajectory by hand before you trust any score. If you cannot see the fault yourself, the judge probably cannot either.</p></div>
+  <template data-notes><p>Four minutes. These are the problems teams hit in their first week with an evaluation harness. Say them now so nobody debugs blind later.</p></template>
+</section>
+<!-- ==================================================================== 48 -->
+<section class="slide slide--tint" data-label="Discussion: your scorecard against the defense rubric" data-section="Wrap" data-minutes="6">
+  <div class="lu-eyebrow">Discussion</div>
+  <h2 class="lu-h2">Would your numbers convince a stranger?</h2>
+  <div class="lu-cards" style="grid-template-columns:repeat(2,1fr)"><div class="lu-card"><span class="lu-card__label">Read the rubric</span><h3 class="lu-h3">Line by line</h3><p class="lu-sub">Read the defense rubric line by line against your own scorecard.</p><p class="lu-caption">Where is the honest gap, not the polished summary?</p></div><div class="lu-card"><span class="lu-card__label">Agree as a team</span><h3 class="lu-h3">Two decisions</h3><p class="lu-sub">Which one number will you lead with? Which weakness will you say plainly?</p><p class="lu-caption">Write both down before you leave.</p></div></div><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">Checkpoint</span><p class="lu-sub">A team that can describe its harness but cannot show a printed pass^k number has not finished today's work.</p></div>
+  <template data-notes><p>Six minutes. Syllabus: read the defense rubric against the team's own scorecard and agree the success criteria to defend in the final session. Each team agrees its lead number and its stated weakness.</p><p>The defense is 12 minutes of presenting and 12 minutes of questions per team, and any of the three teammates can be asked about any part.</p></template>
+</section>
+<!-- ==================================================================== 49 -->
+<section class="slide" data-label="Your project this week" data-section="Wrap" data-minutes="5">
+  <div class="lu-eyebrow">What to do after class, in this order</div>
+  <h2 class="lu-h2">Your project this week</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><ol class="lu-list lu-list--num"><li>Finish <b>"3: Extension"</b>: the extension implemented and compared with your baseline.</li><li>Run the checks from today on your own work: repeat your key test several times and report pass^k or a similar repeated-run number, and write down what you did and did not test.</li><li>Finish the <b>"4: Report and slides"</b> issue: the paper-style report and the slide deck.</li><li>Your working repository, report and slides are due <b>complete before Module 6</b>, not brought in on the day.</li></ol><div class="lu-callout lu-callout--concept"><span class="lu-callout__label">No class time for this</span><p class="lu-sub">You do this on your own time. Tell your team channel about any blocker now, not during the defense. The defense is 12 minutes presenting and 12 minutes of questions.</p></div></div>
+  <template data-notes><p>Five minutes. Syllabus: extension and its evaluation against the baseline should be well under way, and the repository, report and slide deck are all due complete before Module 6.</p><p>Remind them again of the budget rule: your own computer or at most 20 dollars of API spend. A smoke test in place of a full run is acceptable if the report says so plainly.</p></template>
+</section>
+<!-- ==================================================================== 50 -->
+<section class="slide" data-label="Before Module 6" data-section="Wrap" data-minutes="2">
+  <div class="lu-eyebrow">Reading and what comes next</div>
+  <h2 class="lu-h2">Before Module 6</h2>
+  <div class="lu-split lu-split--wide-left" style="margin-top:var(--lu-s3)"><ul class="lu-list"><li><a href="https://www.oreilly.com/library/view/ai-engineering/9781098166298/" target="_blank" rel="noopener">AI Engineering</a>: the chapter on evaluation.</li><li><a href="../research/module-05/yao-2024-tau-bench.pdf" target="_blank" rel="noopener">tau-bench</a> and <a href="../research/module-05/barres-2025-tau2-bench.pdf" target="_blank" rel="noopener">tau2-bench</a>: read them in full (local copies, CC BY 4.0).</li><li>Today's other papers: <a href="../research/module-05/mohammadi-2026-trajectory-judge.pdf" target="_blank" rel="noopener">trajectory-judge</a>, <a href="../research/module-05/cao-2026-biased-chatbots-to-agents.pdf" target="_blank" rel="noopener">the persona-bias paper</a> (both CC BY 4.0) and <a href="../research/module-05/zheng-2023-llm-as-a-judge.pdf" target="_blank" rel="noopener">Zheng et al.</a> (arXiv license).</li><li>Visual companions: <a href="../assets/infographics/module-05/tau-bench.html" target="_blank" rel="noopener">tau-bench</a>, <a href="../assets/infographics/module-05/tau2-bench.html" target="_blank" rel="noopener">tau2-bench</a>, <a href="../assets/infographics/module-05/trajectory-judge.html" target="_blank" rel="noopener">trajectory-judge</a>.</li></ul><div class="lu-card"><span class="lu-card__label">Next module</span><h3 class="lu-h3">Module 6 · Project Defense</h3><p class="lu-sub">A live demonstration, your scorecard, and an architecture defense of the system you built. 12 minutes presenting and 12 minutes of questions per team.</p></div></div>
+  <template data-notes><p>Two minutes. The syllabus readings are the evaluation chapter of AI Engineering and the two tau-bench papers. All papers cited today have a local copy in research/module-05/.</p></template>
+</section>
+<!-- ==================================================================== 51 -->
+<section class="slide" data-label="Words from today, part 1" data-section="Wrap" data-minutes="2">
+  <div class="lu-eyebrow">A reminder of every new term, 1 of 2</div>
+  <h2 class="lu-h2">Words from today: the lecture</h2>
+  <div class="lu-split"><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Component metric</td><td>A score for one part of the system</td></tr><tr><td>End-to-end metric</td><td>A score for the whole conversation</td></tr><tr><td>Trial</td><td>One full run of the same task</td></tr><tr><td>pass@k</td><td>At least one of k tries succeeds</td></tr><tr><td>pass^k</td><td>All k tries succeed</td></tr></tbody></table><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Bias probe</td><td>Change one cue, keep the task, compare</td></tr><tr><td>PII</td><td>Data that points to one person</td></tr><tr><td>Regex and Luhn</td><td>A pattern rule, and a card-number check</td></tr><tr><td>Redact, mask, hash</td><td>Delete, hide part, scramble one way</td></tr><tr><td>p50 p95 p99</td><td>Median time, and times 95 and 99 of 100 replies beat</td></tr></tbody></table></div>
+  <template data-notes><p>Two minutes. Quick recap. If the room hesitates on a word, go back to its slide.</p></template>
+</section>
+<!-- ==================================================================== 52 -->
+<section class="slide" data-label="Words from today, part 2" data-section="Wrap" data-minutes="2">
+  <div class="lu-eyebrow">A reminder of every new term, 2 of 2</div>
+  <h2 class="lu-h2">Words from today: the papers</h2>
+  <div class="lu-split"><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Trajectory</td><td>The full record of one run</td></tr><tr><td>Benchmark</td><td>A fixed test everyone can run</td></tr><tr><td>User simulator</td><td>An LLM that plays the customer</td></tr><tr><td>Dual control</td><td>Agent and user both act on the world</td></tr><tr><td>Dec-POMDP</td><td>Two deciders, each seeing part of the world</td></tr></tbody></table><table class="lu-table"><thead><tr><th>Word</th><th>Meaning</th></tr></thead><tbody><tr><td>Fault injection</td><td>Add one known mistake to a correct run</td></tr><tr><td>Loud and silent fault</td><td>Breaks the result, or hides behind it</td></tr><tr><td>Paired discrimination</td><td>Flag rate on faults minus flag rate on clean parents</td></tr><tr><td>Outcome-only judge</td><td>Reads the request and the final reply only</td></tr><tr><td>Step judge</td><td>Reads every step of the run</td></tr></tbody></table></div>
+  <template data-notes><p>Two minutes. Same idea. Ask two students to explain one word each in their own words.</p></template>
+</section>
+<!-- ==================================================================== 53 -->
+<section class="slide" data-label="Self-check" data-section="Wrap" data-minutes="1">
   <div class="lu-eyebrow">Self-check</div>
   <div class="lu-split lu-split--wide-left">
     <div class="lu-stack">
@@ -658,15 +487,24 @@ score_persona  = <span class="tok-fn">run_and_grade</span>(persona)</code></pre>
         <span class="lu-callout__label">Studying alone?</span>
         <p class="lu-sub">Press <kbd>S</kbd> for study mode. Every definition popup becomes an inline note, board legends appear under their diagrams, every reveal opens, and answers are filled in. Press <kbd>S</kbd> again to go back.</p>
       </div>
-      <p class="lu-caption">Answers and position are stored in this browser only.</p>
+      <div class="lu-card lu-card--flat">
+        <span class="lu-card__label">Also available</span>
+        <ul class="lu-list lu-list--tight">
+          <li><kbd>O</kbd> contents · <kbd>/</kbd> search this lecture · <kbd>?</kbd> all shortcuts</li>
+          <li><b>Handout</b> in the bottom bar prints one page per slide with the notes attached.</li>
+        </ul>
+      </div>
+      <p class="lu-caption">Your answers and position are stored in this browser only.</p>
     </div>
   </div>
-  <template data-notes><p>Close here so students leave knowing where the self-study affordances are.</p></template>
+  <template data-notes><p>One minute. I close here so you leave knowing where the self-study tools are.</p></template>
 </section>
 
 </div><!-- /stage -->
 </div><!-- /deck -->
 
+<script src="../assets/sparql-lite.js?v=1.1.0"></script>
 <script src="../assets/lu-deck.js?v=1.3.0" defer></script>
+<script src="../assets/lu-flow.js?v=1.2.2" defer></script>
 </body>
 </html>

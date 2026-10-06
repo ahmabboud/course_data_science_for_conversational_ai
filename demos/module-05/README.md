@@ -1,7 +1,8 @@
 # Module 5 demo: an evaluation harness for a team's own agent
 
-Used in `lectures/dsca-module-05.html`: the Hands-on lab section, slides 18
-through 25, which build exactly this harness's four pieces live. One script,
+Used in `lectures/dsca-module-05.html`: the live demo in the Hook, and Part 3
+("Watch it built"), whose slides start with "eval_harness.py", build exactly
+this harness's four pieces and its scorecard. One script,
 `eval_harness.py`, evaluates a small toy agent built from scratch for this
 demo (a retail order-status lookup, the same domain flavor as tau-bench's
 own retail split), not a reimplementation of any team's real agent: the
