@@ -6,6 +6,39 @@ and Part 3 ("Watch it built"), whose slides start with "grounded_rag.py". One sc
 `grounded_rag.py`, builds a small fake FAQ knowledge base and runs the
 whole pipeline the lecture describes against it.
 
+## System at a glance
+
+```mermaid
+flowchart LR
+    subgraph startup["Once when the script starts"]
+        FAQ["Six FAQ entries<br/>text + source id"] --> BM25["Build BM25 index"]
+        FAQ --> DOC_EMBED["Gemini embedding model"]
+        DOC_EMBED --> DOC_VECTORS["Store FAQ vectors in memory"]
+    end
+
+    Q["User question"] --> TOK["Tokenize question"]
+    TOK --> BM25_SEARCH["BM25 keyword search"]
+    BM25 --> BM25_SEARCH
+    Q --> QUERY_EMBED["Embed question with Gemini"]
+    QUERY_EMBED --> COSINE["Cosine similarity"]
+    DOC_VECTORS --> COSINE
+
+    BM25_SEARCH --> FUSE["Reciprocal Rank Fusion"]
+    COSINE --> FUSE
+    FUSE --> ASSESS["One structured Gemini call<br/>score candidates, check coverage,<br/>draft answer and select citations"]
+    Q --> ASSESS
+    ASSESS --> COVERED{"Covered by<br/>the passages?"}
+    COVERED -->|"Yes"| ANSWER["Answer with source citations"]
+    COVERED -->|"No"| REFUSAL["Refuse with a reason"]
+```
+
+The diagram shows this demo's actual scope: the six short FAQ entries are
+already separated by topic and kept in memory. The script does not demonstrate
+document parsing, chunking, or a persistent vector database. It embeds the FAQ
+entries once at startup, then embeds each question for vector search. One
+Gemini assessment call performs the visible reranking, coverage, and answer
+steps together; the code prints those results as separate stages.
+
 ## One-time setup
 
 Do this once, not per module (it is the same setup `../README.md` describes
