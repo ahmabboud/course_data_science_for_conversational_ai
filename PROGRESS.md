@@ -142,11 +142,18 @@ committed and pushed to GitHub (`origin/main`) at the instructor's request. Run
      the extra "?" is shown in red, similarity scores are shown being computed,
      figures enlarged, scores and terms defined where first used, the Module 4
      check question moved after Zep is taught, demo kickers renamed "Demo step
-     N", "delta" renamed "difference score". **Module 2 was not revised** (the
-     instructor said to start from Module 3): its worst slides were the Atreya
-     figure, the raw-loop list picture, the cost table, the routing-function
-     slide, and reason-first versus the demo. Slide counts are now M3 54, M4
+     N", "delta" renamed "difference score". Slide counts are now M3 54, M4
      50, M5 53.
+   - **Module 2 clarity pass 2026-10-08.** Done after Modules 3 to 5, from the
+     same cold-reader review. The live demo is two small pictures, the message
+     list is five boxes that grow, the cost slide is bars, state boxes are
+     joined to their nodes, the branch slide has a real table, the checkpoint
+     slide is a timeline, the paper's Figure 1 is redrawn with four numbered
+     zones (original linked), the judge and results slides are bar charts with
+     units, the graph.py slides name the `or` trick, and the self-check slide
+     shows the three answers. Titles changed on about 15 slides. Audit clean,
+     57 slides, 180 minutes. Not done: the "0 of 3 correct" score block still
+     appears in print.
    - **Module 3 rebuilt 2026-10-05 (awaiting review).** 53 slides, 180 minutes
      (opening 2, hook 13, lecture 69, research dive 40, instructor demo 37, wrap
      19). Audit clean. BM25 is now taught with a worked example from the demo's
