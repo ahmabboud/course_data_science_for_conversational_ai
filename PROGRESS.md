@@ -144,6 +144,13 @@ committed and pushed to GitHub (`origin/main`) at the instructor's request. Run
      check question moved after Zep is taught, demo kickers renamed "Demo step
      N", "delta" renamed "difference score". Slide counts are now M3 54, M4
      50, M5 53.
+   - **Module 4 additions 2026-10-10.** After instructor feedback: p95 defined
+     and the two time columns labelled; Zep slide shows the extract and group
+     methods on one example; the compaction demo slide is a before and after
+     picture; the SeCom slide explains why its example topics are there; a new
+     slide before the demo, "What every memory needs", says each memory needs an
+     LLM to write it and an embedding model to search it. Module 4 is now 51
+     slides, still 180 minutes (3 minutes moved from the Mem0 results slides).
    - **Module 2 clarity pass 2026-10-08.** Done after Modules 3 to 5, from the
      same cold-reader review. The live demo is two small pictures, the message
      list is five boxes that grow, the cost slide is bars, state boxes are
