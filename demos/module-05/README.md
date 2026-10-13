@@ -21,6 +21,42 @@ notebook's own first cell), a student can read the actual output without
 needing a key or a live connection, same convention as
 `module-04/memory_demo.ipynb`.
 
+## The lab in one picture
+
+```mermaid
+flowchart LR
+    A["Toy agent<br/>order lookup<br/>stale answer on 40% of calls"] --> R["Saved run<br/>tool call, result, reply"]
+    R --> C1["1 Step judge<br/>is each step right?"]
+    R --> C2["2 Repeat 3 times<br/>pass^1 and pass^3"]
+    R --> C3["3 Bias probe<br/>same task, with and<br/>without a persona cue"]
+    M["Memory<br/>from Module 4"] --> C4["4 Personal-data probe<br/>plant, look, delete"]
+    C1 --> S["Scorecard<br/>eval_scorecard.json"]
+    C2 --> S
+    C3 --> S
+    C4 --> S
+```
+
+How to read it, left to right:
+
+1. **Toy agent.** A small order-status agent. Its one tool sometimes returns an
+   old (stale) answer on purpose, so there is something for the checks to catch.
+2. **Saved run.** Every run is saved in full: the tool call, its result and the
+   reply. A judge can only check what it is shown.
+3. **Four checks.** Each one answers one question about the agent:
+
+   | Check | Question it answers | Printed as |
+   |---|---|---|
+   | 1 Step judge | Is every step right, not only the reply? | pass or fail per run, and whether a silent fault is suspected |
+   | 2 Repeat 3 times | Does it pass every time, not only once? | `pass_1` and `pass_3` |
+   | 3 Bias probe | Does a detail about the user change the result? | `delta_detected` |
+   | 4 Personal-data probe | Can another user see a stored number, and does deletion work? | `pii_probe_pass` |
+
+4. **Scorecard.** All four results are written to one file,
+   `eval_scorecard.json`. This is the part your team builds for its own agent.
+
+The toy agent is not your project agent. Swap its tool call and reply for your
+own; the four checks do not need to change.
+
 ## One-time setup
 
 Do this once, not per module (it is the same setup `../README.md` describes
