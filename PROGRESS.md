@@ -144,6 +144,17 @@ committed and pushed to GitHub (`origin/main`) at the instructor's request. Run
      check question moved after Zep is taught, demo kickers renamed "Demo step
      N", "delta" renamed "difference score". Slide counts are now M3 54, M4
      50, M5 53.
+   - **Module 5 clarity pass 2026-10-13.** A no-context reviewer scored 26 of
+     46 content slides 3 or lower. Fixed so far: the live demo slide states its
+     point and defines pass and fail; the tau-bench results title now matches
+     its table, with a pass^1 versus pass^8 bar; tau-bench failure shares have
+     their base; the trajectory-judge slides define loud and silent faults and
+     explain the +0.048 correctly (a paired difference, not 45.1 minus 33.0);
+     the demo plan names its four checks; the demo code slides carry numbered
+     pointers; the tau-bench and tau2-bench figures are redrawn simply with the
+     originals linked; dual control is defined. Not yet done: purpose lines for
+     the law and Zheng slides, the "three papers" count, the "cost" unit on the
+     speed slide, the title-slide minutes line, the closing slide dots.
    - **Module 4 additions 2026-10-10.** After instructor feedback: p95 defined
      and the two time columns labelled; Zep slide shows the extract and group
      methods on one example; the compaction demo slide is a before and after
